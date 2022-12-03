@@ -18,10 +18,13 @@ int _lp_inci(int a) {
 
 int main(int argc, char** argv) {
 	
-	int a;
-	for (int i = 0; i < 10000; i++) {
+	int a = 0;
+	do {
+		/*
+		 * Few instructions repeated many times => TEMPORAL LOCALITY
+		 */
 		a = _lp_inci(a);
-	}
+	} while(a < 10000);
 
 	return 0;
 }
