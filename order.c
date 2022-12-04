@@ -26,8 +26,14 @@ struct order {
  *
  * waste 8 bytes in the stack frame (16 bytes aligned)
  */
-double _order_sum_paidd(struct order *o) {
-
+double _order_sum_paidd(struct order *o, long buyer_id) {
+	double sum = 0;
+	for(int i = 0; i < NUMBER_OF_ORDERS; ++i) {
+		if(o[i].buyer_id == buyer_id && o[i].paid) {
+			sum += o[i].price;
+		}
+	}
+	return sum;
 }
 
 /*
@@ -37,8 +43,14 @@ double _order_sum_paidd(struct order *o) {
  *
  * waste 8 bytes in the stack frame (16 bytes aligned)
  */
-double _order_sum_notpaidd(struct order *o) {
-
+double _order_sum_notpaidd(struct order *o, long buyer_id) {
+	double sum = 0;
+	for(int i = 0; i < NUMBER_OF_ORDERS; ++i) {
+		if(o[i].buyer_id == buyer_id && !o[i].paid) {
+			sum += o[i].price;
+		}
+	}
+	return sum;
 }
 
 
@@ -104,8 +116,16 @@ int main(int argc, char** argv) {
 			orders[i].buyer[b] = buyers[b];
 		}
 		
-		int tmp_id = (int)(( rand() / (double)RAND_MAX ) * 5.0);
+		long tmp_id = (long)(( rand() / (double)RAND_MAX ) * NUMBER_OF_BUYERS);
 		orders[i].buyer_id = tmp_id;
+	}
+
+	/*
+	 * Sum paid orders for each buyer ID
+	 */
+	for(long j = 0; j < NUMBER_OF_BUYERS; ++j) {
+		printf("[`buyer_id` = %ld]\ttotal paid = %.4f\n", j, _order_sum_paidd(orders, j));
+		printf("[`buyer_id` = %ld]\ttotal NOT paid = %.4f\n", j, _order_sum_notpaidd(orders, j));
 	}
 
 	return 0;
