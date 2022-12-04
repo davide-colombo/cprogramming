@@ -89,7 +89,12 @@ int main(int argc, char** argv) {
 	 * reproducible.
 	 */
 	srand(time(NULL));
-
+	
+	/*
+	 * Record the start of the initialization
+	 */
+	clock_t start_clock, end_clock;
+	start_clock = clock();
 	/*
 	 * Initialize the array of orders
 	 */
@@ -120,6 +125,17 @@ int main(int argc, char** argv) {
 		orders[i].buyer_id = tmp_id;
 	}
 
+	end_clock = clock();
+	unsigned long elapsed_clock = (end_clock - start_clock);
+	printf("CLOCKS_PER_SEC = %lu\n", (unsigned long)CLOCKS_PER_SEC);
+	printf("elapsed_clock = %lu\n", elapsed_clock);
+
+	/*
+	 * Measure how much time it takes to compute the total amount of paid and 
+	 * not-paid orders.
+	 */
+	start_clock = clock();
+
 	/*
 	 * Sum paid orders for each buyer ID
 	 */
@@ -127,6 +143,10 @@ int main(int argc, char** argv) {
 		printf("[`buyer_id` = %ld]\ttotal paid = %.4f\n", j, _order_sum_paidd(orders, j));
 		printf("[`buyer_id` = %ld]\ttotal NOT paid = %.4f\n", j, _order_sum_notpaidd(orders, j));
 	}
+
+	end_clock = clock();
+	elapsed_clock = (end_clock - start_clock);
+	printf("elapsed_clock = %lu\n", elapsed_clock);
 
 	return 0;
 }
