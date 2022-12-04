@@ -164,11 +164,17 @@ int main(int argc, char** argv) {
 	 * Initialize the array of orders
 	 */
 	for(unsigned long i = 0; i < NUMBER_OF_BUYERS; ++i) {
-		ptr = malloc(sizeof(struct order) * ((size_t)NUMBER_OF_PAID_ORDERS_PER_BUYER));
-		if ( ptr == NULL ) {
+		ptr = aligned_alloc(CLS, sizeof(struct order) * ((size_t)NUMBER_OF_PAID_ORDERS_PER_BUYER));
+		if( ptr == NULL ){
 			fprintf(stderr, "[paid orders] buyer_id = %lu\n", i);
 			return -1;
 		}
+
+		/*
+		 * IMPORTANT: even if it was EXPLICITLY enforced an alignment equal to 
+		 * the CACHE LINE SIZE on the `struct order`, the memory dynamically 
+		 * allocated DOES NOT HAVE THE SAME ALIGNMENT.
+		 * */
 
 		/*
 		 * TODO: optimize loop
@@ -190,12 +196,12 @@ int main(int argc, char** argv) {
 		orders_per_buyer[i].paid_orders = ptr;
 		ptr = NULL;
 
-		ptr = malloc(sizeof(struct order) * ((size_t)NUMBER_OF_UNPAID_ORDERS_PER_BUYER));
-		if( ptr == NULL ) {
+		ptr = aligned_alloc(CLS, sizeof(struct order) * ((size_t)NUMBER_OF_PAID_ORDERS_PER_BUYER));
+		if( ptr == NULL ){
 			fprintf(stderr, "[unpaid orders] buyer_id = %lu\n", i);
 			return -1;
 		}
-		
+
 		/*
 		 * TODO: optimize the loop.
 		 */
