@@ -133,16 +133,6 @@ double _order_sum_priced(struct order *orders, size_t number_of_orders) {
 
 int main(int argc, char** argv) {
 	/*
-	 * 64 bytes on an 8 bytes alignment
-	 *
-	 * 4 items aligned on a memory address required to be a multiple of the 
-	 *   largest data type in the `struct` (8 bytes).
-	 *
-	 */
-	//printf("sizeof(struct order) = %zu\n", sizeof(struct buyer_orders));
-	//printf("alignof(struct order) = %zu\n", alignof(struct buyer_orders));
-
-	/*
 	 * Initialize pseudo-random number generator to make the result 
 	 * reproducible.
 	 */
@@ -160,6 +150,12 @@ int main(int argc, char** argv) {
 	struct buyer_orders orders_per_buyer[NUMBER_OF_BUYERS];
 	struct order *ptr = NULL;
 
+	printf("sizeof(orders_per_buyer) = %zu\n", sizeof orders_per_buyer);
+	printf("alignof(orders_per_buyer) = %zu\n", alignof(orders_per_buyer));
+	
+	printf("sizeof(*ptr) = %zu\n", sizeof *ptr);
+	printf("alignof(*ptr) = %zu\n", alignof(*ptr));
+
 	/*
 	 * Initialize the array of orders
 	 */
@@ -169,12 +165,14 @@ int main(int argc, char** argv) {
 			fprintf(stderr, "[paid orders] buyer_id = %lu\n", i);
 			return -1;
 		}
-
+	
 		/*
 		 * IMPORTANT: even if it was EXPLICITLY enforced an alignment equal to 
 		 * the CACHE LINE SIZE on the `struct order`, the memory dynamically 
 		 * allocated DOES NOT HAVE THE SAME ALIGNMENT.
 		 * */
+		printf("sizeof(*ptr) = %zu\n", sizeof *ptr);
+		printf("alignof(*ptr) = %zu\n", alignof(*ptr));
 
 		/*
 		 * TODO: optimize loop
@@ -233,14 +231,14 @@ int main(int argc, char** argv) {
 		printf("[`buyer_id` = %ld]\ttotal paid = %.4f\n",
 			j, 
 			_order_sum_priced(
-				orders_per_buyer[j].paid_orders, 
+				orders_per_buyer[j].paid_orders,
 				orders_per_buyer[j].number_of_paid_orders
 			)
 		);
 		printf("[`buyer_id` = %ld]\ttotal NOT paid = %.4f\n",
 			j, 
 			_order_sum_priced(
-				orders_per_buyer[j].unpaid_orders, 
+				orders_per_buyer[j].unpaid_orders,
 				orders_per_buyer[j].number_of_unpaid_orders
 			)
 		);
