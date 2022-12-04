@@ -7,6 +7,8 @@
 #define NUMBER_OF_ORDERS 1000
 #define NUMBER_OF_BUYERS 5
 #define NUMBER_OF_ORDERS_PER_BUYER	(NUMBER_OF_ORDERS / NUMBER_OF_BUYERS)
+#define NUMBER_OF_PAID_ORDERS_PER_BUYER	(NUMBER_OF_ORDERS_PER_BUYER / 2)
+#define NUMBER_OF_UNPAID_ORDERS_PER_BUYER	(NUMBER_OF_ORDERS_PER_BUYER - NUMBER_OF_PAID_ORDERS_PER_BUYER)
 
 /*
  * Cache line size
@@ -137,91 +139,110 @@ int main(int argc, char** argv) {
 	 *   largest data type in the `struct` (8 bytes).
 	 *
 	 */
-	printf("sizeof(struct order) = %zu\n", sizeof(struct buyer_orders));
-	printf("alignof(struct order) = %zu\n", alignof(struct buyer_orders));
+	//printf("sizeof(struct order) = %zu\n", sizeof(struct buyer_orders));
+	//printf("alignof(struct order) = %zu\n", alignof(struct buyer_orders));
 
-//	/*
-//	 * Array of buyers name.
-//	 *
-//	 * This will be stored in the `order` data structure.
-//	 *
-//	 * There, the 
-//	 */
-//	const char *buyers[5] = {
-//		"buy1", "buy2", "buy3", "buy4", "buy5"
-//	};
-//
-//	/*
-//	 * Statically allocate an array of orders
-//	 *
-//	 * order == &order[0]
-//	 *
-//	 */
-//	struct order orders[NUMBER_OF_ORDERS];
-//
-//	/*
-//	 * Initialize pseudo-random number generator to make the result 
-//	 * reproducible.
-//	 */
-//	srand(time(NULL));
-//	
-//	/*
-//	 * Record the start of the initialization
-//	 */
-//	clock_t start_clock, end_clock;
-//	start_clock = clock();
-//	/*
-//	 * Initialize the array of orders
-//	 */
-//	for(int i = 0; i < NUMBER_OF_ORDERS; ++i) {
-//		/*
-//		 * Generate a random number between 0 and 1 then scale it between 10.0 
-//		 * and 1010.0
-//		 */
-//		orders[i].price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
-//
-//		/*
-//		 * Paid if `tmp >= 0.5`, otherwise not paid.
-//		 *
-//		 * Since a new random value is generated this has the benefit of 
-//		 * totally decoupling the generation of order price to the paid value.
-//		 */
-//		double tmp = ( rand() / (double)RAND_MAX);
-//		orders[i].paid = ( tmp >= 0.5 ) ? true : false;
-//
-//		/*
-//		 * Initialize buyer names
-//		 */
-//		for(int b = 0; b < NUMBER_OF_BUYERS; ++b) {
-//			orders[i].buyer[b] = buyers[b];
-//		}
-//		
-//		long tmp_id = (long)(( rand() / (double)RAND_MAX ) * NUMBER_OF_BUYERS);
-//		orders[i].buyer_id = tmp_id;
-//	}
-//
-//	end_clock = clock();
-//	unsigned long elapsed_clock = (end_clock - start_clock);
-//	printf("CLOCKS_PER_SEC = %lu\n", (unsigned long)CLOCKS_PER_SEC);
-//	printf("elapsed_clock = %lu\n", elapsed_clock);
-//
-//	/*
-//	 * Measure how much time it takes to compute the total amount of paid and 
-//	 * not-paid orders.
-//	 */
-//	start_clock = clock();
-//
-//	/*
-//	 * Sum paid orders for each buyer ID
-//	 */
-//	for(long j = 0; j < NUMBER_OF_BUYERS; ++j) {
-//		printf("[`buyer_id` = %ld]\ttotal paid = %.4f\n", j, _order_sum_paidd(orders, j));
-//		printf("[`buyer_id` = %ld]\ttotal NOT paid = %.4f\n", j, _order_sum_notpaidd(orders, j));
-//	}
-//
-//	end_clock = clock();
-//	elapsed_clock = (end_clock - start_clock);
-//	printf("elapsed_clock = %lu\n", elapsed_clock);
+	/*
+	 * Initialize pseudo-random number generator to make the result 
+	 * reproducible.
+	 */
+	srand(time(NULL));
+
+	/*
+	 * Record the start of the initialization
+	 */
+	clock_t start_clock, end_clock;
+	start_clock = clock();
+
+	/*
+	 * Array of buyers; not aligned to the cache line size;
+	 */
+	struct buyer_orders orders_per_buyer[NUMBER_OF_BUYERS];
+	struct order *ptr = NULL;
+
+	/*
+	 * Initialize the array of orders
+	 */
+	for(unsigned long i = 0; i < NUMBER_OF_BUYERS; ++i) {
+		ptr = malloc(sizeof(struct order) * ((size_t)NUMBER_OF_PAID_ORDERS_PER_BUYER));
+		if ( ptr == NULL ) {
+			fprintf(stderr, "[paid orders] buyer_id = %lu\n", i);
+			return -1;
+		}
+
+		/*
+		 * TODO: optimize loop
+		 *
+		 * If I end the list with NULL I can remove the field that stores the 
+		 * number of paid/unpaid orders from the data structure and squeeze 
+		 * out redundancy.
+		 */
+		for (int j = 0; j < NUMBER_OF_PAID_ORDERS_PER_BUYER; ++j) {
+			(ptr+j)->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
+		}
+
+		/*
+		 * IMPORTANT!!!
+		 *
+		 * Store the value in the data structure before using it to get 
+		 * another block of memory.
+		 */
+		orders_per_buyer[i].paid_orders = ptr;
+		ptr = NULL;
+
+		ptr = malloc(sizeof(struct order) * ((size_t)NUMBER_OF_UNPAID_ORDERS_PER_BUYER));
+		if( ptr == NULL ) {
+			fprintf(stderr, "[unpaid orders] buyer_id = %lu\n", i);
+			return -1;
+		}
+		
+		/*
+		 * TODO: optimize the loop.
+		 */
+		for(int j = 0; j < NUMBER_OF_UNPAID_ORDERS_PER_BUYER; ++j) {
+			(ptr+j)->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
+		}
+
+		orders_per_buyer[i].unpaid_orders = ptr;
+		orders_per_buyer[i].buyer_id = i;
+		orders_per_buyer[i].number_of_paid_orders = NUMBER_OF_PAID_ORDERS_PER_BUYER;
+		orders_per_buyer[i].number_of_unpaid_orders = NUMBER_OF_UNPAID_ORDERS_PER_BUYER;
+		ptr = NULL;
+	}
+
+	end_clock = clock();
+	unsigned long elapsed_clock = (end_clock - start_clock);
+	printf("elapsed_clock = %lu\n", elapsed_clock);
+
+	/*
+	 * Measure how much time it takes to compute the total amount of paid and 
+	 * not-paid orders.
+	 */
+	start_clock = clock();
+
+	/*
+	 * Sum paid orders for each buyer ID
+	 */
+	for(unsigned long j = 0; j < NUMBER_OF_BUYERS; ++j) {
+		printf("[`buyer_id` = %ld]\ttotal paid = %.4f\n",
+			j, 
+			_order_sum_priced(
+				orders_per_buyer[j].paid_orders, 
+				orders_per_buyer[j].number_of_paid_orders
+			)
+		);
+		printf("[`buyer_id` = %ld]\ttotal NOT paid = %.4f\n",
+			j, 
+			_order_sum_priced(
+				orders_per_buyer[j].unpaid_orders, 
+				orders_per_buyer[j].number_of_unpaid_orders
+			)
+		);
+	}
+
+	end_clock = clock();
+	elapsed_clock = (end_clock - start_clock);
+	printf("elapsed_clock = %lu\n", elapsed_clock);
 
 	return 0;
 }
