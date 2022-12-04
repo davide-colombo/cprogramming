@@ -155,7 +155,9 @@ int main(int argc, char** argv) {
 	
 	printf("sizeof(*ptr) = %zu\n", sizeof *ptr);
 	printf("alignof(*ptr) = %zu\n", alignof(*ptr));
-
+	
+	printf("sizeof(*(ptr+1)) = %zu\n", sizeof *(ptr+1));
+	printf("alignof(*(ptr+1)) = %zu\n", alignof(*(ptr+1)));
 	/*
 	 * Initialize the array of orders
 	 */
@@ -165,7 +167,7 @@ int main(int argc, char** argv) {
 			fprintf(stderr, "[paid orders] buyer_id = %lu\n", i);
 			return -1;
 		}
-	
+
 		/*
 		 * IMPORTANT: even if it was EXPLICITLY enforced an alignment equal to 
 		 * the CACHE LINE SIZE on the `struct order`, the memory dynamically 
