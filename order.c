@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdalign.h>
 
 /*
  * Demonstrating cache locality and how to improve it.
@@ -14,5 +15,15 @@ struct order {
 };
 
 int main(int argc, char** argv) {
+	/*
+	 * 64 bytes on an 8 bytes alignment
+	 *
+	 * 4 items aligned on a memory address required to be a multiple of the 
+	 *   largest data type in the `struct` (8 bytes).
+	 *
+	 */
+	printf("sizeof(struct order) = %zu\n", sizeof(struct order));
+	printf("alignof(struct order) = %zu\n", alignof(struct order));
+
 	return 0;
 }
