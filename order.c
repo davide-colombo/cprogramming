@@ -189,7 +189,7 @@ size_t _order_aligned_alloc_array_of_orders(struct order **orders, size_t nel)
 	/*
 	 * Compute the total amount of memory to be allocated
 	 */
-	size_t tot = (sizeof *orders) * nel;
+	size_t tot = (sizeof **orders) * nel;
 
 	/*
 	 * If the total memory bytes are not a multiple of `CACHE_LINE_SIZE` then 
@@ -227,37 +227,41 @@ size_t _order_aligned_alloc_array_of_orders(struct order **orders, size_t nel)
 	return nel;
 }
 
+/*
+ * Perform initialization of array of orders
+ */
+void _order_init_array_of_orders(struct order **orders, size_t nel) {
+	struct order *o_end = (*orders)+nel;
+	for (struct order *o_init = *orders; o_init < o_end; ++o_init) {
+		o_init->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
+	}
+}
+
 // ===========================================================================
 
 /*
  * Static array to store array of paid/unpaid orders of each buyer.
  */
-struct buyer_orders orders_per_buyer[NUMBER_OF_BUYERS];
+struct buyer_orders orders_per_buyer[NUMBER_OF_BUYERS] \
+	__attribute__(( aligned(CACHE_LINE_SIZE)));
 
 /*
  * Global variable to store temporal reference to a buyer order.
+ *
+ * 8 bytes
  */
 struct buyer_orders *bo;
 
 /*
  * Global variable to store the temporal reference to the array of orders
+ *
+ * 8 bytes
  */
 struct order **optr;
 
+
 // ===========================================================================
 
-/*
- * NOTE
- *
- * `main()` is a function.
- *
- * Every static variable allocated inside main are LOCAL TO THE MAIN FUNCTION 
- * and must be stored on the STACK.
- *
- * Better to leave `main()` as clean as possible and declare GLOBAL variables 
- * if needed.
- *
- */
 int main(int argc, char** argv) {
 	/*
 	 * Initialize pseudo-random number generator to make the result 
@@ -297,28 +301,14 @@ int main(int argc, char** argv) {
 		 */
 		optr = &(bo->paid_orders);
 		_order_aligned_alloc_array_of_orders(optr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
-
-		/*
-		 * TODO: optimize loop
-		 *
-		 * If I end the list with NULL I can remove the field that stores the 
-		 * number of paid/unpaid orders from the data structure and squeeze 
-		 * out redundancy.
-		 *
-		 * TODO: use non-temporal functions!!
-		 */
-		for (int j = 0; j < NUMBER_OF_PAID_ORDERS_PER_BUYER; ++j) {
-			((*optr)+j)->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
-		}
+		_order_init_array_of_orders(optr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
 
 		/*
 		 * Initialize unpaid orders
 		 */
 		optr = &(bo->unpaid_orders);
 		_order_aligned_alloc_array_of_orders(optr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
-		for(int j = 0; j < NUMBER_OF_UNPAID_ORDERS_PER_BUYER; ++j) {
-			((*optr)+j)->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
-		}
+		_order_init_array_of_orders(optr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
 	}
 
 	end_clock = clock();
