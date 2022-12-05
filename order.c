@@ -36,7 +36,7 @@
  * This can be done efficiently by exploiting the property of Marsenne 
  * numbers.
  */
-#define IS_MULT_OF_CACHELINE(x) ( (x) & (CACHE_LINE_SIZE - 1) )
+#define FAST_X_MOD_CACHELINE(x) ( (x) & (CACHE_LINE_SIZE - 1) )
 
 /*
  * The goal of this program is to compute the total amount of paid and unpaid 
@@ -138,21 +138,31 @@ struct order {
 struct buyer_orders {
 	long buyer_id;						// 8 bytes
 	struct order *paid_orders;			// 8 bytes
-	size_t number_of_paid_orders;		// 8 bytes
 	struct order *unpaid_orders;		// 8 bytes
-	size_t number_of_unpaid_orders;		// 8 bytes
 };
 
 /*
  * stack frame 16 bytes
- * 8 bytes allocated for the first argument
- * 8 bytes allocated for the second argument
- * 8 bytes allocated for the local variable
+ * first arg => 8 bytes
+ * second arg => 8 bytes
+ *
+ * Local variable
+ * result => 8 bytes
+ *
  */
-double _order_sum_priced(struct order *orders, size_t number_of_orders) {
+double _order_sum_priced(struct order *orders, size_t nel) {
 	double sum = 0;
-	for(size_t i = 0; i < number_of_orders; ++i) {
-		sum += orders[i].price;
+	/*
+	 * TODO: try to remove initialization block and increment block
+	 *
+	 */
+	struct order tmp;
+	for(size_t i = 0; i < nel; ++i) {
+		/*
+		 * Using the temporary variable increases the data access prediction.
+		 */
+		tmp = orders[i];
+		sum += tmp.price;
 	}
 	return sum;
 }
@@ -164,31 +174,77 @@ double _order_sum_priced(struct order *orders, size_t number_of_orders) {
  *
  * The size MUST be a multiple of the `CACHE_LINE_SIZE`.
  *
- * Stack alignment:
- * size_t => 8 bytes
+ * Arguments:
+ * struct order * => 8 bytes
  * size_t => 8 bytes
  *
- * One full stack frame (16 bytes)
+ * Local variables:
+ * size_t => 8 bytes
+ *
+ * Two stack frames (24/32 bytes)
  */
-struct order *_order_aligned_alloc_array_of_orders(size_t sz, size_t nel) {
-	assert( sz != 0 );
+size_t _order_aligned_alloc_array_of_orders(struct order **orders, size_t nel)
+{
 	assert( nel != 0 );
-	size_t tot = sz * nel;
-	if( IS_MULT_OF_CACHELINE(tot) != 0 ) {
+	/*
+	 * Compute the total amount of memory to be allocated
+	 */
+	size_t tot = (sizeof *orders) * nel;
+
+	/*
+	 * If the total memory bytes are not a multiple of `CACHE_LINE_SIZE` then 
+	 * round-up to that value.
+	 *
+	 * This is crucial otherwise `aligned_alloc()` returns NULL.
+	 */
+	if( FAST_X_MOD_CACHELINE(tot) != 0 ) {
 		tot = ROUND_UP_TO_CACHELINE(tot);
 	}
-	assert( IS_MULT_OF_CACHELINE(tot) == 0 );
-	struct order *ptr = NULL;
-	ptr = aligned_alloc(CACHE_LINE_SIZE, tot);
-	if( ptr == NULL ) {
+	assert( FAST_X_MOD_CACHELINE(tot) == 0 );
+
+	/*
+	 * Aligned alloc memory for array of orders
+	 */
+	*orders = aligned_alloc(CACHE_LINE_SIZE, tot);
+	if( *orders == NULL ) {
 		// FREE ALL THE ITEMS ALLOCATED!!!
 		fprintf(stderr, "aligned_alloc(%d, %zu) failed", CACHE_LINE_SIZE, tot);
 		// CALL TO EXIT?
 	}
-
-	assert(ptr != NULL);		// can be removed in future
-	return ptr;
+	assert(*orders != NULL);		// can be removed in future
+	/*
+	 * Return the number of requested elements.
+	 *
+	 * NOTE:
+	 *
+	 * If given the `nel` value passed to the function the `tot` amount of 
+	 * bytes is not a multiple of `CACHE_LINE_SIZE` the true NUMBER OF 
+	 * ELEMENTS allocated are more than `nel`!!
+	 *
+	 * However, this is transparent to the user and the return value is the 
+	 * actual number of elements requested by the user.
+	 */
+	return nel;
 }
+
+// ===========================================================================
+
+/*
+ * Static array to store array of paid/unpaid orders of each buyer.
+ */
+struct buyer_orders orders_per_buyer[NUMBER_OF_BUYERS];
+
+/*
+ * Global variable to store temporal reference to a buyer order.
+ */
+struct buyer_orders *bo;
+
+/*
+ * Global variable to store the temporal reference to the array of orders
+ */
+struct order **optr;
+
+// ===========================================================================
 
 /*
  * NOTE
@@ -216,16 +272,31 @@ int main(int argc, char** argv) {
 	start_clock = clock();
 
 	/*
-	 * Array of buyers; not aligned to the cache line size;
-	 */
-	struct buyer_orders orders_per_buyer[NUMBER_OF_BUYERS];
-	struct order *ptr = NULL;
-
-	/*
 	 * Initialize the array of orders
 	 */
 	for(unsigned long i = 0; i < NUMBER_OF_BUYERS; ++i) {
-		ptr = _order_aligned_alloc_array_of_orders(sizeof *ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
+		/*
+		 * This helps the CPU to understand the data access pattern and can be 
+		 * more efficient in prefetching data.
+		 */
+		bo = orders_per_buyer+i;
+		bo->buyer_id = i;
+
+		/*
+		 * Initialize paid orders
+		 *
+		 * NOTE!!
+		 *
+		 * Passing the memory address of a variable to the function.
+		 *
+		 * DO NOT PASS THE MEMORY ADDRESS OF A LOCAL VARIABLE ALLOCATED INSIDE 
+		 * `main()`.
+		 *
+		 * LOCAL VARIABLE ARE STORED ON THE STACK!!
+		 *
+		 */
+		optr = &(bo->paid_orders);
+		_order_aligned_alloc_array_of_orders(optr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
 
 		/*
 		 * TODO: optimize loop
@@ -237,26 +308,17 @@ int main(int argc, char** argv) {
 		 * TODO: use non-temporal functions!!
 		 */
 		for (int j = 0; j < NUMBER_OF_PAID_ORDERS_PER_BUYER; ++j) {
-			(ptr+j)->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
+			((*optr)+j)->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
 		}
 
 		/*
-		 * IMPORTANT!!!
-		 *
-		 * Store the value in the data structure before using it to get 
-		 * another block of memory.
+		 * Initialize unpaid orders
 		 */
-		orders_per_buyer[i].paid_orders = ptr;
-		ptr = _order_aligned_alloc_array_of_orders(sizeof *ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
+		optr = &(bo->unpaid_orders);
+		_order_aligned_alloc_array_of_orders(optr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
 		for(int j = 0; j < NUMBER_OF_UNPAID_ORDERS_PER_BUYER; ++j) {
-			(ptr+j)->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
+			((*optr)+j)->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
 		}
-
-		orders_per_buyer[i].unpaid_orders = ptr;
-		orders_per_buyer[i].buyer_id = i;
-		orders_per_buyer[i].number_of_paid_orders = NUMBER_OF_PAID_ORDERS_PER_BUYER;
-		orders_per_buyer[i].number_of_unpaid_orders = NUMBER_OF_UNPAID_ORDERS_PER_BUYER;
-		ptr = NULL;
 	}
 
 	end_clock = clock();
@@ -272,16 +334,15 @@ int main(int argc, char** argv) {
 	/*
 	 * Sum paid orders for each buyer ID
 	 */
-	struct buyer_orders tmp;
 	for(unsigned long j = 0; j < NUMBER_OF_BUYERS; ++j) {
 		/*
 		 * This seems inefficient but in reality allows the CPU to understand 
 		 * that there is a pattern in accessing the data, so prefetching can 
 		 * be done.
 		 */
-		tmp = orders_per_buyer[j];
-		_order_sum_priced(tmp.paid_orders, tmp.number_of_paid_orders);
-		_order_sum_priced(tmp.unpaid_orders, tmp.number_of_unpaid_orders);
+		bo = orders_per_buyer+j;
+		_order_sum_priced(bo->paid_orders, NUMBER_OF_PAID_ORDERS_PER_BUYER);
+		_order_sum_priced(bo->unpaid_orders, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
 	}
 
 	end_clock = clock();
