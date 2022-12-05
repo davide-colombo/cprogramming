@@ -31,6 +31,14 @@
 
 
 /*
+ * Test whether a number is a multiple of `CACHE_LINE_SIZE`.
+ *
+ * This can be done efficiently by exploiting the property of Marsenne 
+ * numbers.
+ */
+#define IS_MULT_OF_CACHELINE(x) ( (x) & (CACHE_LINE_SIZE - 1) )
+
+/*
  * The goal of this program is to compute the total amount of paid and unpaid 
  * orders for each buyer.
  *
@@ -150,6 +158,39 @@ double _order_sum_priced(struct order *orders, size_t number_of_orders) {
 }
 
 /*
+ * Allocate aligned memory for array of orders.
+ *
+ * Returned memory address is a multiple of `CACHE_LINE_SIZE`.
+ *
+ * The size MUST be a multiple of the `CACHE_LINE_SIZE`.
+ *
+ * Stack alignment:
+ * size_t => 8 bytes
+ * size_t => 8 bytes
+ *
+ * One full stack frame (16 bytes)
+ */
+struct order *_order_aligned_alloc_array_of_orders(size_t sz, size_t nel) {
+	assert( sz != 0 );
+	assert( nel != 0 );
+	size_t tot = sz * nel;
+	if( IS_MULT_OF_CACHELINE(tot) != 0 ) {
+		tot = ROUND_UP_TO_CACHELINE(tot);
+	}
+	assert( IS_MULT_OF_CACHELINE(tot) == 0 );
+	struct order *ptr = NULL;
+	ptr = aligned_alloc(CACHE_LINE_SIZE, tot);
+	if( ptr == NULL ) {
+		// FREE ALL THE ITEMS ALLOCATED!!!
+		fprintf(stderr, "aligned_alloc(%d, %zu) failed", CACHE_LINE_SIZE, tot);
+		// CALL TO EXIT?
+	}
+
+	assert(ptr != NULL);		// can be removed in future
+	return ptr;
+}
+
+/*
  * NOTE
  *
  * `main()` is a function.
@@ -181,35 +222,10 @@ int main(int argc, char** argv) {
 	struct order *ptr = NULL;
 
 	/*
-	 * NOTE: `aligned_alloc()` fails if the SIZE to allocate is NOT A 
-	 * MULTIPLE OF the ALIGNMENT.
-	 *
-	 */
-	size_t size_paid_orders_per_buyer = \
-		ROUND_UP_TO_CACHELINE(sizeof *ptr * NUMBER_OF_PAID_ORDERS_PER_BUYER);
-	assert( size_paid_orders_per_buyer % CACHE_LINE_SIZE == 0 );
-
-	size_t size_unpaid_orders_per_buyer = \
-		ROUND_UP_TO_CACHELINE(sizeof *ptr * NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
-	assert( size_unpaid_orders_per_buyer % CACHE_LINE_SIZE == 0 );
-
-	printf("sizeof(orders_per_buyer) = %zu\n", sizeof orders_per_buyer);
-	printf("alignof(orders_per_buyer) = %zu\n", alignof(orders_per_buyer));
-
-	printf("sizeof(*ptr) = %zu\n", sizeof *ptr);
-	printf("alignof(*ptr) = %zu\n", alignof(*ptr));
-
-	printf("sizeof(*(ptr+1)) = %zu\n", sizeof *(ptr+1));
-	printf("alignof(*(ptr+1)) = %zu\n", alignof(*(ptr+1)));
-	/*
 	 * Initialize the array of orders
 	 */
 	for(unsigned long i = 0; i < NUMBER_OF_BUYERS; ++i) {
-		ptr = aligned_alloc(CACHE_LINE_SIZE, size_paid_orders_per_buyer);
-		if( ptr == NULL ){
-			fprintf(stderr, "[paid orders] buyer_id = %lu\n", i);
-			return -1;
-		}
+		ptr = _order_aligned_alloc_array_of_orders(sizeof *ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
 
 		/*
 		 * TODO: optimize loop
@@ -217,6 +233,8 @@ int main(int argc, char** argv) {
 		 * If I end the list with NULL I can remove the field that stores the 
 		 * number of paid/unpaid orders from the data structure and squeeze 
 		 * out redundancy.
+		 *
+		 * TODO: use non-temporal functions!!
 		 */
 		for (int j = 0; j < NUMBER_OF_PAID_ORDERS_PER_BUYER; ++j) {
 			(ptr+j)->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
@@ -229,17 +247,7 @@ int main(int argc, char** argv) {
 		 * another block of memory.
 		 */
 		orders_per_buyer[i].paid_orders = ptr;
-		ptr = NULL;
-
-		ptr = aligned_alloc(CACHE_LINE_SIZE, size_unpaid_orders_per_buyer);
-		if( ptr == NULL ){
-			fprintf(stderr, "[unpaid orders] buyer_id = %lu\n", i);
-			return -1;
-		}
-
-		/*
-		 * TODO: optimize the loop.
-		 */
+		ptr = _order_aligned_alloc_array_of_orders(sizeof *ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
 		for(int j = 0; j < NUMBER_OF_UNPAID_ORDERS_PER_BUYER; ++j) {
 			(ptr+j)->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
 		}
