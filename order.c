@@ -14,7 +14,21 @@
 /*
  * Cache line size
  */
-#define CLS 128
+#define CACHE_LINE_SIZE 128
+
+/*
+ * Round `x` to the next multiple of a cache line size.
+ *
+ * The formula relies on the fact that the size of a cache line is a multiple 
+ * of 2.
+ *
+ * Indeed it exploits the property that 2^i - 1 is a Marsenne number, i.e. a 
+ * number with all the bits prior to the i-th position set to 1 and the other 
+ * to 0.
+ *
+ */
+#define ROUND_UP_TO_CACHELINE(x) ( ((x) + (CACHE_LINE_SIZE - 1)) & ~(CACHE_LINE_SIZE - 1) )
+
 
 /*
  * The goal of this program is to compute the total amount of paid and unpaid 
@@ -170,17 +184,14 @@ int main(int argc, char** argv) {
 	 * NOTE: `aligned_alloc()` fails if the SIZE to allocate is NOT A 
 	 * MULTIPLE OF the ALIGNMENT.
 	 *
-	 * TODO: optimize + write a macro
 	 */
-	size_t nbytes_paid_orders_per_buyer = sizeof *ptr * NUMBER_OF_PAID_ORDERS_PER_BUYER;
-	size_t nbytes_shift = nbytes_paid_orders_per_buyer % CLS;
-	size_t size_paid_orders_per_buyer = nbytes_paid_orders_per_buyer + CLS - nbytes_shift;
-	assert( size_paid_orders_per_buyer % CLS == 0 );
+	size_t size_paid_orders_per_buyer = \
+		ROUND_UP_TO_CACHELINE(sizeof *ptr * NUMBER_OF_PAID_ORDERS_PER_BUYER);
+	assert( size_paid_orders_per_buyer % CACHE_LINE_SIZE == 0 );
 
-	size_t nbytes_unpaid_orders_per_buyer = sizeof *ptr * NUMBER_OF_UNPAID_ORDERS_PER_BUYER;
-	nbytes_shift = nbytes_unpaid_orders_per_buyer % CLS;
-	size_t size_unpaid_orders_per_buyer = nbytes_unpaid_orders_per_buyer + CLS - nbytes_shift;
-	assert( size_unpaid_orders_per_buyer % CLS == 0 );
+	size_t size_unpaid_orders_per_buyer = \
+		ROUND_UP_TO_CACHELINE(sizeof *ptr * NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
+	assert( size_unpaid_orders_per_buyer % CACHE_LINE_SIZE == 0 );
 
 	printf("sizeof(orders_per_buyer) = %zu\n", sizeof orders_per_buyer);
 	printf("alignof(orders_per_buyer) = %zu\n", alignof(orders_per_buyer));
@@ -194,22 +205,11 @@ int main(int argc, char** argv) {
 	 * Initialize the array of orders
 	 */
 	for(unsigned long i = 0; i < NUMBER_OF_BUYERS; ++i) {
-		ptr = aligned_alloc(CLS, size_paid_orders_per_buyer);
+		ptr = aligned_alloc(CACHE_LINE_SIZE, size_paid_orders_per_buyer);
 		if( ptr == NULL ){
 			fprintf(stderr, "[paid orders] buyer_id = %lu\n", i);
 			return -1;
 		}
-
-		/*
-		 * IMPORTANT: even if it was EXPLICITLY enforced an alignment equal to 
-		 * the CACHE LINE SIZE on the `struct order`, the memory dynamically 
-		 * allocated DOES NOT HAVE THE SAME ALIGNMENT.
-		 * */
-		printf("sizeof(*ptr) = %zu\n", sizeof *ptr);
-		printf("alignof(*ptr) = %zu\n", alignof(*ptr));
-
-		//printf("sizeof(ptr) = %zu\n", sizeof ptr);
-		//printf("alignof(ptr) = %zu\n", alignof(ptr));
 
 		/*
 		 * TODO: optimize loop
@@ -231,7 +231,7 @@ int main(int argc, char** argv) {
 		orders_per_buyer[i].paid_orders = ptr;
 		ptr = NULL;
 
-		ptr = aligned_alloc(CLS, size_unpaid_orders_per_buyer);
+		ptr = aligned_alloc(CACHE_LINE_SIZE, size_unpaid_orders_per_buyer);
 		if( ptr == NULL ){
 			fprintf(stderr, "[unpaid orders] buyer_id = %lu\n", i);
 			return -1;
@@ -264,26 +264,23 @@ int main(int argc, char** argv) {
 	/*
 	 * Sum paid orders for each buyer ID
 	 */
+	struct buyer_orders tmp;
 	for(unsigned long j = 0; j < NUMBER_OF_BUYERS; ++j) {
-		printf("[`buyer_id` = %ld]\ttotal paid = %.4f\n",
-			j, 
-			_order_sum_priced(
-				orders_per_buyer[j].paid_orders,
-				orders_per_buyer[j].number_of_paid_orders
-			)
-		);
-		printf("[`buyer_id` = %ld]\ttotal NOT paid = %.4f\n",
-			j, 
-			_order_sum_priced(
-				orders_per_buyer[j].unpaid_orders,
-				orders_per_buyer[j].number_of_unpaid_orders
-			)
-		);
+		/*
+		 * This seems inefficient but in reality allows the CPU to understand 
+		 * that there is a pattern in accessing the data, so prefetching can 
+		 * be done.
+		 */
+		tmp = orders_per_buyer[j];
+		_order_sum_priced(tmp.paid_orders, tmp.number_of_paid_orders);
+		_order_sum_priced(tmp.unpaid_orders, tmp.number_of_unpaid_orders);
 	}
 
 	end_clock = clock();
 	elapsed_clock = (end_clock - start_clock);
 	printf("elapsed_clock = %lu\n", elapsed_clock);
+
+	/* PRINT THE RESULTS */
 
 	return 0;
 }
