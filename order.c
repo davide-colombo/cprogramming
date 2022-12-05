@@ -246,19 +246,24 @@ struct buyer_orders orders_per_buyer[NUMBER_OF_BUYERS] \
 	__attribute__(( aligned(CACHE_LINE_SIZE)));
 
 /*
- * Global variable to store temporal reference to a buyer order.
+ * Fixed memory address of the end of the array.
  *
- * 8 bytes
+ * This speeds up the loop over orders per buyer array.
  */
-struct buyer_orders *bo;
+struct buyer_orders *bo_end = orders_per_buyer+NUMBER_OF_BUYERS;
 
 /*
  * Global variable to store the temporal reference to the array of orders
  *
- * 8 bytes
+ * 8 bytes + 8 bytes
  */
-struct order **optr;
+struct order **po_ptr;
+struct order **uo_ptr;
 
+/*
+ * Buyer id counter
+ */
+unsigned long id = 0;
 
 // ===========================================================================
 
@@ -278,37 +283,20 @@ int main(int argc, char** argv) {
 	/*
 	 * Initialize the array of orders
 	 */
-	for(unsigned long i = 0; i < NUMBER_OF_BUYERS; ++i) {
+	for(struct buyer_orders *bo_init = orders_per_buyer; bo_init < bo_end; ++bo_init) {
 		/*
 		 * This helps the CPU to understand the data access pattern and can be 
 		 * more efficient in prefetching data.
 		 */
-		bo = orders_per_buyer+i;
-		bo->buyer_id = i;
+		bo_init->buyer_id = ++id;
+		po_ptr = &(bo_init->paid_orders);
+		uo_ptr = &(bo_init->unpaid_orders);
 
-		/*
-		 * Initialize paid orders
-		 *
-		 * NOTE!!
-		 *
-		 * Passing the memory address of a variable to the function.
-		 *
-		 * DO NOT PASS THE MEMORY ADDRESS OF A LOCAL VARIABLE ALLOCATED INSIDE 
-		 * `main()`.
-		 *
-		 * LOCAL VARIABLE ARE STORED ON THE STACK!!
-		 *
-		 */
-		optr = &(bo->paid_orders);
-		_order_aligned_alloc_array_of_orders(optr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
-		_order_init_array_of_orders(optr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
+		_order_aligned_alloc_array_of_orders(po_ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
+		_order_init_array_of_orders(po_ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
 
-		/*
-		 * Initialize unpaid orders
-		 */
-		optr = &(bo->unpaid_orders);
-		_order_aligned_alloc_array_of_orders(optr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
-		_order_init_array_of_orders(optr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
+		_order_aligned_alloc_array_of_orders(uo_ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
+		_order_init_array_of_orders(uo_ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
 	}
 
 	end_clock = clock();
@@ -316,23 +304,18 @@ int main(int argc, char** argv) {
 	printf("elapsed_clock = %lu\n", elapsed_clock);
 
 	/*
-	 * Measure how much time it takes to compute the total amount of paid and 
-	 * not-paid orders.
+	 * Measuring computations
 	 */
 	start_clock = clock();
-
-	/*
-	 * Sum paid orders for each buyer ID
-	 */
-	for(unsigned long j = 0; j < NUMBER_OF_BUYERS; ++j) {
+	for(struct buyer_orders *bo_init = orders_per_buyer; bo_init < bo_end; ++bo_init)
+	{
 		/*
 		 * This seems inefficient but in reality allows the CPU to understand 
 		 * that there is a pattern in accessing the data, so prefetching can 
 		 * be done.
 		 */
-		bo = orders_per_buyer+j;
-		_order_sum_priced(bo->paid_orders, NUMBER_OF_PAID_ORDERS_PER_BUYER);
-		_order_sum_priced(bo->unpaid_orders, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
+		_order_sum_priced(bo_init->paid_orders, NUMBER_OF_PAID_ORDERS_PER_BUYER);
+		_order_sum_priced(bo_init->unpaid_orders, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
 	}
 
 	end_clock = clock();
