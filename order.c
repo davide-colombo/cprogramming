@@ -3,6 +3,7 @@
 #include <stdalign.h>
 #include <time.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #define NUMBER_OF_ORDERS 1000
 #define NUMBER_OF_BUYERS 5
@@ -90,20 +91,24 @@
 // ===========================================================================
 
 /*
- * The elements must be aligned on a MEMORY ADDRESS that is a multiple of the 
- * CACHE LINE SIZE.
+ * sizeof = 8 bytes
+ * alignof = 8 bytes
  *
- * Items of this data structure are loaded into the CACHE for computations.
+ * NOTE: the size of a data type IS ALWAYS a multiple of its alignment.
  *
- * Data structure aligned on 8 bytes boundary with a total size of 8 bytes.
+ * Applicate an alignment equal to CACHE LINE SIZE it means:
  *
- * With a CACHE LINE SIZE of 128 bytes it's possible to contain 16 orders in 
- * each cache line.
+ * new sizeof = CACHE LINE SIZE bytes
+ * new alignof = CACHE LINE SIZE bytes
+ *
+ * Enforce an ALIGNMENT that is GREATER THAN the actual size of the data 
+ * structure has the SIDE EFFECT of making the data structure occupy much more 
+ * memory.
  *
  */
 struct order {
 	double price;		// 8 bytes
-} __attribute__((aligned (CLS) ));
+};
 
 /*
  * The buyer is not necessary to make computations on the orders.
@@ -130,7 +135,18 @@ double _order_sum_priced(struct order *orders, size_t number_of_orders) {
 	return sum;
 }
 
-
+/*
+ * NOTE
+ *
+ * `main()` is a function.
+ *
+ * Every static variable allocated inside main are LOCAL TO THE MAIN FUNCTION 
+ * and must be stored on the STACK.
+ *
+ * Better to leave `main()` as clean as possible and declare GLOBAL variables 
+ * if needed.
+ *
+ */
 int main(int argc, char** argv) {
 	/*
 	 * Initialize pseudo-random number generator to make the result 
@@ -150,19 +166,35 @@ int main(int argc, char** argv) {
 	struct buyer_orders orders_per_buyer[NUMBER_OF_BUYERS];
 	struct order *ptr = NULL;
 
+	/*
+	 * NOTE: `aligned_alloc()` fails if the SIZE to allocate is NOT A 
+	 * MULTIPLE OF the ALIGNMENT.
+	 *
+	 * TODO: optimize + write a macro
+	 */
+	size_t nbytes_paid_orders_per_buyer = sizeof *ptr * NUMBER_OF_PAID_ORDERS_PER_BUYER;
+	size_t nbytes_shift = nbytes_paid_orders_per_buyer % CLS;
+	size_t size_paid_orders_per_buyer = nbytes_paid_orders_per_buyer + CLS - nbytes_shift;
+	assert( size_paid_orders_per_buyer % CLS == 0 );
+
+	size_t nbytes_unpaid_orders_per_buyer = sizeof *ptr * NUMBER_OF_UNPAID_ORDERS_PER_BUYER;
+	nbytes_shift = nbytes_unpaid_orders_per_buyer % CLS;
+	size_t size_unpaid_orders_per_buyer = nbytes_unpaid_orders_per_buyer + CLS - nbytes_shift;
+	assert( size_unpaid_orders_per_buyer % CLS == 0 );
+
 	printf("sizeof(orders_per_buyer) = %zu\n", sizeof orders_per_buyer);
 	printf("alignof(orders_per_buyer) = %zu\n", alignof(orders_per_buyer));
-	
+
 	printf("sizeof(*ptr) = %zu\n", sizeof *ptr);
 	printf("alignof(*ptr) = %zu\n", alignof(*ptr));
-	
+
 	printf("sizeof(*(ptr+1)) = %zu\n", sizeof *(ptr+1));
 	printf("alignof(*(ptr+1)) = %zu\n", alignof(*(ptr+1)));
 	/*
 	 * Initialize the array of orders
 	 */
 	for(unsigned long i = 0; i < NUMBER_OF_BUYERS; ++i) {
-		ptr = aligned_alloc(CLS, sizeof(struct order) * ((size_t)NUMBER_OF_PAID_ORDERS_PER_BUYER));
+		ptr = aligned_alloc(CLS, size_paid_orders_per_buyer);
 		if( ptr == NULL ){
 			fprintf(stderr, "[paid orders] buyer_id = %lu\n", i);
 			return -1;
@@ -175,6 +207,9 @@ int main(int argc, char** argv) {
 		 * */
 		printf("sizeof(*ptr) = %zu\n", sizeof *ptr);
 		printf("alignof(*ptr) = %zu\n", alignof(*ptr));
+
+		//printf("sizeof(ptr) = %zu\n", sizeof ptr);
+		//printf("alignof(ptr) = %zu\n", alignof(ptr));
 
 		/*
 		 * TODO: optimize loop
@@ -196,7 +231,7 @@ int main(int argc, char** argv) {
 		orders_per_buyer[i].paid_orders = ptr;
 		ptr = NULL;
 
-		ptr = aligned_alloc(CLS, sizeof(struct order) * ((size_t)NUMBER_OF_PAID_ORDERS_PER_BUYER));
+		ptr = aligned_alloc(CLS, size_unpaid_orders_per_buyer);
 		if( ptr == NULL ){
 			fprintf(stderr, "[unpaid orders] buyer_id = %lu\n", i);
 			return -1;

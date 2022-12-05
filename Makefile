@@ -1,9 +1,9 @@
 
 order: order.c
-	clang order.c -Wgnu-alignof-expression -o order
+	clang -Wgnu-alignof-expression order.c -o order
 
 order.s: order.c
 	clang -S order.c -o order.s
 
 clean:
-	rm -f order.s
+	rm -f order.s order
