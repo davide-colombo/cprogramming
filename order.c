@@ -132,15 +132,33 @@ struct order {
 	double price;		// 8 bytes
 };
 
+/*
+ * The purpose of this data structure is to locally store the begin and the 
+ * pre-computed end of the array (pointer to the last item in the array) so 
+ * that looping through the array can be more efficient.
+ *
+ * 16 bytes => divisor of `CACHE_LINE_SIZE`
+ *
+ */
 struct orders {
 	struct order *o_init;		// 8 bytes
 	struct order *o_end;		// 8 bytes
 };
 
 /*
- * The buyer is not necessary to make computations on the orders.
+ * This data structure binds together a buyer to its orders.
  *
- * Add 8 bytes padding to make the an element a divisor of `CACHE_LINE_SIZE`.
+ * The orders are split into two sets because the program aims to make 
+ * computations on both paid and unpaid orders.
+ *
+ * This makes the computations faster by increasing the SPATIAL LOCALITY of 
+ * the data and remove the needs of a CONDITIONAL BRANCH to test whether the 
+ * order is PAID or NOT.
+ *
+ * Add 8 bytes padding to make the element a divisor of `CACHE_LINE_SIZE`.
+ *
+ * size before padding => 24 bytes
+ * size after padding => 32 bytes
  */
 struct buyer_orders {
 	long buyer_id;						// 8 bytes
@@ -169,24 +187,20 @@ double _order_sum_priced(struct orders *optr) {
 /*
  * Allocate aligned memory for array of orders.
  *
- * Returned memory address is a multiple of `CACHE_LINE_SIZE`.
+ * Returned memory address is a multiple of `CACHE_LINE_SIZE` (i.e., the 
+ * memory address is aligned on the same boundary of `CACHE_LINE_SIZE`).
  *
  * The size MUST be a multiple of the `CACHE_LINE_SIZE`.
  *
  * Arguments:
- * struct order * => 8 bytes
+ * struct orders ** => 8 bytes
  * size_t => 8 bytes
  *
  * Local variables:
+ * struct orders * => 8 bytes
  * size_t => 8 bytes
  *
- * Two stack frames (24/32 bytes)
- *
- * Return the pointer to the last element in the array according to the 
- * requested number of elements (`nel`).
- *
- * The allocated memory may be greater to ensure the requested size is a 
- * multiple of `CACHE_LINE_SIZE`.
+ * Two stack frames (32/32 bytes)
  *
  */
 void _order_aligned_alloc_array_of_orders(struct orders **orders, size_t nel)
@@ -220,8 +234,6 @@ void _order_aligned_alloc_array_of_orders(struct orders **orders, size_t nel)
 	}
 	assert(container->o_init != NULL);		// can be removed in future
 	/*
-	 * Return the number of requested elements.
-	 *
 	 * NOTE:
 	 *
 	 * If given the `nel` value passed to the function the `tot` amount of 
@@ -237,6 +249,11 @@ void _order_aligned_alloc_array_of_orders(struct orders **orders, size_t nel)
 /*
  * Allocate the data structure that holds the intermediate representation of 
  * the array of orders.
+ *
+ * Arguments:
+ * struct orders ** => 8 bytes
+ *
+ * One stack frame (8/16 bytes)
  */
 void _order_alloc_ir_orders(struct orders **optr) {
 	*optr = malloc(sizeof **optr);
@@ -250,10 +267,12 @@ void _order_alloc_ir_orders(struct orders **optr) {
  * Perform initialization of array of orders
  *
  * Arguments:
- * struct order ** => 8 bytes
- * struct order * => 8 bytes
+ * struct orders * => 8 bytes
  *
- * One full stack frame (16 bytes)
+ * One stack frame (8/16 bytes)
+ *
+ * TODO: extract this function to main and create another function that 
+ * includes also the function declared above (_order_alloc_ir_orders)
  */
 void _order_init_array_of_orders(struct orders *optr) {
 	for (struct order *o_init = optr->o_init; o_init < optr->o_end; ++o_init) {
@@ -296,15 +315,6 @@ unsigned long id = 0;
 // ===========================================================================
 
 int main(int argc, char** argv) {
-//	printf("alignof(orders_per_buyer) = %zu\n", _Alignof(orders_per_buyer));
-//	printf("alignof(bo_end) = %zu\n", _Alignof(bo_end));
-//	printf("alignof(po_ptr) = %zu\n", _Alignof(po_ptr));
-//	printf("alignof(uo_ptr) = %zu\n", _Alignof(uo_ptr));
-//
-//	printf("sizeof(orders_per_buyer) = %zu\n", sizeof(orders_per_buyer));
-//	printf("sizeof(bo_end) = %zu\n", sizeof(bo_end));
-//	printf("sizeof(po_ptr) = %zu\n", sizeof(po_ptr));
-//	printf("sizeof(uo_ptr) = %zu\n", sizeof(uo_ptr));
 	/*
 	 * Initialize pseudo-random number generator to make the result 
 	 * reproducible.

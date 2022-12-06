@@ -62,7 +62,7 @@ LBB1_1:
 	add	x0, x0, l___func__._order_aligned_alloc_array_of_orders@PAGEOFF
 	adrp	x1, l_.str@PAGE
 	add	x1, x1, l_.str@PAGEOFF
-	mov	w2, #194
+	mov	w2, #208
 	adrp	x3, l_.str.1@PAGE
 	add	x3, x3, l_.str.1@PAGEOFF
 	bl	___assert_rtn
@@ -97,7 +97,7 @@ LBB1_6:
 	add	x0, x0, l___func__._order_aligned_alloc_array_of_orders@PAGEOFF
 	adrp	x1, l_.str@PAGE
 	add	x1, x1, l_.str@PAGEOFF
-	mov	w2, #210
+	mov	w2, #224
 	adrp	x3, l_.str.2@PAGE
 	add	x3, x3, l_.str.2@PAGEOFF
 	bl	___assert_rtn
@@ -138,7 +138,7 @@ LBB1_11:
 	add	x0, x0, l___func__._order_aligned_alloc_array_of_orders@PAGEOFF
 	adrp	x1, l_.str@PAGE
 	add	x1, x1, l_.str@PAGEOFF
-	mov	w2, #221
+	mov	w2, #235
 	adrp	x3, l_.str.4@PAGE
 	add	x3, x3, l_.str.4@PAGEOFF
 	bl	___assert_rtn
@@ -194,7 +194,7 @@ LBB2_3:
 	add	x0, x0, l___func__._order_alloc_ir_orders@PAGEOFF
 	adrp	x1, l_.str@PAGE
 	add	x1, x1, l_.str@PAGEOFF
-	mov	w2, #246
+	mov	w2, #263
 	adrp	x3, l_.str.6@PAGE
 	add	x3, x3, l_.str.6@PAGEOFF
 	bl	___assert_rtn
