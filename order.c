@@ -203,13 +203,25 @@ double _order_sum_priced(struct orders *optr) {
  * Two stack frames (32/32 bytes)
  *
  */
-void _order_aligned_alloc_array_of_orders(struct orders **orders, size_t nel)
+void _order_aligned_alloc_array_of_orders(struct orders **optr, size_t nel)
 {
 	assert( nel != 0 );
+	assert( *optr == NULL );
+
+	/*
+	 * Alloc memory dynamically for the intermediate representation data 
+	 * structure that holds the array of orders.
+	 */
+	*optr = malloc(sizeof **optr);
+	if( *optr == NULL ) {
+		fprintf(stderr, "[ir orders] malloc failed\n");
+	}
+	assert( *optr != NULL );
+
 	/*
 	 * Compute the total amount of memory to be allocated
 	 */
-	struct orders *container = *orders;
+	struct orders *container = *optr;
 	size_t tot = (sizeof *(container->o_init)) * nel;
 
 	/*
@@ -244,38 +256,11 @@ void _order_aligned_alloc_array_of_orders(struct orders **orders, size_t nel)
 	 * actual number of elements requested by the user.
 	 */
 	container->o_end = (container->o_init) + nel;
-}
 
-/*
- * Allocate the data structure that holds the intermediate representation of 
- * the array of orders.
- *
- * Arguments:
- * struct orders ** => 8 bytes
- *
- * One stack frame (8/16 bytes)
- */
-void _order_alloc_ir_orders(struct orders **optr) {
-	*optr = malloc(sizeof **optr);
-	if( optr == NULL ) {
-		fprintf(stderr, "[ir orders] malloc failed\n");
-	}
-	assert( optr != NULL );
-}
-
-/*
- * Perform initialization of array of orders
- *
- * Arguments:
- * struct orders * => 8 bytes
- *
- * One stack frame (8/16 bytes)
- *
- * TODO: extract this function to main and create another function that 
- * includes also the function declared above (_order_alloc_ir_orders)
- */
-void _order_init_array_of_orders(struct orders *optr) {
-	for (struct order *o_init = optr->o_init; o_init < optr->o_end; ++o_init) {
+	/*
+	 * Initialize the array of orders pointed to by the container.
+	 */
+	for (struct order *o_init = container->o_init; o_init < container->o_end; ++o_init) {
 		o_init->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
 	}
 }
@@ -342,16 +327,12 @@ int main(int argc, char** argv) {
 		/*
 		 * Array of paid orders
 		 * */
-		_order_alloc_ir_orders(po_ptr);
 		_order_aligned_alloc_array_of_orders(po_ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
-		_order_init_array_of_orders(*po_ptr);
 
 		/*
 		 * Array of unpaid orders
 		 */
-		_order_alloc_ir_orders(uo_ptr);
 		_order_aligned_alloc_array_of_orders(uo_ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
-		_order_init_array_of_orders(*uo_ptr);
 	}
 
 	end_clock = clock();
