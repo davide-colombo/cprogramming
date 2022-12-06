@@ -185,6 +185,44 @@ double _order_sum_priced(struct orders *optr) {
 }
 
 /*
+ * Dynamically alloc memory for the intermediate representation container of 
+ * an array of orders.
+ *
+ * Arguments:
+ * struct orders ** => 8 bytes
+ */
+void _order_alloc_ir_of_orders(struct orders **optr) {
+	assert( *optr == NULL );
+	/*
+	 * Alloc memory dynamically for the intermediate representation data 
+	 * structure that holds the array of orders.
+	 */
+	*optr = malloc(sizeof **optr);
+	if( *optr == NULL ) {
+		fprintf(stderr, "[ir orders] malloc failed\n");
+	}
+	assert( *optr != NULL );
+}
+
+/*
+ * Sometimes it may not be needed to call this function but is very small and 
+ * cheap and it's better to call this function ALWAYS then using a conditional 
+ * branch to jump to it.
+ *
+ * Arguments:
+ * size_t => 8 byeìtes
+ * size_t => 8 bytes
+ *
+ * One stack frame (16/16 bytes)
+ */
+size_t _order_get_aligned_memory(size_t nel, size_t sz) {
+	//assert( nel > 0 );
+	//assert( sz > 0 );
+	return ROUND_UP_TO_CACHELINE(nel * sz);
+	//assert( FAST_X_MOD_CACHELINE(sz) == 0 );
+}
+
+/*
  * Allocate aligned memory for array of orders.
  *
  * Returned memory address is a multiple of `CACHE_LINE_SIZE` (i.e., the 
@@ -203,66 +241,40 @@ double _order_sum_priced(struct orders *optr) {
  * Two stack frames (32/32 bytes)
  *
  */
-void _order_aligned_alloc_array_of_orders(struct orders **optr, size_t nel)
-{
-	assert( nel != 0 );
-	assert( *optr == NULL );
-
+void _order_aligned_alloc_orders(struct orders **optr, size_t aligned_bytes) {
 	/*
-	 * Alloc memory dynamically for the intermediate representation data 
-	 * structure that holds the array of orders.
+	 * Dynamically alloc memory for the intermediate representation of the 
+	 * array of orders.
 	 */
-	*optr = malloc(sizeof **optr);
-	if( *optr == NULL ) {
-		fprintf(stderr, "[ir orders] malloc failed\n");
-	}
-	assert( *optr != NULL );
-
-	/*
-	 * Compute the total amount of memory to be allocated
-	 */
-	struct orders *container = *optr;
-	size_t tot = (sizeof *(container->o_init)) * nel;
-
-	/*
-	 * If the total memory bytes are not a multiple of `CACHE_LINE_SIZE` then 
-	 * round-up to that value.
-	 *
-	 * This is crucial otherwise `aligned_alloc()` returns NULL.
-	 */
-	if( FAST_X_MOD_CACHELINE(tot) != 0 ) {
-		tot = ROUND_UP_TO_CACHELINE(tot);
-	}
-	assert( FAST_X_MOD_CACHELINE(tot) == 0 );
+	_order_alloc_ir_of_orders(optr);
 
 	/*
 	 * Aligned alloc memory for array of orders
 	 */
-	container->o_init = aligned_alloc(CACHE_LINE_SIZE, tot);
-	if( container->o_init == NULL ) {
+	(*optr)->o_init = aligned_alloc(CACHE_LINE_SIZE, aligned_bytes);
+	if( (*optr)->o_init == NULL ) {
 		// FREE ALL THE DYNAMIC ALLOCATED MEMORY!!!
 		free(*optr);
-		fprintf(stderr, "aligned_alloc(%d, %zu) failed", CACHE_LINE_SIZE, tot);
+		fprintf(stderr, "aligned_alloc(%d, %zu) failed", CACHE_LINE_SIZE, aligned_bytes);
 		// CALL TO EXIT?
 	}
-	assert(container->o_init != NULL);		// can be removed in future
-	/*
-	 * NOTE:
-	 *
-	 * If given the `nel` value passed to the function the `tot` amount of 
-	 * bytes is not a multiple of `CACHE_LINE_SIZE` the true NUMBER OF 
-	 * ELEMENTS allocated are more than `nel`!!
-	 *
-	 * However, this is transparent to the user and the return value is the 
-	 * actual number of elements requested by the user.
-	 */
-	container->o_end = (container->o_init) + nel;
+	//assert(container->o_init != NULL);		// can be removed in future
+}
 
-	/*
-	 * Initialize the array of orders pointed to by the container.
-	 */
-	for (struct order *o_init = container->o_init; o_init < container->o_end; ++o_init) {
-		o_init->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
+/*
+ * Initialize array of orders.
+ *
+ * Arguments:
+ * struct order * => 8 bytes
+ * struct order * => 8 bytes
+ *
+ * One stack frame (16/16 bytes)
+ *
+ * TODO: optimize the random generation of the prices
+ */
+void _order_init_array_of_orders(struct order *o_init, struct order *o_end) {
+	for (struct order *tmp = o_init; tmp < o_end; ++tmp) {
+		tmp->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
 	}
 }
 
@@ -306,6 +318,13 @@ int main(int argc, char** argv) {
 	start_clock = clock();
 
 	/*
+	 * Size needed to allocate the array of orders.
+	 */
+	size_t sz = sizeof(struct order);
+	size_t tot_paid = _order_get_aligned_memory(NUMBER_OF_PAID_ORDERS_PER_BUYER, sz);
+	size_t tot_unpaid = _order_get_aligned_memory(NUMBER_OF_UNPAID_ORDERS_PER_BUYER, sz);
+
+	/*
 	 * Initialize the array of orders
 	 */
 	struct orders **po_ptr, **uo_ptr;
@@ -320,13 +339,17 @@ int main(int argc, char** argv) {
 
 		/*
 		 * Array of paid orders
-		 * */
-		_order_aligned_alloc_array_of_orders(po_ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
+		 */
+		_order_aligned_alloc_orders(po_ptr, tot_paid);
+		(*po_ptr)->o_end = ((*po_ptr)->o_init) + NUMBER_OF_PAID_ORDERS_PER_BUYER;
+		_order_init_array_of_orders((*po_ptr)->o_init, (*po_ptr)->o_end);
 
 		/*
 		 * Array of unpaid orders
 		 */
-		_order_aligned_alloc_array_of_orders(uo_ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
+		_order_aligned_alloc_orders(uo_ptr, tot_unpaid);
+		(*uo_ptr)->o_end = ((*uo_ptr)->o_init) + NUMBER_OF_UNPAID_ORDERS_PER_BUYER;
+		_order_init_array_of_orders((*uo_ptr)->o_init, (*uo_ptr)->o_end);
 	}
 
 	end_clock = clock();
