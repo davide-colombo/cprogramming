@@ -285,14 +285,6 @@ struct buyer_orders orders_per_buyer[NUMBER_OF_BUYERS] \
 struct buyer_orders *bo_end = orders_per_buyer+NUMBER_OF_BUYERS;
 
 /*
- * Global variable to store the temporal reference to the array of orders
- *
- * 8 bytes + 8 bytes
- */
-struct orders **po_ptr;
-struct orders **uo_ptr;
-
-/*
  * Buyer id counter
  */
 unsigned long id = 0;
@@ -315,6 +307,8 @@ int main(int argc, char** argv) {
 	/*
 	 * Initialize the array of orders
 	 */
+
+	struct orders **po_ptr, **uo_ptr;
 	for(struct buyer_orders *bo_init = orders_per_buyer; bo_init < bo_end; ++bo_init) {
 		/*
 		 * This helps the CPU to understand the data access pattern and can be 

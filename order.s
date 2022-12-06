@@ -252,9 +252,9 @@ LBB1_25:
 _main:                                  ; @main
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #96
-	stp	x29, x30, [sp, #80]             ; 16-byte Folded Spill
-	add	x29, sp, #80
+	sub	sp, sp, #112
+	stp	x29, x30, [sp, #96]             ; 16-byte Folded Spill
+	add	x29, sp, #96
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
@@ -286,23 +286,17 @@ LBB2_2:                                 ;   in Loop: Header=BB2_1 Depth=1
 	ldr	x9, [sp, #40]
 	str	x8, [x9]
 	ldr	x8, [sp, #40]
-	add	x9, x8, #8
-	adrp	x8, _po_ptr@GOTPAGE
-	ldr	x8, [x8, _po_ptr@GOTPAGEOFF]
-	str	x9, [x8]
-	ldr	x9, [sp, #40]
-	add	x9, x9, #16
-	adrp	x10, _uo_ptr@GOTPAGE
-	ldr	x10, [x10, _uo_ptr@GOTPAGEOFF]
-	str	x10, [sp, #8]                   ; 8-byte Folded Spill
-	str	x9, [x10]
-	ldr	x0, [x8]
+	add	x8, x8, #8
+	stur	x8, [x29, #-40]
+	ldr	x8, [sp, #40]
+	add	x8, x8, #16
+	str	x8, [sp, #48]
+	ldur	x0, [x29, #-40]
 	mov	x1, #5
 	str	x1, [sp, #16]                   ; 8-byte Folded Spill
 	bl	__order_aligned_alloc_array_of_orders
-	ldr	x8, [sp, #8]                    ; 8-byte Folded Reload
 	ldr	x1, [sp, #16]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
+	ldr	x0, [sp, #48]
 	bl	__order_aligned_alloc_array_of_orders
 	b	LBB2_3
 LBB2_3:                                 ;   in Loop: Header=BB2_1 Depth=1
@@ -363,8 +357,8 @@ LBB2_8:
 	add	x0, x0, l_.str.8@PAGEOFF
 	bl	_printf
 	mov	w0, #0
-	ldp	x29, x30, [sp, #80]             ; 16-byte Folded Reload
-	add	sp, sp, #96
+	ldp	x29, x30, [sp, #96]             ; 16-byte Folded Reload
+	add	sp, sp, #112
 	ret
 	.cfi_endproc
                                         ; -- End function
@@ -405,8 +399,6 @@ _bo_end:
 
 	.globl	_id                             ; @id
 .zerofill __DATA,__common,_id,8,3
-	.comm	_po_ptr,8,3                     ; @po_ptr
-	.comm	_uo_ptr,8,3                     ; @uo_ptr
 	.section	__TEXT,__cstring,cstring_literals
 l_.str.8:                               ; @.str.8
 	.asciz	"elapsed_clock = %lu\n"
