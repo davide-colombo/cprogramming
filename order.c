@@ -181,8 +181,14 @@ double _order_sum_priced(struct order *orders, size_t nel) {
  * size_t => 8 bytes
  *
  * Two stack frames (24/32 bytes)
+ *
+ * Return the pointer to the last element in the array according to the 
+ * requested number of elements (`nel`).
+ *
+ * The allocated memory may be greater to ensure the requested size is a 
+ * multiple of `CACHE_LINE_SIZE`.
  */
-size_t _order_aligned_alloc_array_of_orders(struct order **orders, size_t nel)
+struct order *_order_aligned_alloc_array_of_orders(struct order **orders, size_t nel)
 {
 	assert( nel != 0 );
 	/*
@@ -223,14 +229,13 @@ size_t _order_aligned_alloc_array_of_orders(struct order **orders, size_t nel)
 	 * However, this is transparent to the user and the return value is the 
 	 * actual number of elements requested by the user.
 	 */
-	return nel;
+	return (*orders)+nel;
 }
 
 /*
  * Perform initialization of array of orders
  */
-void _order_init_array_of_orders(struct order **orders, size_t nel) {
-	struct order *o_end = (*orders)+nel;
+void _order_init_array_of_orders(struct order **orders, struct order *o_end) {
 	for (struct order *o_init = *orders; o_init < o_end; ++o_init) {
 		o_init->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
 	}
@@ -291,6 +296,7 @@ int main(int argc, char** argv) {
 	/*
 	 * Initialize the array of orders
 	 */
+	struct order *o_end;
 	for(struct buyer_orders *bo_init = orders_per_buyer; bo_init < bo_end; ++bo_init) {
 		/*
 		 * This helps the CPU to understand the data access pattern and can be 
@@ -300,11 +306,11 @@ int main(int argc, char** argv) {
 		po_ptr = &(bo_init->paid_orders);
 		uo_ptr = &(bo_init->unpaid_orders);
 
-		_order_aligned_alloc_array_of_orders(po_ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
-		_order_init_array_of_orders(po_ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
+		o_end = _order_aligned_alloc_array_of_orders(po_ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
+		_order_init_array_of_orders(po_ptr, o_end);
 
-		_order_aligned_alloc_array_of_orders(uo_ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
-		_order_init_array_of_orders(uo_ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
+		o_end = _order_aligned_alloc_array_of_orders(uo_ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
+		_order_init_array_of_orders(uo_ptr, o_end);
 	}
 
 	end_clock = clock();
