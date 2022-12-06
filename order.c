@@ -235,24 +235,16 @@ void _order_aligned_alloc_array_of_orders(struct orders **orders, size_t nel)
 }
 
 /*
- * Allocate array of orders.
- *
- * This is an intermediate function to fill the `orders` data structure in 
- * between `buyer_orders` and `order`.
- *
- * The `orders` data structure is a data abstraction to store an array of 
- * `order`s.
- *
- * Arguments:
- * struct orders * => 8 bytes
- * size_t => 8 bytes
- *
- * One full stack frame (16 bytes)
+ * Allocate the data structure that holds the intermediate representation of 
+ * the array of orders.
  */
-//void _order_aligned_alloc_buyer_orders(struct orders *op, size_t nel) {
-//	op->o_end = _order_aligned_alloc_array_of_orders(op->o_init, nel);
-//	_order_init_array_of_orders(po_ptr, op->o_end);
-//}
+void _order_alloc_ir_orders(struct orders **optr) {
+	*optr = malloc(sizeof **optr);
+	if( optr == NULL ) {
+		fprintf(stderr, "[ir orders] malloc failed\n");
+	}
+	assert( optr != NULL );
+}
 
 /*
  * Perform initialization of array of orders
@@ -340,12 +332,14 @@ int main(int argc, char** argv) {
 		/*
 		 * Array of paid orders
 		 * */
+		_order_alloc_ir_orders(po_ptr);
 		_order_aligned_alloc_array_of_orders(po_ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
 		_order_init_array_of_orders(*po_ptr);
 
 		/*
 		 * Array of unpaid orders
 		 */
+		_order_alloc_ir_orders(uo_ptr);
 		_order_aligned_alloc_array_of_orders(uo_ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
 		_order_init_array_of_orders(*uo_ptr);
 	}
