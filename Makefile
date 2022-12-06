@@ -1,4 +1,6 @@
 
+all: order order.s
+
 order: order.c
 	clang -Wgnu-alignof-expression order.c -o order
 

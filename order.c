@@ -134,11 +134,14 @@ struct order {
 
 /*
  * The buyer is not necessary to make computations on the orders.
+ *
+ * Add 8 bytes padding to make the an element a divisor of `CACHE_LINE_SIZE`.
  */
 struct buyer_orders {
 	long buyer_id;						// 8 bytes
 	struct order *paid_orders;			// 8 bytes
 	struct order *unpaid_orders;		// 8 bytes
+	char pad[8];						// 8 bytes
 };
 
 /*
@@ -152,10 +155,6 @@ struct buyer_orders {
  */
 double _order_sum_priced(struct order *orders, size_t nel) {
 	double sum = 0;
-	/*
-	 * TODO: try to remove initialization block and increment block
-	 *
-	 */
 	struct order tmp;
 	for(size_t i = 0; i < nel; ++i) {
 		/*
@@ -207,7 +206,7 @@ size_t _order_aligned_alloc_array_of_orders(struct order **orders, size_t nel)
 	 */
 	*orders = aligned_alloc(CACHE_LINE_SIZE, tot);
 	if( *orders == NULL ) {
-		// FREE ALL THE ITEMS ALLOCATED!!!
+		// FREE ALL THE DYNAMIC ALLOCATED MEMORY!!!
 		fprintf(stderr, "aligned_alloc(%d, %zu) failed", CACHE_LINE_SIZE, tot);
 		// CALL TO EXIT?
 	}
@@ -268,6 +267,15 @@ unsigned long id = 0;
 // ===========================================================================
 
 int main(int argc, char** argv) {
+	printf("alignof(orders_per_buyer) = %zu\n", _Alignof(orders_per_buyer));
+	printf("alignof(bo_end) = %zu\n", _Alignof(bo_end));
+	printf("alignof(po_ptr) = %zu\n", _Alignof(po_ptr));
+	printf("alignof(uo_ptr) = %zu\n", _Alignof(uo_ptr));
+
+	printf("sizeof(orders_per_buyer) = %zu\n", sizeof(orders_per_buyer));
+	printf("sizeof(bo_end) = %zu\n", sizeof(bo_end));
+	printf("sizeof(po_ptr) = %zu\n", sizeof(po_ptr));
+	printf("sizeof(uo_ptr) = %zu\n", sizeof(uo_ptr));
 	/*
 	 * Initialize pseudo-random number generator to make the result 
 	 * reproducible.
