@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#define NUMBER_OF_ORDERS 1000
-#define NUMBER_OF_BUYERS 5
+#define NUMBER_OF_ORDERS 100000
+#define NUMBER_OF_BUYERS 10000
 #define NUMBER_OF_ORDERS_PER_BUYER	(NUMBER_OF_ORDERS / NUMBER_OF_BUYERS)
 #define NUMBER_OF_PAID_ORDERS_PER_BUYER	(NUMBER_OF_ORDERS_PER_BUYER / 2)
 #define NUMBER_OF_UNPAID_ORDERS_PER_BUYER	(NUMBER_OF_ORDERS_PER_BUYER - NUMBER_OF_PAID_ORDERS_PER_BUYER)
@@ -132,6 +132,11 @@ struct order {
 	double price;		// 8 bytes
 };
 
+struct orders {
+	struct order *o_init;		// 8 bytes
+	struct order *o_end;		// 8 bytes
+};
+
 /*
  * The buyer is not necessary to make computations on the orders.
  *
@@ -139,29 +144,24 @@ struct order {
  */
 struct buyer_orders {
 	long buyer_id;						// 8 bytes
-	struct order *paid_orders;			// 8 bytes
-	struct order *unpaid_orders;		// 8 bytes
+	struct orders *paid_orders;			// 8 bytes
+	struct orders *unpaid_orders;		// 8 bytes
 	char pad[8];						// 8 bytes
 };
 
 /*
- * stack frame 16 bytes
- * first arg => 8 bytes
- * second arg => 8 bytes
+ * Arguments:
+ * struct orders * => 8 bytes
  *
- * Local variable
- * result => 8 bytes
+ * Local variables:
+ * double => 8 bytes
  *
+ * One full stack frame (16 bytes)
  */
-double _order_sum_priced(struct order *orders, size_t nel) {
+double _order_sum_priced(struct orders *optr) {
 	double sum = 0;
-	struct order tmp;
-	for(size_t i = 0; i < nel; ++i) {
-		/*
-		 * Using the temporary variable increases the data access prediction.
-		 */
-		tmp = orders[i];
-		sum += tmp.price;
+	for(struct order *o_init = optr->o_init; o_init < optr->o_end; ++o_init) {
+		sum += o_init->price;
 	}
 	return sum;
 }
@@ -187,14 +187,16 @@ double _order_sum_priced(struct order *orders, size_t nel) {
  *
  * The allocated memory may be greater to ensure the requested size is a 
  * multiple of `CACHE_LINE_SIZE`.
+ *
  */
-struct order *_order_aligned_alloc_array_of_orders(struct order **orders, size_t nel)
+void _order_aligned_alloc_array_of_orders(struct orders **orders, size_t nel)
 {
 	assert( nel != 0 );
 	/*
 	 * Compute the total amount of memory to be allocated
 	 */
-	size_t tot = (sizeof **orders) * nel;
+	struct orders *container = *orders;
+	size_t tot = (sizeof *(container->o_init)) * nel;
 
 	/*
 	 * If the total memory bytes are not a multiple of `CACHE_LINE_SIZE` then 
@@ -210,13 +212,13 @@ struct order *_order_aligned_alloc_array_of_orders(struct order **orders, size_t
 	/*
 	 * Aligned alloc memory for array of orders
 	 */
-	*orders = aligned_alloc(CACHE_LINE_SIZE, tot);
-	if( *orders == NULL ) {
+	container->o_init = aligned_alloc(CACHE_LINE_SIZE, tot);
+	if( container->o_init == NULL ) {
 		// FREE ALL THE DYNAMIC ALLOCATED MEMORY!!!
 		fprintf(stderr, "aligned_alloc(%d, %zu) failed", CACHE_LINE_SIZE, tot);
 		// CALL TO EXIT?
 	}
-	assert(*orders != NULL);		// can be removed in future
+	assert(container->o_init != NULL);		// can be removed in future
 	/*
 	 * Return the number of requested elements.
 	 *
@@ -229,14 +231,40 @@ struct order *_order_aligned_alloc_array_of_orders(struct order **orders, size_t
 	 * However, this is transparent to the user and the return value is the 
 	 * actual number of elements requested by the user.
 	 */
-	return (*orders)+nel;
+	container->o_end = (container->o_init) + nel;
 }
 
 /*
- * Perform initialization of array of orders
+ * Allocate array of orders.
+ *
+ * This is an intermediate function to fill the `orders` data structure in 
+ * between `buyer_orders` and `order`.
+ *
+ * The `orders` data structure is a data abstraction to store an array of 
+ * `order`s.
+ *
+ * Arguments:
+ * struct orders * => 8 bytes
+ * size_t => 8 bytes
+ *
+ * One full stack frame (16 bytes)
  */
-void _order_init_array_of_orders(struct order **orders, struct order *o_end) {
-	for (struct order *o_init = *orders; o_init < o_end; ++o_init) {
+//void _order_aligned_alloc_buyer_orders(struct orders *op, size_t nel) {
+//	op->o_end = _order_aligned_alloc_array_of_orders(op->o_init, nel);
+//	_order_init_array_of_orders(po_ptr, op->o_end);
+//}
+
+/*
+ * Perform initialization of array of orders
+ *
+ * Arguments:
+ * struct order ** => 8 bytes
+ * struct order * => 8 bytes
+ *
+ * One full stack frame (16 bytes)
+ */
+void _order_init_array_of_orders(struct orders *optr) {
+	for (struct order *o_init = optr->o_init; o_init < optr->o_end; ++o_init) {
 		o_init->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
 	}
 }
@@ -245,9 +273,13 @@ void _order_init_array_of_orders(struct order **orders, struct order *o_end) {
 
 /*
  * Static array to store array of paid/unpaid orders of each buyer.
+ *
+ * Enforce alignment to the cache line size.
+ * This would not be efficient if the data structure size and alignment are 
+ * not a multiple or a divisor of `CACHE_LINE_SIZE`.
  */
 struct buyer_orders orders_per_buyer[NUMBER_OF_BUYERS] \
-	__attribute__(( aligned(CACHE_LINE_SIZE)));
+	__attribute__(( aligned(CACHE_LINE_SIZE) ));
 
 /*
  * Fixed memory address of the end of the array.
@@ -261,8 +293,8 @@ struct buyer_orders *bo_end = orders_per_buyer+NUMBER_OF_BUYERS;
  *
  * 8 bytes + 8 bytes
  */
-struct order **po_ptr;
-struct order **uo_ptr;
+struct orders **po_ptr;
+struct orders **uo_ptr;
 
 /*
  * Buyer id counter
@@ -272,15 +304,15 @@ unsigned long id = 0;
 // ===========================================================================
 
 int main(int argc, char** argv) {
-	printf("alignof(orders_per_buyer) = %zu\n", _Alignof(orders_per_buyer));
-	printf("alignof(bo_end) = %zu\n", _Alignof(bo_end));
-	printf("alignof(po_ptr) = %zu\n", _Alignof(po_ptr));
-	printf("alignof(uo_ptr) = %zu\n", _Alignof(uo_ptr));
-
-	printf("sizeof(orders_per_buyer) = %zu\n", sizeof(orders_per_buyer));
-	printf("sizeof(bo_end) = %zu\n", sizeof(bo_end));
-	printf("sizeof(po_ptr) = %zu\n", sizeof(po_ptr));
-	printf("sizeof(uo_ptr) = %zu\n", sizeof(uo_ptr));
+//	printf("alignof(orders_per_buyer) = %zu\n", _Alignof(orders_per_buyer));
+//	printf("alignof(bo_end) = %zu\n", _Alignof(bo_end));
+//	printf("alignof(po_ptr) = %zu\n", _Alignof(po_ptr));
+//	printf("alignof(uo_ptr) = %zu\n", _Alignof(uo_ptr));
+//
+//	printf("sizeof(orders_per_buyer) = %zu\n", sizeof(orders_per_buyer));
+//	printf("sizeof(bo_end) = %zu\n", sizeof(bo_end));
+//	printf("sizeof(po_ptr) = %zu\n", sizeof(po_ptr));
+//	printf("sizeof(uo_ptr) = %zu\n", sizeof(uo_ptr));
 	/*
 	 * Initialize pseudo-random number generator to make the result 
 	 * reproducible.
@@ -296,7 +328,6 @@ int main(int argc, char** argv) {
 	/*
 	 * Initialize the array of orders
 	 */
-	struct order *o_end;
 	for(struct buyer_orders *bo_init = orders_per_buyer; bo_init < bo_end; ++bo_init) {
 		/*
 		 * This helps the CPU to understand the data access pattern and can be 
@@ -306,11 +337,17 @@ int main(int argc, char** argv) {
 		po_ptr = &(bo_init->paid_orders);
 		uo_ptr = &(bo_init->unpaid_orders);
 
-		o_end = _order_aligned_alloc_array_of_orders(po_ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
-		_order_init_array_of_orders(po_ptr, o_end);
+		/*
+		 * Array of paid orders
+		 * */
+		_order_aligned_alloc_array_of_orders(po_ptr, NUMBER_OF_PAID_ORDERS_PER_BUYER);
+		_order_init_array_of_orders(*po_ptr);
 
-		o_end = _order_aligned_alloc_array_of_orders(uo_ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
-		_order_init_array_of_orders(uo_ptr, o_end);
+		/*
+		 * Array of unpaid orders
+		 */
+		_order_aligned_alloc_array_of_orders(uo_ptr, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
+		_order_init_array_of_orders(*uo_ptr);
 	}
 
 	end_clock = clock();
@@ -321,15 +358,9 @@ int main(int argc, char** argv) {
 	 * Measuring computations
 	 */
 	start_clock = clock();
-	for(struct buyer_orders *bo_init = orders_per_buyer; bo_init < bo_end; ++bo_init)
-	{
-		/*
-		 * This seems inefficient but in reality allows the CPU to understand 
-		 * that there is a pattern in accessing the data, so prefetching can 
-		 * be done.
-		 */
-		_order_sum_priced(bo_init->paid_orders, NUMBER_OF_PAID_ORDERS_PER_BUYER);
-		_order_sum_priced(bo_init->unpaid_orders, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
+	for(struct buyer_orders *bo_init = orders_per_buyer; bo_init < bo_end; ++bo_init) {
+		_order_sum_priced(bo_init->paid_orders);
+		_order_sum_priced(bo_init->unpaid_orders);
 	}
 
 	end_clock = clock();

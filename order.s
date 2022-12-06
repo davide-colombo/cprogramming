@@ -5,38 +5,37 @@
 __order_sum_priced:                     ; @_order_sum_priced
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #48
-	.cfi_def_cfa_offset 48
-	str	x0, [sp, #40]
-	str	x1, [sp, #32]
+	sub	sp, sp, #32
+	.cfi_def_cfa_offset 32
+	str	x0, [sp, #24]
 	movi	d0, #0000000000000000
-	str	d0, [sp, #24]
-	str	xzr, [sp, #8]
+	str	d0, [sp, #16]
+	ldr	x8, [sp, #24]
+	ldr	x8, [x8]
+	str	x8, [sp, #8]
 	b	LBB0_1
 LBB0_1:                                 ; =>This Inner Loop Header: Depth=1
 	ldr	x8, [sp, #8]
-	ldr	x9, [sp, #32]
+	ldr	x9, [sp, #24]
+	ldr	x9, [x9, #8]
 	subs	x8, x8, x9
 	b.hs	LBB0_4
 	b	LBB0_2
 LBB0_2:                                 ;   in Loop: Header=BB0_1 Depth=1
-	ldr	x8, [sp, #40]
-	ldr	x9, [sp, #8]
-	ldr	x8, [x8, x9, lsl #3]
-	str	x8, [sp, #16]
-	ldr	d1, [sp, #16]
-	ldr	d0, [sp, #24]
+	ldr	x8, [sp, #8]
+	ldr	d1, [x8]
+	ldr	d0, [sp, #16]
 	fadd	d0, d0, d1
-	str	d0, [sp, #24]
+	str	d0, [sp, #16]
 	b	LBB0_3
 LBB0_3:                                 ;   in Loop: Header=BB0_1 Depth=1
 	ldr	x8, [sp, #8]
-	add	x8, x8, #1
+	add	x8, x8, #8
 	str	x8, [sp, #8]
 	b	LBB0_1
 LBB0_4:
-	ldr	d0, [sp, #24]
-	add	sp, sp, #48
+	ldr	d0, [sp, #16]
+	add	sp, sp, #32
 	ret
 	.cfi_endproc
                                         ; -- End function
@@ -63,29 +62,32 @@ LBB1_1:
 	add	x0, x0, l___func__._order_aligned_alloc_array_of_orders@PAGEOFF
 	adrp	x1, l_.str@PAGE
 	add	x1, x1, l_.str@PAGEOFF
-	mov	w2, #193
+	mov	w2, #194
 	adrp	x3, l_.str.1@PAGE
 	add	x3, x3, l_.str.1@PAGEOFF
 	bl	___assert_rtn
 LBB1_2:
 	b	LBB1_3
 LBB1_3:
+	ldur	x8, [x29, #-8]
+	ldr	x8, [x8]
+	str	x8, [sp, #24]
 	ldur	x9, [x29, #-16]
 	mov	x8, #8
 	mul	x8, x8, x9
-	str	x8, [sp, #24]
-	ldr	x8, [sp, #24]
+	str	x8, [sp, #16]
+	ldr	x8, [sp, #16]
 	and	x8, x8, #0x7f
 	cbz	x8, LBB1_5
 	b	LBB1_4
 LBB1_4:
-	ldr	x8, [sp, #24]
+	ldr	x8, [sp, #16]
 	add	x8, x8, #127
 	and	x8, x8, #0xffffffffffffff80
-	str	x8, [sp, #24]
+	str	x8, [sp, #16]
 	b	LBB1_5
 LBB1_5:
-	ldr	x8, [sp, #24]
+	ldr	x8, [sp, #16]
 	ands	x8, x8, #0x7f
 	cset	w8, ne
 	tbz	w8, #0, LBB1_7
@@ -95,19 +97,19 @@ LBB1_6:
 	add	x0, x0, l___func__._order_aligned_alloc_array_of_orders@PAGEOFF
 	adrp	x1, l_.str@PAGE
 	add	x1, x1, l_.str@PAGEOFF
-	mov	w2, #208
+	mov	w2, #210
 	adrp	x3, l_.str.2@PAGE
 	add	x3, x3, l_.str.2@PAGEOFF
 	bl	___assert_rtn
 LBB1_7:
 	b	LBB1_8
 LBB1_8:
-	ldr	x1, [sp, #24]
+	ldr	x1, [sp, #16]
 	mov	x0, #128
 	bl	_aligned_alloc
-	ldur	x8, [x29, #-8]
+	ldr	x8, [sp, #24]
 	str	x0, [x8]
-	ldur	x8, [x29, #-8]
+	ldr	x8, [sp, #24]
 	ldr	x8, [x8]
 	cbnz	x8, LBB1_10
 	b	LBB1_9
@@ -115,7 +117,7 @@ LBB1_9:
 	adrp	x8, ___stderrp@GOTPAGE
 	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 	ldr	x0, [x8]
-	ldr	x8, [sp, #24]
+	ldr	x8, [sp, #16]
 	mov	x9, sp
 	mov	x10, #128
 	str	x10, [x9]
@@ -125,7 +127,7 @@ LBB1_9:
 	bl	_fprintf
 	b	LBB1_10
 LBB1_10:
-	ldur	x8, [x29, #-8]
+	ldr	x8, [sp, #24]
 	ldr	x8, [x8]
 	subs	x8, x8, #0
 	cset	w8, eq
@@ -136,17 +138,19 @@ LBB1_11:
 	add	x0, x0, l___func__._order_aligned_alloc_array_of_orders@PAGEOFF
 	adrp	x1, l_.str@PAGE
 	add	x1, x1, l_.str@PAGEOFF
-	mov	w2, #219
+	mov	w2, #221
 	adrp	x3, l_.str.4@PAGE
 	add	x3, x3, l_.str.4@PAGEOFF
 	bl	___assert_rtn
 LBB1_12:
 	b	LBB1_13
 LBB1_13:
-	ldur	x8, [x29, #-8]
+	ldr	x8, [sp, #24]
 	ldr	x8, [x8]
 	ldur	x9, [x29, #-16]
-	add	x0, x8, x9, lsl #3
+	add	x8, x8, x9, lsl #3
+	ldr	x9, [sp, #24]
+	str	x8, [x9, #8]
 	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
 	add	sp, sp, #64
 	ret
@@ -164,21 +168,21 @@ lCPI2_1:
 __order_init_array_of_orders:           ; @_order_init_array_of_orders
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #48
-	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
-	add	x29, sp, #32
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	stur	x0, [x29, #-8]
-	str	x1, [sp, #16]
-	ldur	x8, [x29, #-8]
+	str	x0, [sp, #8]
+	ldr	x8, [sp, #8]
 	ldr	x8, [x8]
-	str	x8, [sp, #8]
+	str	x8, [sp]
 	b	LBB2_1
 LBB2_1:                                 ; =>This Inner Loop Header: Depth=1
-	ldr	x8, [sp, #8]
-	ldr	x9, [sp, #16]
+	ldr	x8, [sp]
+	ldr	x9, [sp, #8]
+	ldr	x9, [x9, #8]
 	subs	x8, x8, x9
 	b.hs	LBB2_4
 	b	LBB2_2
@@ -193,17 +197,17 @@ LBB2_2:                                 ;   in Loop: Header=BB2_1 Depth=1
 	fmul	d0, d0, d1
 	fmov	d1, #10.00000000
 	fadd	d0, d0, d1
-	ldr	x8, [sp, #8]
+	ldr	x8, [sp]
 	str	d0, [x8]
 	b	LBB2_3
 LBB2_3:                                 ;   in Loop: Header=BB2_1 Depth=1
-	ldr	x8, [sp, #8]
+	ldr	x8, [sp]
 	add	x8, x8, #8
-	str	x8, [sp, #8]
+	str	x8, [sp]
 	b	LBB2_1
 LBB2_4:
-	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
-	add	sp, sp, #48
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
 	ret
 	.cfi_endproc
                                         ; -- End function
@@ -212,9 +216,9 @@ LBB2_4:
 _main:                                  ; @main
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #128
-	stp	x29, x30, [sp, #112]            ; 16-byte Folded Spill
-	add	x29, sp, #112
+	sub	sp, sp, #112
+	stp	x29, x30, [sp, #96]             ; 16-byte Folded Spill
+	add	x29, sp, #96
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
@@ -227,55 +231,6 @@ _main:                                  ; @main
 	stur	wzr, [x29, #-4]
 	stur	w0, [x29, #-8]
 	stur	x1, [x29, #-16]
-	mov	x9, sp
-	mov	x8, #128
-	str	x8, [x9]
-	adrp	x0, l_.str.5@PAGE
-	add	x0, x0, l_.str.5@PAGEOFF
-	bl	_printf
-	mov	x9, sp
-	mov	x8, #8
-	str	x8, [sp, #40]                   ; 8-byte Folded Spill
-	str	x8, [x9]
-	adrp	x0, l_.str.6@PAGE
-	add	x0, x0, l_.str.6@PAGEOFF
-	bl	_printf
-	ldr	x8, [sp, #40]                   ; 8-byte Folded Reload
-	mov	x9, sp
-	str	x8, [x9]
-	adrp	x0, l_.str.7@PAGE
-	add	x0, x0, l_.str.7@PAGEOFF
-	bl	_printf
-	ldr	x8, [sp, #40]                   ; 8-byte Folded Reload
-	mov	x9, sp
-	str	x8, [x9]
-	adrp	x0, l_.str.8@PAGE
-	add	x0, x0, l_.str.8@PAGEOFF
-	bl	_printf
-	mov	x9, sp
-	mov	x8, #160
-	str	x8, [x9]
-	adrp	x0, l_.str.9@PAGE
-	add	x0, x0, l_.str.9@PAGEOFF
-	bl	_printf
-	ldr	x8, [sp, #40]                   ; 8-byte Folded Reload
-	mov	x9, sp
-	str	x8, [x9]
-	adrp	x0, l_.str.10@PAGE
-	add	x0, x0, l_.str.10@PAGEOFF
-	bl	_printf
-	ldr	x8, [sp, #40]                   ; 8-byte Folded Reload
-	mov	x9, sp
-	str	x8, [x9]
-	adrp	x0, l_.str.11@PAGE
-	add	x0, x0, l_.str.11@PAGEOFF
-	bl	_printf
-	ldr	x8, [sp, #40]                   ; 8-byte Folded Reload
-	mov	x9, sp
-	str	x8, [x9]
-	adrp	x0, l_.str.12@PAGE
-	add	x0, x0, l_.str.12@PAGEOFF
-	bl	_printf
 	mov	x0, #0
 	bl	_time
                                         ; kill: def $w0 killed $w0 killed $x0
@@ -284,10 +239,10 @@ _main:                                  ; @main
 	stur	x0, [x29, #-24]
 	adrp	x8, _orders_per_buyer@GOTPAGE
 	ldr	x8, [x8, _orders_per_buyer@GOTPAGEOFF]
-	stur	x8, [x29, #-48]
+	stur	x8, [x29, #-40]
 	b	LBB3_1
 LBB3_1:                                 ; =>This Inner Loop Header: Depth=1
-	ldur	x8, [x29, #-48]
+	ldur	x8, [x29, #-40]
 	adrp	x9, _bo_end@PAGE
 	ldr	x9, [x9, _bo_end@PAGEOFF]
 	subs	x8, x8, x9
@@ -300,37 +255,35 @@ LBB3_2:                                 ;   in Loop: Header=BB3_1 Depth=1
 	ldr	x9, [x11, _id@PAGEOFF]
 	add	x9, x9, #1
 	str	x9, [x11, _id@PAGEOFF]
-	ldur	x11, [x29, #-48]
+	ldur	x11, [x29, #-40]
 	str	x9, [x11]
-	ldur	x9, [x29, #-48]
+	ldur	x9, [x29, #-40]
 	add	x9, x9, #8
 	str	x9, [x8]
-	ldur	x9, [x29, #-48]
+	ldur	x9, [x29, #-40]
 	add	x9, x9, #16
 	str	x9, [x10]
 	ldr	x0, [x8]
-	mov	x1, #100
+	mov	x1, #5
 	str	x1, [sp, #16]                   ; 8-byte Folded Spill
 	bl	__order_aligned_alloc_array_of_orders
 	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	stur	x0, [x29, #-40]
+	ldr	x8, [x8]
 	ldr	x0, [x8]
-	ldur	x1, [x29, #-40]
 	bl	__order_init_array_of_orders
 	ldr	x1, [sp, #16]                   ; 8-byte Folded Reload
 	ldr	x8, [sp, #32]                   ; 8-byte Folded Reload
 	ldr	x0, [x8]
 	bl	__order_aligned_alloc_array_of_orders
 	ldr	x8, [sp, #32]                   ; 8-byte Folded Reload
-	stur	x0, [x29, #-40]
+	ldr	x8, [x8]
 	ldr	x0, [x8]
-	ldur	x1, [x29, #-40]
 	bl	__order_init_array_of_orders
 	b	LBB3_3
 LBB3_3:                                 ;   in Loop: Header=BB3_1 Depth=1
-	ldur	x8, [x29, #-48]
+	ldur	x8, [x29, #-40]
 	add	x8, x8, #32
-	stur	x8, [x29, #-48]
+	stur	x8, [x29, #-40]
 	b	LBB3_1
 LBB3_4:
 	bl	_clock
@@ -338,41 +291,38 @@ LBB3_4:
 	ldur	x8, [x29, #-32]
 	ldur	x9, [x29, #-24]
 	subs	x8, x8, x9
-	str	x8, [sp, #56]
-	ldr	x8, [sp, #56]
+	str	x8, [sp, #48]
+	ldr	x8, [sp, #48]
 	mov	x9, sp
 	str	x8, [x9]
-	adrp	x0, l_.str.13@PAGE
-	add	x0, x0, l_.str.13@PAGEOFF
+	adrp	x0, l_.str.5@PAGE
+	add	x0, x0, l_.str.5@PAGEOFF
 	bl	_printf
 	bl	_clock
 	stur	x0, [x29, #-24]
 	adrp	x8, _orders_per_buyer@GOTPAGE
 	ldr	x8, [x8, _orders_per_buyer@GOTPAGEOFF]
-	str	x8, [sp, #48]
+	str	x8, [sp, #40]
 	b	LBB3_5
 LBB3_5:                                 ; =>This Inner Loop Header: Depth=1
-	ldr	x8, [sp, #48]
+	ldr	x8, [sp, #40]
 	adrp	x9, _bo_end@PAGE
 	ldr	x9, [x9, _bo_end@PAGEOFF]
 	subs	x8, x8, x9
 	b.hs	LBB3_8
 	b	LBB3_6
 LBB3_6:                                 ;   in Loop: Header=BB3_5 Depth=1
-	ldr	x8, [sp, #48]
+	ldr	x8, [sp, #40]
 	ldr	x0, [x8, #8]
-	mov	x1, #100
-	str	x1, [sp, #8]                    ; 8-byte Folded Spill
 	bl	__order_sum_priced
-	ldr	x1, [sp, #8]                    ; 8-byte Folded Reload
-	ldr	x8, [sp, #48]
+	ldr	x8, [sp, #40]
 	ldr	x0, [x8, #16]
 	bl	__order_sum_priced
 	b	LBB3_7
 LBB3_7:                                 ;   in Loop: Header=BB3_5 Depth=1
-	ldr	x8, [sp, #48]
+	ldr	x8, [sp, #40]
 	add	x8, x8, #32
-	str	x8, [sp, #48]
+	str	x8, [sp, #40]
 	b	LBB3_5
 LBB3_8:
 	bl	_clock
@@ -380,16 +330,16 @@ LBB3_8:
 	ldur	x8, [x29, #-32]
 	ldur	x9, [x29, #-24]
 	subs	x8, x8, x9
-	str	x8, [sp, #56]
-	ldr	x8, [sp, #56]
+	str	x8, [sp, #48]
+	ldr	x8, [sp, #48]
 	mov	x9, sp
 	str	x8, [x9]
-	adrp	x0, l_.str.13@PAGE
-	add	x0, x0, l_.str.13@PAGEOFF
+	adrp	x0, l_.str.5@PAGE
+	add	x0, x0, l_.str.5@PAGEOFF
 	bl	_printf
 	mov	w0, #0
-	ldp	x29, x30, [sp, #112]            ; 16-byte Folded Reload
-	add	sp, sp, #128
+	ldp	x29, x30, [sp, #96]             ; 16-byte Folded Reload
+	add	sp, sp, #112
 	ret
 	.cfi_endproc
                                         ; -- End function
@@ -410,45 +360,21 @@ l_.str.3:                               ; @.str.3
 	.asciz	"aligned_alloc(%d, %zu) failed"
 
 l_.str.4:                               ; @.str.4
-	.asciz	"*orders != NULL"
+	.asciz	"container->o_init != NULL"
 
-	.comm	_orders_per_buyer,160,7         ; @orders_per_buyer
+	.comm	_orders_per_buyer,320000,7      ; @orders_per_buyer
 	.section	__DATA,__data
 	.globl	_bo_end                         ; @bo_end
 	.p2align	3
 _bo_end:
-	.quad	_orders_per_buyer+160
+	.quad	_orders_per_buyer+320000
 
 	.globl	_id                             ; @id
 .zerofill __DATA,__common,_id,8,3
-	.section	__TEXT,__cstring,cstring_literals
-l_.str.5:                               ; @.str.5
-	.asciz	"alignof(orders_per_buyer) = %zu\n"
-
-l_.str.6:                               ; @.str.6
-	.asciz	"alignof(bo_end) = %zu\n"
-
-l_.str.7:                               ; @.str.7
-	.asciz	"alignof(po_ptr) = %zu\n"
-
-l_.str.8:                               ; @.str.8
-	.asciz	"alignof(uo_ptr) = %zu\n"
-
-l_.str.9:                               ; @.str.9
-	.asciz	"sizeof(orders_per_buyer) = %zu\n"
-
-l_.str.10:                              ; @.str.10
-	.asciz	"sizeof(bo_end) = %zu\n"
-
-l_.str.11:                              ; @.str.11
-	.asciz	"sizeof(po_ptr) = %zu\n"
-
-l_.str.12:                              ; @.str.12
-	.asciz	"sizeof(uo_ptr) = %zu\n"
-
 	.comm	_po_ptr,8,3                     ; @po_ptr
 	.comm	_uo_ptr,8,3                     ; @uo_ptr
-l_.str.13:                              ; @.str.13
+	.section	__TEXT,__cstring,cstring_literals
+l_.str.5:                               ; @.str.5
 	.asciz	"elapsed_clock = %lu\n"
 
 .subsections_via_symbols
