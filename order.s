@@ -174,6 +174,9 @@ LBB1_16:
 	cbnz	x8, LBB1_18
 	b	LBB1_17
 LBB1_17:
+	ldur	x8, [x29, #-8]
+	ldr	x0, [x8]
+	bl	_free
 	adrp	x8, ___stderrp@GOTPAGE
 	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 	ldr	x0, [x8]
@@ -198,7 +201,7 @@ LBB1_19:
 	add	x0, x0, l___func__._order_aligned_alloc_array_of_orders@PAGEOFF
 	adrp	x1, l_.str@PAGE
 	add	x1, x1, l_.str@PAGEOFF
-	mov	w2, #247
+	mov	w2, #248
 	adrp	x3, l_.str.7@PAGE
 	add	x3, x3, l_.str.7@PAGEOFF
 	bl	___assert_rtn

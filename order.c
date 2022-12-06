@@ -241,6 +241,7 @@ void _order_aligned_alloc_array_of_orders(struct orders **optr, size_t nel)
 	container->o_init = aligned_alloc(CACHE_LINE_SIZE, tot);
 	if( container->o_init == NULL ) {
 		// FREE ALL THE DYNAMIC ALLOCATED MEMORY!!!
+		free(*optr);
 		fprintf(stderr, "aligned_alloc(%d, %zu) failed", CACHE_LINE_SIZE, tot);
 		// CALL TO EXIT?
 	}
@@ -307,7 +308,6 @@ int main(int argc, char** argv) {
 	/*
 	 * Initialize the array of orders
 	 */
-
 	struct orders **po_ptr, **uo_ptr;
 	for(struct buyer_orders *bo_init = orders_per_buyer; bo_init < bo_end; ++bo_init) {
 		/*
