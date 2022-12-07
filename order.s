@@ -221,9 +221,9 @@ LBB4_3:
 _main:                                  ; @main
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #144
-	stp	x29, x30, [sp, #128]            ; 16-byte Folded Spill
-	add	x29, sp, #128
+	sub	sp, sp, #160
+	stp	x29, x30, [sp, #144]            ; 16-byte Folded Spill
+	add	x29, sp, #144
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
@@ -268,38 +268,34 @@ LBB5_2:                                 ;   in Loop: Header=BB5_1 Depth=1
 	str	x8, [x9]
 	ldr	x8, [sp, #48]
 	add	x8, x8, #8
-	str	x8, [sp, #64]
+	stur	x8, [x29, #-64]
 	ldr	x8, [sp, #48]
 	add	x8, x8, #16
-	str	x8, [sp, #56]
-	ldr	x0, [sp, #64]
+	str	x8, [sp, #72]
+	ldur	x0, [x29, #-64]
 	ldur	x1, [x29, #-48]
 	bl	__order_aligned_alloc_orders
-	ldr	x8, [sp, #64]
-	ldr	x9, [x8]
-	mov	x8, #5
-	str	x8, [sp, #16]                   ; 8-byte Folded Spill
-	str	x8, [x9, #8]
-	ldr	x8, [sp, #64]
+	ldur	x8, [x29, #-64]
 	ldr	x8, [x8]
+	str	x8, [sp, #64]
+	ldr	x8, [sp, #64]
+	mov	x1, #5
+	str	x1, [sp, #16]                   ; 8-byte Folded Spill
+	str	x1, [x8, #8]
+	ldr	x8, [sp, #64]
 	ldr	x0, [x8]
-	ldr	x8, [sp, #64]
-	ldr	x8, [x8]
-	ldr	x1, [x8, #8]
 	bl	__order_init_array_of_orders
-	ldr	x0, [sp, #56]
+	ldr	x0, [sp, #72]
 	ldur	x1, [x29, #-56]
 	bl	__order_aligned_alloc_orders
-	ldr	x8, [sp, #16]                   ; 8-byte Folded Reload
-	ldr	x9, [sp, #56]
-	ldr	x9, [x9]
-	str	x8, [x9, #8]
-	ldr	x8, [sp, #56]
+	ldr	x1, [sp, #16]                   ; 8-byte Folded Reload
+	ldr	x8, [sp, #72]
 	ldr	x8, [x8]
+	str	x8, [sp, #56]
+	ldr	x8, [sp, #56]
+	str	x1, [x8, #8]
+	ldr	x8, [sp, #56]
 	ldr	x0, [x8]
-	ldr	x8, [sp, #56]
-	ldr	x8, [x8]
-	ldr	x1, [x8, #8]
 	bl	__order_init_array_of_orders
 	b	LBB5_3
 LBB5_3:                                 ;   in Loop: Header=BB5_1 Depth=1
@@ -336,16 +332,18 @@ LBB5_5:                                 ; =>This Inner Loop Header: Depth=1
 LBB5_6:                                 ;   in Loop: Header=BB5_5 Depth=1
 	ldr	x8, [sp, #32]
 	ldr	x8, [x8, #8]
+	str	x8, [sp, #64]
+	ldr	x8, [sp, #64]
 	ldr	x0, [x8]
-	ldr	x8, [sp, #32]
-	ldr	x8, [x8, #8]
+	ldr	x8, [sp, #64]
 	ldr	x1, [x8, #8]
 	bl	__order_sum_priced
 	ldr	x8, [sp, #32]
 	ldr	x8, [x8, #16]
+	str	x8, [sp, #56]
+	ldr	x8, [sp, #56]
 	ldr	x0, [x8]
-	ldr	x8, [sp, #32]
-	ldr	x8, [x8, #16]
+	ldr	x8, [sp, #56]
 	ldr	x1, [x8, #8]
 	bl	__order_sum_priced
 	b	LBB5_7
@@ -368,8 +366,8 @@ LBB5_8:
 	add	x0, x0, l_.str.5@PAGEOFF
 	bl	_printf
 	mov	w0, #0
-	ldp	x29, x30, [sp, #128]            ; 16-byte Folded Reload
-	add	sp, sp, #144
+	ldp	x29, x30, [sp, #144]            ; 16-byte Folded Reload
+	add	sp, sp, #160
 	ret
 	.cfi_endproc
                                         ; -- End function

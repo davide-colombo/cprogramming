@@ -319,13 +319,14 @@ int main(int argc, char** argv) {
 	 * Size needed to allocate the array of orders.
 	 */
 	size_t sz = sizeof(struct order);
-	size_t tot_paid = _order_get_aligned_memory(NUMBER_OF_PAID_ORDERS_PER_BUYER, sz);
-	size_t tot_unpaid = _order_get_aligned_memory(NUMBER_OF_UNPAID_ORDERS_PER_BUYER, sz);
+	size_t tot_paid_aligned_bytes = _order_get_aligned_memory(NUMBER_OF_PAID_ORDERS_PER_BUYER, sz);
+	size_t tot_unpaid_aligned_bytes = _order_get_aligned_memory(NUMBER_OF_UNPAID_ORDERS_PER_BUYER, sz);
 
 	/*
 	 * Initialize the array of orders
 	 */
 	struct orders **po_ptr, **uo_ptr;
+	struct orders *po, *uo;
 	for(struct buyer_orders *bo_init = orders_per_buyer; bo_init < bo_end; ++bo_init) {
 		/*
 		 * This helps the CPU to understand the data access pattern and can be 
@@ -338,16 +339,18 @@ int main(int argc, char** argv) {
 		/*
 		 * Array of paid orders
 		 */
-		_order_aligned_alloc_orders(po_ptr, tot_paid);
-		(*po_ptr)->delta = NUMBER_OF_PAID_ORDERS_PER_BUYER;
-		_order_init_array_of_orders((*po_ptr)->o_init, (*po_ptr)->delta);
+		_order_aligned_alloc_orders(po_ptr, tot_paid_aligned_bytes);
+		po = *po_ptr;
+		po->delta = NUMBER_OF_PAID_ORDERS_PER_BUYER;
+		_order_init_array_of_orders(po->o_init, NUMBER_OF_PAID_ORDERS_PER_BUYER);
 
 		/*
 		 * Array of unpaid orders
 		 */
-		_order_aligned_alloc_orders(uo_ptr, tot_unpaid);
-		(*uo_ptr)->delta = NUMBER_OF_UNPAID_ORDERS_PER_BUYER;
-		_order_init_array_of_orders((*uo_ptr)->o_init, (*uo_ptr)->delta);
+		_order_aligned_alloc_orders(uo_ptr, tot_unpaid_aligned_bytes);
+		uo = *uo_ptr;
+		uo->delta = NUMBER_OF_UNPAID_ORDERS_PER_BUYER;
+		_order_init_array_of_orders(uo->o_init, NUMBER_OF_UNPAID_ORDERS_PER_BUYER);
 	}
 
 	end_clock = clock();
@@ -359,8 +362,10 @@ int main(int argc, char** argv) {
 	 */
 	start_clock = clock();
 	for(struct buyer_orders *bo_init = orders_per_buyer; bo_init < bo_end; ++bo_init) {
-		_order_sum_priced(bo_init->paid_orders->o_init, bo_init->paid_orders->delta);
-		_order_sum_priced(bo_init->unpaid_orders->o_init, bo_init->unpaid_orders->delta);
+		po = bo_init->paid_orders;
+		_order_sum_priced(po->o_init, po->delta);
+		uo = bo_init->unpaid_orders;
+		_order_sum_priced(uo->o_init, uo->delta);
 	}
 
 	end_clock = clock();
