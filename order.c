@@ -142,7 +142,7 @@ struct order {
  */
 struct orders {
 	struct order *o_init;		// 8 bytes
-	struct order *o_end;		// 8 bytes
+	long delta;					// 8 bytes
 };
 
 /*
@@ -168,18 +168,14 @@ struct buyer_orders {
 };
 
 /*
- * Arguments:
- * struct orders * => 8 bytes
+ * Compute the sum of the price of all the orders in the array pointed to by 
+ * `struct orders *optr`.
  *
- * Local variables:
- * double => 8 bytes
- *
- * One full stack frame (16 bytes)
+ * Since the loop is based on modifying `delta` IT IS WRONG to pass delta by 
+ * reference!
  */
-double _order_sum_priced(struct orders *optr) {
-	struct order *init = optr->o_init;
+double _order_sum_priced(struct order *init, long delta) {
 	double sum = 0;
-	long delta = (optr->o_end - init);
 	while( --delta >= 0 ) {
 		sum += (init+delta)->price;
 	}
@@ -274,9 +270,9 @@ void _order_aligned_alloc_orders(struct orders **optr, size_t aligned_bytes) {
  *
  * TODO: optimize the random generation of the prices
  */
-void _order_init_array_of_orders(struct order *o_init, struct order *o_end) {
-	for (struct order *tmp = o_init; tmp < o_end; ++tmp) {
-		tmp->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
+void _order_init_array_of_orders(struct order *init, long delta) {
+	while( --delta >= 0 ) {
+		(init+delta)->price = ((rand() / (double)RAND_MAX) * 1000.0) + 10.0;
 	}
 }
 
@@ -343,15 +339,15 @@ int main(int argc, char** argv) {
 		 * Array of paid orders
 		 */
 		_order_aligned_alloc_orders(po_ptr, tot_paid);
-		(*po_ptr)->o_end = ((*po_ptr)->o_init) + NUMBER_OF_PAID_ORDERS_PER_BUYER;
-		_order_init_array_of_orders((*po_ptr)->o_init, (*po_ptr)->o_end);
+		(*po_ptr)->delta = NUMBER_OF_PAID_ORDERS_PER_BUYER;
+		_order_init_array_of_orders((*po_ptr)->o_init, (*po_ptr)->delta);
 
 		/*
 		 * Array of unpaid orders
 		 */
 		_order_aligned_alloc_orders(uo_ptr, tot_unpaid);
-		(*uo_ptr)->o_end = ((*uo_ptr)->o_init) + NUMBER_OF_UNPAID_ORDERS_PER_BUYER;
-		_order_init_array_of_orders((*uo_ptr)->o_init, (*uo_ptr)->o_end);
+		(*uo_ptr)->delta = NUMBER_OF_UNPAID_ORDERS_PER_BUYER;
+		_order_init_array_of_orders((*uo_ptr)->o_init, (*uo_ptr)->delta);
 	}
 
 	end_clock = clock();
@@ -363,8 +359,8 @@ int main(int argc, char** argv) {
 	 */
 	start_clock = clock();
 	for(struct buyer_orders *bo_init = orders_per_buyer; bo_init < bo_end; ++bo_init) {
-		_order_sum_priced(bo_init->paid_orders);
-		_order_sum_priced(bo_init->unpaid_orders);
+		_order_sum_priced(bo_init->paid_orders->o_init, bo_init->paid_orders->delta);
+		_order_sum_priced(bo_init->unpaid_orders->o_init, bo_init->unpaid_orders->delta);
 	}
 
 	end_clock = clock();
