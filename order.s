@@ -8,34 +8,35 @@ __order_sum_priced:                     ; @_order_sum_priced
 	sub	sp, sp, #32
 	.cfi_def_cfa_offset 32
 	str	x0, [sp, #24]
+	ldr	x8, [sp, #24]
+	ldr	x8, [x8]
+	str	x8, [sp, #16]
 	movi	d0, #0000000000000000
-	str	d0, [sp, #16]
+	str	d0, [sp, #8]
 	ldr	x8, [sp, #24]
 	ldr	x8, [x8, #8]
-	ldr	x9, [sp, #24]
-	ldr	x9, [x9]
+	ldr	x9, [sp, #16]
 	subs	x8, x8, x9
 	mov	x9, #8
 	sdiv	x8, x8, x9
-	str	x8, [sp, #8]
+	str	x8, [sp]
 	b	LBB0_1
 LBB0_1:                                 ; =>This Inner Loop Header: Depth=1
-	ldr	x8, [sp, #8]
+	ldr	x8, [sp]
 	subs	x8, x8, #1
-	str	x8, [sp, #8]
+	str	x8, [sp]
 	tbnz	x8, #63, LBB0_3
 	b	LBB0_2
 LBB0_2:                                 ;   in Loop: Header=BB0_1 Depth=1
-	ldr	x8, [sp, #24]
-	ldr	x8, [x8]
-	ldr	x9, [sp, #8]
+	ldr	x8, [sp, #16]
+	ldr	x9, [sp]
 	ldr	d1, [x8, x9, lsl #3]
-	ldr	d0, [sp, #16]
+	ldr	d0, [sp, #8]
 	fadd	d0, d0, d1
-	str	d0, [sp, #16]
+	str	d0, [sp, #8]
 	b	LBB0_1
 LBB0_3:
-	ldr	d0, [sp, #16]
+	ldr	d0, [sp, #8]
 	add	sp, sp, #32
 	ret
 	.cfi_endproc
@@ -63,7 +64,7 @@ LBB1_1:
 	add	x0, x0, l___func__._order_alloc_ir_of_orders@PAGEOFF
 	adrp	x1, l_.str@PAGE
 	add	x1, x1, l_.str@PAGEOFF
-	mov	w2, #196
+	mov	w2, #197
 	adrp	x3, l_.str.1@PAGE
 	add	x3, x3, l_.str.1@PAGEOFF
 	bl	___assert_rtn
@@ -98,7 +99,7 @@ LBB1_6:
 	add	x0, x0, l___func__._order_alloc_ir_of_orders@PAGEOFF
 	adrp	x1, l_.str@PAGE
 	add	x1, x1, l_.str@PAGEOFF
-	mov	w2, #205
+	mov	w2, #206
 	adrp	x3, l_.str.3@PAGE
 	add	x3, x3, l_.str.3@PAGEOFF
 	bl	___assert_rtn

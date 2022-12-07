@@ -177,10 +177,11 @@ struct buyer_orders {
  * One full stack frame (16 bytes)
  */
 double _order_sum_priced(struct orders *optr) {
+	struct order *init = optr->o_init;
 	double sum = 0;
-	long delta = (optr->o_end - optr->o_init);
+	long delta = (optr->o_end - init);
 	while( --delta >= 0 ) {
-		sum += ((optr->o_init)+delta)->price;
+		sum += (init+delta)->price;
 	}
 	return sum;
 }
