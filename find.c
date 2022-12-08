@@ -20,28 +20,14 @@ int main(int argc, char **argv) {
 	 * reload the MEMORY PAGE in which the `ia` array is allocated!!!
 	 */
 	uint32_t *ptr = ia;
-
-	/*
-	 * Pre-compute the final value is important because it avoids to compute 
-	 * it every time inside the loop.
-	 */
-	uint32_t *ia_end = ia+N_ITEMS;
-
 	uint32_t i = 0;
-	while(ptr < ia_end){
-		/*
-		 * Remove ptr+i to be computed every time in the loop.
-		 * Already computed at this point.
-		 * This instruction can be executed faster because there is no need to 
-		 * wait for the computation of (ptr+i).
-		 */
-		*(ptr++) = i++;
-	}
+	do{
+		*(ptr+i) = i;
+	}while((i++ ^ N_ITEMS) != 0);
 
 	/*
 	 * If two values are equal, the XOR returns 0.
 	 */
-	ptr = ia;
 	uint32_t val = 74;
 	while((*ptr ^ val) != 0){
 		++ptr;
