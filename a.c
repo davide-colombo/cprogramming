@@ -7,21 +7,14 @@
 
 #include <stdio.h>
 
-/*
- * a => 4 bytes
- * Stack frame == 16 bytes (12 bytes wasted)
- * return a 4 bytes word => uses `w` register
- */
-//int _lp_inci(int a) {
-//	return a+1;
-//}
-
 int main(int argc, char** argv) {
 	
+	/*
+	 * Increment a many times
+	 */
 	int a = 0;
-	while(a++ < 10000){
-		;
-	}
+	while(++a < 10000);
+	printf("a = %d\n", a);
 
 	return 0;
 }

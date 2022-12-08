@@ -1,6 +1,11 @@
 
-lp.s: lp.c
-	clang -S -fstack-usage lp.c
+all: a a.s
+
+a: a.c
+	clang a.c -o a
+
+a.s: a.c
+	clang -S a.c -o a.s
 
 clean:
-	rm -f lp.s lp.su
+	rm -f a.s a
