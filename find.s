@@ -40,8 +40,8 @@ LBB0_5:                                 ; =>This Inner Loop Header: Depth=1
 	ldr	x8, [sp, #16]
 	ldr	w8, [x8]
 	ldr	w9, [sp, #12]
-	subs	w8, w8, w9
-	b.eq	LBB0_7
+	eor	w8, w8, w9
+	cbz	w8, LBB0_7
 	b	LBB0_6
 LBB0_6:                                 ;   in Loop: Header=BB0_5 Depth=1
 	ldr	x8, [sp, #16]

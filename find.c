@@ -21,7 +21,10 @@ int main(int argc, char **argv) {
 
 	uint32_t *ptr = ia;
 	uint32_t val = 74;
-	while(*ptr != val){
+	/*
+	 * If two values are equal, the XOR returns 0.
+	 * */
+	while((*ptr ^ val) != 0){
 		++ptr;
 	}
 	//printf("*ptr = %d\n", *ptr);
