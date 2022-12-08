@@ -15,15 +15,34 @@
 uint32_t ia[N_ITEMS];
 
 int main(int argc, char **argv) {
-	for(int i = 0; i < N_ITEMS; i++){
-		*(ia+i) = i;
+	/*
+	 * Using the local variable is important because it avoids to continually 
+	 * reload the MEMORY PAGE in which the `ia` array is allocated!!!
+	 */
+	uint32_t *ptr = ia;
+
+	/*
+	 * Pre-compute the final value is important because it avoids to compute 
+	 * it every time inside the loop.
+	 */
+	uint32_t *ia_end = ia+N_ITEMS;
+
+	uint32_t i = 0;
+	while(ptr < ia_end){
+		/*
+		 * Remove ptr+i to be computed every time in the loop.
+		 * Already computed at this point.
+		 * This instruction can be executed faster because there is no need to 
+		 * wait for the computation of (ptr+i).
+		 */
+		*(ptr++) = i++;
 	}
 
-	uint32_t *ptr = ia;
-	uint32_t val = 74;
 	/*
 	 * If two values are equal, the XOR returns 0.
 	 */
+	ptr = ia;
+	uint32_t val = 74;
 	while((*ptr ^ val) != 0){
 		++ptr;
 	}
