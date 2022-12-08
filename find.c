@@ -21,7 +21,9 @@ int main(int argc, char **argv) {
 
 	uint32_t *ptr = ia;
 	uint32_t val = 74;
-	while(*ptr++ != val);
+	while(*ptr != val){
+		++ptr;
+	}
 	//printf("*ptr = %d\n", *ptr);
 
 	return 0;
