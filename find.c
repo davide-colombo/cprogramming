@@ -20,10 +20,10 @@ int main(int argc, char **argv) {
 	 * reload the MEMORY PAGE in which the `ia` array is allocated!!!
 	 */
 	uint32_t *ptr = ia;
-	uint32_t i = 0;
-	do{
+	int i = N_ITEMS;
+	while(--i >= 0){
 		*(ptr+i) = i;
-	}while((i++ ^ N_ITEMS) != 0);
+	}
 
 	/*
 	 * If two values are equal, the XOR returns 0.

@@ -13,22 +13,21 @@ _main:                                  ; @main
 	adrp	x8, _ia@GOTPAGE
 	ldr	x8, [x8, _ia@GOTPAGEOFF]
 	str	x8, [sp, #8]
-	str	wzr, [sp, #4]
+	mov	w8, #256
+	str	w8, [sp, #4]
 	b	LBB0_1
 LBB0_1:                                 ; =>This Inner Loop Header: Depth=1
 	ldr	w8, [sp, #4]
-	ldr	x9, [sp, #8]
-	ldr	w10, [sp, #4]
-                                        ; kill: def $x10 killed $w10
-	str	w8, [x9, x10, lsl #2]
+	subs	w8, w8, #1
+	str	w8, [sp, #4]
+	tbnz	w8, #31, LBB0_3
 	b	LBB0_2
 LBB0_2:                                 ;   in Loop: Header=BB0_1 Depth=1
 	ldr	w8, [sp, #4]
-	add	w9, w8, #1
-	str	w9, [sp, #4]
-	eor	w8, w8, #0x100
-	cbnz	w8, LBB0_1
-	b	LBB0_3
+	ldr	x9, [sp, #8]
+	ldrsw	x10, [sp, #4]
+	str	w8, [x9, x10, lsl #2]
+	b	LBB0_1
 LBB0_3:
 	mov	w8, #74
 	str	w8, [sp]
