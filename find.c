@@ -22,17 +22,16 @@ int main(int argc, char **argv) {
 	uint32_t *ptr = ia;
 
 	/*
-	 * This MUST be signed!
-	 */
-	int i = N_ITEMS;
-
-	/*
 	 * The compiler without optimizations is capable of turning the condition 
 	 * into a shift of the correct number of bits based on the data type to 
 	 * check if the most significant bit is either 1 or 0.
 	 */
-	while(--i >= 0){
-		*(ptr+i) = i;
+	int j, s;
+	uint32_t *t;
+	for(j = 0; j < N_ITEMS; j+=4) {
+		for(s = 0, t = ptr+j; s < 4; s++) {
+			*(t+s) = j+s;
+		}
 	}
 
 	/*
@@ -43,7 +42,7 @@ int main(int argc, char **argv) {
 	/*
 	 * Same approach as above, don't need to declare a new variable.
 	 */
-	i = N_ITEMS;
+	int i = N_ITEMS;
 	
 	/*
 	 * The first conditions guarantees that the loop does not exceed the 
