@@ -19,14 +19,10 @@ int main(int argc, char **argv) {
 		ia[i] = i;
 	}
 
-	bool found = false;
+	uint32_t *ptr = ia;
 	uint32_t val = 74;
-	uint32_t *ptr = &ia[0];
-	for(int i = N_ITEMS; i != 0; i--) {
-		if(val == *ptr++){
-			found = true;
-			break;
-		}
-	}
+	while(*ptr++ != val);
+	//printf("*ptr = %d\n", *ptr);
+
 	return 0;
 }
