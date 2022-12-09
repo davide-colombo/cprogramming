@@ -35,6 +35,7 @@ void _loop_rowise() {
 	int *ptr = &ia[0][0];						// 8 bytes
 	int *last_row = &ia[NROWS-1][0];			// 8 bytes
 	int j;										// 4 bytes
+	int val = 1;								// 4 bytes
 
 	/*
 	 * Moving pointer increment OUT FROM THE CONDITION avoids to execute 1 
@@ -48,10 +49,10 @@ void _loop_rowise() {
 			 * value OR EVEN BETTER TO BULK ASSIGN ALL THE ITEMS THAT FITS A 
 			 * CACHE LINE WITH A SINGLE STATEMENT
 			 * */
-			ptr[j] = 1;
-			ptr[j+1] = 1;
-			ptr[j+2] = 1;
-			ptr[j+3] = 1;
+			ptr[j] = val;
+			ptr[j+1] = val;
+			ptr[j+2] = val;
+			ptr[j+3] = val;
 		}
 		ptr+=NROWS;
 	}while( ptr <= last_row );

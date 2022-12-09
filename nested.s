@@ -14,6 +14,8 @@ __loop_rowise:                          ; @_loop_rowise
 	add	x8, x8, x10
 	str	x9, [sp, #24]
 	str	x8, [sp, #16]
+	mov	w8, #1
+	str	w8, [sp, #8]
 	b	LBB0_1
 LBB0_1:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB0_2 Depth 2
@@ -26,18 +28,21 @@ LBB0_2:                                 ;   Parent Loop BB0_1 Depth=1
 	b.ge	LBB0_5
 	b	LBB0_3
 LBB0_3:                                 ;   in Loop: Header=BB0_2 Depth=2
+	ldr	w8, [sp, #8]
 	ldr	x9, [sp, #24]
 	ldrsw	x10, [sp, #12]
-	mov	w8, #1
 	str	w8, [x9, x10, lsl #2]
+	ldr	w8, [sp, #8]
 	ldr	x9, [sp, #24]
 	ldr	w10, [sp, #12]
 	add	w10, w10, #1
 	str	w8, [x9, w10, sxtw #2]
+	ldr	w8, [sp, #8]
 	ldr	x9, [sp, #24]
 	ldr	w10, [sp, #12]
 	add	w10, w10, #2
 	str	w8, [x9, w10, sxtw #2]
+	ldr	w8, [sp, #8]
 	ldr	x9, [sp, #24]
 	ldr	w10, [sp, #12]
 	add	w10, w10, #3
