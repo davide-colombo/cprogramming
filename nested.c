@@ -1,11 +1,12 @@
 
 #include <stdio.h>
+#include <time.h>
 
 /*
  * Nested for loop optimization
  */
-#define NROWS 128
-#define NCOLS 128
+#define NROWS 10000
+#define NCOLS 10000
 
 #define CACHE_LINE_SIZE 128
 /*
@@ -26,38 +27,122 @@ int ia[NROWS][NCOLS];
  * 5 - try to increased parallelism with software pipelining.
  */
 
-void _loop_rowise() {
+void _loop_rowise_optim() {
 	/*
-	 * IMPORTANT:
-	 *
-	 * Doing the assignment by referring to `ia` as the base variable is more 
-	 * efficient because it uses THREE DIFFERENT REGISTER and performs THREE 
-	 * STORE instructions with only a SINGLE LOAD INSTRUCTION.
+	 * Initialize in bulk here to reduce the amount of times the memory 
+	 * address of the `ia` variable needs to be loaded.
 	 */
-	int *rowptr = &ia[0][0];				// 8 bytes
-	int *endptr = &ia[NROWS-1][NCOLS];		// 8 bytes
-	int *colptr = &ia[0][NCOLS];			// 8 bytes
+	int *row0ptr = &ia[0][0];				// 8 bytes
+	int *row1ptr = &ia[4][0];				// 8 bytes
+	int *row2ptr = &ia[8][0];				// 8 bytes
+	int *row3ptr = &ia[12][0];				// 8 bytes
+	int *col0ptr = &ia[0][0];				// 8 bytes
+	int *col1ptr = &ia[0][4];				// 8 bytes
+	int *col2ptr = &ia[0][8];				// 8 bytes
+	int *col3ptr = &ia[0][12];				// 8 bytes
 
-	do{
-		while(rowptr < colptr){
-			*rowptr = 1;
-			*(rowptr+1) = 1;
-			*(rowptr+2) = 1;
-			*(rowptr+3) = 1;
-			*(rowptr+4) = 1;
-			*(rowptr+5) = 1;
-			*(rowptr+6) = 1;
-			*(rowptr+7) = 1;
-			rowptr+=8;
-		}
-		colptr = rowptr + NCOLS;
-	}while(rowptr != endptr);
+	/*
+	 * Unrolling the loop with factor k = 4
+	 */
+	int row;
+	int col, col2;
+
+	/*
+	 * Efficiently compute the division by k = 4 + s = 4 by shifting right N 
+	 * by log2(k+s) = 4 positions.
+	 */
+	int unrolled_iterations = NCOLS >> 4;
+
+	/*
+	 * Since k = 4 is a Marsenne number it's possible to compute the remainder 
+	 * of the division by 4 by computing: N & (4-1).
+	 */
+	int residual_iterations = NCOLS & 15;
+
+	/*
+	 * Explanation:
+	 *
+	 * a - (a&b)
+	 *
+	 * Suppose c = a&b
+	 *
+	 * `a - b` can be written using the XOR operator.
+	 *
+	 * a - b = ~(a^b) + 1
+	 *
+	 * The difference between a and b is equal to the TWO'S COMPLEMENT of a 
+	 * and b.
+	 *
+	 * In this particular case:
+	 * 		a - (a&b)
+	 * is equal to:
+	 * 		a & (~b)
+	 *
+	 */
+	int residual_start = NCOLS - residual_iterations;
+
+	/*
+	 * Cycle on the rows
+	 *
+	 * TODO: change unrolled iterations
+	 */
+	for(row = 0; row < NROWS; ++row){
+		/*
+		 * Increase by 16 because the variables are shifted by 4 items one 
+		 * another, so the total coverage in one pass is k = 4 times s = 4 where s 
+		 * is equal to the shift of the 4 variables.
+		 */
+		for(col = 0; col < NCOLS; col+=16){
+			/*
+			 * Loop performs k = 4 iterations
+			 */
+			for(col2 = col; (col2 - col) < 4 ; ++col2) {
+				*(col0ptr+col2) = 1;
+				*(col1ptr+col2) = 1;
+				*(col2ptr+col2) = 1;
+				*(col3ptr+col2) = 1;
+			} // col2
+		} // col, unrolled iterations
+	
+		/*
+		 * Residual iterations on a single matrix line
+		 */
+		for(col = residual_start; col < NCOLS; ++col){
+			*(col0ptr+col) = 1;
+			*(col1ptr+col) = 1;
+			*(col2ptr+col) = 1;
+			*(col3ptr+col) = 1;
+		} // col, residual iterations
+
+		/*
+		 * Move the 4 pointers down a row completely.
+		 */
+		col0ptr+=NROWS;
+		col1ptr+=NROWS;
+		col2ptr+=NROWS;
+		col3ptr+=NROWS;
+	} // row, unrolled iterations
+
 }
+
+
+
+
 
 void _loop_colwise() {
 	int i, j;
-	for(j = 0; j < NCOLS; j++) {
-		for(i = 0; i < NROWS; i++) {
+	for(j = 0; j < NROWS; j++) {
+		for(i = 0; i < NCOLS; i++) {
+			ia[i][j] = 1;
+		}
+	}
+}
+
+
+void _loop_rowise_baseline(){
+	int i, j;
+	for(j = 0; j < NROWS; j++) {
+		for(i = 0; i < NCOLS; i++) {
 			ia[j][i] = 1;
 		}
 	}
@@ -66,15 +151,21 @@ void _loop_colwise() {
 
 
 int main(int argc, char **argv) {
-	_loop_rowise();
-
-	/*int *ptr = &ia[0][0];
+	clock_t start, end;
+	start = clock();
+	_loop_rowise_optim();
+	end = clock();
+	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
+	printf("Elapsed = %.20lf\n", elapsed);
+/*
+	int *ptr = &ia[0][0];
 	for(int i = 0; i < NROWS; i++) {
 		printf("ia[%d][...] = ", i);
 		for(int j = 0; j < NCOLS; j++) {
 			printf("%d ", *(ptr+i+j));
 		}
 		printf("\n");
-	}*/
+	}
+*/
 	return 0;
 }
