@@ -60,15 +60,14 @@ void _loop_rowise() {
 			 * First, load memory address of col into x9.
 			 * Second, add.
 			 * Third, store.
+			 *
+			 * TODO: test if normal array indexing works better than pointer 
+			 * indexing.
 			 */
-			*col = 1;
-			col++;
-			*col = 1;
-			col++;
-			*col = 1;
-			col++;
-			*col = 1;
-			col++;
+			*(col++) = 1;
+			*(col++) = 1;
+			*(col++) = 1;
+			*(col++) = 1;
 		}
 		ptr+=NROWS;
 	}while( ptr < last_row );

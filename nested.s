@@ -32,26 +32,22 @@ LBB0_2:                                 ;   Parent Loop BB0_1 Depth=1
 	b	LBB0_3
 LBB0_3:                                 ;   in Loop: Header=BB0_2 Depth=2
 	ldr	x9, [sp, #8]
+	add	x8, x9, #4
+	str	x8, [sp, #8]
 	mov	w8, #1
 	str	w8, [x9]
 	ldr	x9, [sp, #8]
-	add	x9, x9, #4
-	str	x9, [sp, #8]
-	ldr	x9, [sp, #8]
+	add	x10, x9, #4
+	str	x10, [sp, #8]
 	str	w8, [x9]
 	ldr	x9, [sp, #8]
-	add	x9, x9, #4
-	str	x9, [sp, #8]
-	ldr	x9, [sp, #8]
+	add	x10, x9, #4
+	str	x10, [sp, #8]
 	str	w8, [x9]
 	ldr	x9, [sp, #8]
-	add	x9, x9, #4
-	str	x9, [sp, #8]
-	ldr	x9, [sp, #8]
+	add	x10, x9, #4
+	str	x10, [sp, #8]
 	str	w8, [x9]
-	ldr	x8, [sp, #8]
-	add	x8, x8, #4
-	str	x8, [sp, #8]
 	b	LBB0_2
 LBB0_4:                                 ;   in Loop: Header=BB0_1 Depth=1
 	ldr	x8, [sp, #24]
