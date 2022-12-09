@@ -40,14 +40,15 @@ void _loop_rowise() {
 
 	do{
 		while(rowptr < colptr){
-			*(rowptr++) = 1;
-			*(rowptr++) = 1;
-			*(rowptr++) = 1;
-			*(rowptr++) = 1;
-			*(rowptr++) = 1;
-			*(rowptr++) = 1;
-			*(rowptr++) = 1;
-			*(rowptr++) = 1;
+			*rowptr = 1;
+			*(rowptr+1) = 1;
+			*(rowptr+2) = 1;
+			*(rowptr+3) = 1;
+			*(rowptr+4) = 1;
+			*(rowptr+5) = 1;
+			*(rowptr+6) = 1;
+			*(rowptr+7) = 1;
+			rowptr+=8;
 		}
 		colptr = rowptr + NCOLS;
 	}while(rowptr != endptr);

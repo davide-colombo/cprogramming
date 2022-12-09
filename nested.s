@@ -27,39 +27,26 @@ LBB0_2:                                 ;   Parent Loop BB0_1 Depth=1
 	b	LBB0_3
 LBB0_3:                                 ;   in Loop: Header=BB0_2 Depth=2
 	ldr	x9, [sp, #24]
-	add	x8, x9, #4
-	str	x8, [sp, #24]
 	mov	w8, #1
 	str	w8, [sp, #4]                    ; 4-byte Folded Spill
 	str	w8, [x9]
 	ldr	x9, [sp, #24]
-	add	x10, x9, #4
-	str	x10, [sp, #24]
-	str	w8, [x9]
+	str	w8, [x9, #4]
 	ldr	x9, [sp, #24]
-	add	x10, x9, #4
-	str	x10, [sp, #24]
-	str	w8, [x9]
+	str	w8, [x9, #8]
 	ldr	x9, [sp, #24]
-	add	x10, x9, #4
-	str	x10, [sp, #24]
-	str	w8, [x9]
+	str	w8, [x9, #12]
 	ldr	x9, [sp, #24]
-	add	x10, x9, #4
-	str	x10, [sp, #24]
-	str	w8, [x9]
+	str	w8, [x9, #16]
 	ldr	x9, [sp, #24]
-	add	x10, x9, #4
-	str	x10, [sp, #24]
-	str	w8, [x9]
+	str	w8, [x9, #20]
 	ldr	x9, [sp, #24]
-	add	x10, x9, #4
-	str	x10, [sp, #24]
-	str	w8, [x9]
+	str	w8, [x9, #24]
 	ldr	x9, [sp, #24]
-	add	x10, x9, #4
-	str	x10, [sp, #24]
-	str	w8, [x9]
+	str	w8, [x9, #28]
+	ldr	x8, [sp, #24]
+	add	x8, x8, #32
+	str	x8, [sp, #24]
 	b	LBB0_2
 LBB0_4:                                 ;   in Loop: Header=BB0_1 Depth=1
 	ldr	x8, [sp, #24]
