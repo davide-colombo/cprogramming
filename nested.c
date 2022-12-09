@@ -7,6 +7,13 @@
 #define NROWS 100
 #define NCOLS 100
 
+#define CACHE_LINE_SIZE 128
+/*
+ * The division does not need to be converted because the size of an integer 
+ * is a multiple of 2.
+ */
+#define SM ( CACHE_LINE_SIZE / sizeof(int) )
+
 int ia[NROWS][NCOLS];
 
 /*
@@ -28,16 +35,27 @@ void _loop_rowise() {
 	int *ptr = &ia[0][0];						// 8 bytes
 	int *last_row = &ia[NROWS-1][0];			// 8 bytes
 	int j;										// 4 bytes
+	int j2;										// 4 bytes
 
 	/*
-	 * TODO: see the effect of extracting the INCREMENT of `ptr` from the 
-	 * condition.
+	 * Moving pointer increment OUT FROM THE CONDITION avoids to execute 1 
+	 * `mov` instruction.
 	 */
 	do{
-		for(j = 0; j < NCOLS; j++) {
-			*(ptr+j) = 1;
+		for(j = 0; j < NCOLS; j += SM) {
+			
+			/*
+			 * Since the program assigns ALWAYS 1 to every value, it may be 
+			 * possible to rewritten the assignment in terms of the previous 
+			 * value OR EVEN BETTER TO BULK ASSIGN ALL THE ITEMS THAT FITS A 
+			 * CACHE LINE WITH A SINGLE STATEMENT
+			 * */
+			for(j2 = 0; j2 < SM; ++j2) {
+				ptr[j2] = 1;
+			}
 		}
-	}while( (ptr+=NROWS) <= last_row );
+		ptr+=NROWS;
+	}while( ptr <= last_row );
 }
 
 void _loop_colwise() {
