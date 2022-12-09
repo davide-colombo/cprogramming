@@ -1,4 +1,6 @@
 
+#include <stdio.h>
+
 /*
  * Nested for loop optimization
  */
@@ -18,33 +20,24 @@ int ia[NROWS][NCOLS];
  */
 
 void _loop_rowise() {
-	int i, j;
-
 	/*
 	 * This avoids to make two `mult` instructions inside the body of the loop 
 	 * to retrieve the correct memory page and offset to the memory address of 
 	 * the `ia` global array.
 	 */
-	int *ptr = &ia[0][0];
+	int *ptr = &ia[0][0];						// 8 bytes
+	int *last_row = &ia[NROWS-1][0];			// 8 bytes
+	int j;										// 4 bytes
 
 	/*
-	 * `i` loaded into `w8` register.
-	 * make the comparison with #100 (subs IMMEDIATE)
-	 * jump to the beginning of the second loop
+	 * TODO: see the effect of extracting the INCREMENT of `ptr` from the 
+	 * condition.
 	 */
-	for(i = 0; i < NROWS; i++) {
-		/*
-		 * `j` is loaded into `w8` register.
-		 *
-		 * THIS OVERRIDES THE PREVIOUS VALUE OF `i`.
-		 *
-		 * IT MEANS THAT `i` must be reloaded into a register before accessing 
-		 * the array.
-		 */
+	do{
 		for(j = 0; j < NCOLS; j++) {
-			*(ptr+i+j) = 1;
+			*(ptr+j) = 1;
 		}
-	}
+	}while( (ptr+=NROWS) <= last_row );
 }
 
 void _loop_colwise() {
@@ -54,4 +47,21 @@ void _loop_colwise() {
 			ia[j][i] = 1;
 		}
 	}
+}
+
+
+
+int main(int argc, char **argv) {
+	_loop_rowise();
+
+	/*
+	int *ptr = &ia[0][0];
+	for(int i = 0; i < NROWS; i++) {
+		printf("ia[%d][...] = ", i);
+		for(int j = 0; j < NCOLS; j++) {
+			printf("%d ", *(ptr+i+j));
+		}
+		printf("\n");
+	}*/
+	return 0;
 }
