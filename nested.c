@@ -18,16 +18,18 @@ int ia[NROWS][NCOLS];
  */
 
 void _loop_rowise() {
-	for(int i = 0; i < NROWS; i++) {
-		for(int j = 0; j < NCOLS; j++) {
+	int i, j;
+	for(i = 0; i < NROWS; i++) {
+		for(j = 0; j < NCOLS; j++) {
 			ia[i][j] = 1;
 		}
 	}
 }
 
 void _loop_colwise() {
-	for(int j = 0; j < NCOLS; j++) {
-		for(int i = 0; i < NROWS; i++) {
+	int i, j;
+	for(j = 0; j < NCOLS; j++) {
+		for(i = 0; i < NROWS; i++) {
 			ia[j][i] = 1;
 		}
 	}
