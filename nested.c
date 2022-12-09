@@ -33,29 +33,45 @@ void _loop_rowise() {
 	 * the `ia` global array.
 	 */
 	int *ptr = &ia[0][0];						// 8 bytes
-	int *last_row = &ia[NROWS-1][0];			// 8 bytes
-	int j;										// 4 bytes
-	int val = 1;								// 4 bytes
+	int *last_row = &ia[NROWS][0];				// 8 bytes
+	int *col;									// 8 bytes
+	int *end;									// 8 bytes
 
 	/*
 	 * Moving pointer increment OUT FROM THE CONDITION avoids to execute 1 
 	 * `mov` instruction.
 	 */
 	do{
-		for(j = 0; j < NCOLS; j += SM) {
+		col = &ptr[0];
+		end = col+NCOLS;
+		while(col < end) {
 			/*
-			 * Since the program assigns ALWAYS 1 to every value, it may be 
-			 * possible to rewritten the assignment in terms of the previous 
-			 * value OR EVEN BETTER TO BULK ASSIGN ALL THE ITEMS THAT FITS A 
-			 * CACHE LINE WITH A SINGLE STATEMENT
-			 * */
-			ptr[j] = val;
-			ptr[j+1] = val;
-			ptr[j+2] = val;
-			ptr[j+3] = val;
+			 * The pair of instructions is translated into 6 instructions.
+			 *
+			 * Every pair is repeated 4 times, so the content of the inner 
+			 * loop is translated into 24 instructions.
+			 *
+			 * First, load the value of `col` in the register `x9`.
+			 * Second, mov #1 to w8.
+			 * Third, store [x9]
+			 *
+			 * Then, to update the value of `col` it is used:
+			 *
+			 * First, load memory address of col into x9.
+			 * Second, add.
+			 * Third, store.
+			 */
+			*col = 1;
+			col++;
+			*col = 1;
+			col++;
+			*col = 1;
+			col++;
+			*col = 1;
+			col++;
 		}
 		ptr+=NROWS;
-	}while( ptr <= last_row );
+	}while( ptr < last_row );
 }
 
 void _loop_colwise() {
