@@ -19,9 +19,30 @@ int ia[NROWS][NCOLS];
 
 void _loop_rowise() {
 	int i, j;
+
+	/*
+	 * This avoids to make two `mult` instructions inside the body of the loop 
+	 * to retrieve the correct memory page and offset to the memory address of 
+	 * the `ia` global array.
+	 */
+	int *ptr = &ia[0][0];
+
+	/*
+	 * `i` loaded into `w8` register.
+	 * make the comparison with #100 (subs IMMEDIATE)
+	 * jump to the beginning of the second loop
+	 */
 	for(i = 0; i < NROWS; i++) {
+		/*
+		 * `j` is loaded into `w8` register.
+		 *
+		 * THIS OVERRIDES THE PREVIOUS VALUE OF `i`.
+		 *
+		 * IT MEANS THAT `i` must be reloaded into a register before accessing 
+		 * the array.
+		 */
 		for(j = 0; j < NCOLS; j++) {
-			ia[i][j] = 1;
+			*(ptr+i+j) = 1;
 		}
 	}
 }
