@@ -64,18 +64,13 @@ LBB0_3:                                 ;   Parent Loop BB0_1 Depth=1
 	b.ge	LBB0_10
 	b	LBB0_4
 LBB0_4:                                 ;   in Loop: Header=BB0_3 Depth=2
-	str	wzr, [sp, #40]
 	ldr	w8, [sp, #36]
 	str	w8, [sp, #32]
+	str	wzr, [sp, #40]
 	b	LBB0_5
 LBB0_5:                                 ;   Parent Loop BB0_1 Depth=1
                                         ;     Parent Loop BB0_3 Depth=2
                                         ; =>    This Inner Loop Header: Depth=3
-	ldr	w8, [sp, #40]
-	subs	w8, w8, #4
-	b.ge	LBB0_8
-	b	LBB0_6
-LBB0_6:                                 ;   in Loop: Header=BB0_5 Depth=3
 	ldr	x9, [sp, #72]
 	ldrsw	x10, [sp, #32]
 	mov	w8, #1
@@ -89,14 +84,18 @@ LBB0_6:                                 ;   in Loop: Header=BB0_5 Depth=3
 	ldr	x9, [sp, #48]
 	ldrsw	x10, [sp, #32]
 	str	w8, [x9, x10, lsl #2]
-	b	LBB0_7
+	ldr	w8, [sp, #40]
+	add	w8, w8, #1
+	str	w8, [sp, #40]
+	eor	w8, w8, #0x4
+	cbnz	w8, LBB0_7
+	b	LBB0_6
+LBB0_6:                                 ;   in Loop: Header=BB0_3 Depth=2
+	b	LBB0_8
 LBB0_7:                                 ;   in Loop: Header=BB0_5 Depth=3
 	ldr	w8, [sp, #32]
 	add	w8, w8, #1
 	str	w8, [sp, #32]
-	ldr	w8, [sp, #40]
-	add	w8, w8, #1
-	str	w8, [sp, #40]
 	b	LBB0_5
 LBB0_8:                                 ;   in Loop: Header=BB0_3 Depth=2
 	b	LBB0_9

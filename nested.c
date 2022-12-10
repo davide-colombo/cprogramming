@@ -107,11 +107,18 @@ void _loop_rowise_optim() {
 			/*
 			 * Loop performs k = 4 iterations
 			 */
-			for(_col2 = 0, col2 = col; _col2 < 4 ; ++col2, ++_col2) {
+			col2 = col;
+			_col2 = 0;
+			while(1) {
+			//for(_col2 = 0, col2 = col; _col2 < 4 ; ++col2, ++_col2) {
 				col0ptr[col2] = 1;
 				col1ptr[col2] = 1;
 				col2ptr[col2] = 1;
 				col3ptr[col2] = 1;
+				if( ((++_col2)^4) == 0 ){
+					break;
+				}
+				++col2;
 			} // col2
 		} // col, unrolled iterations
 	
