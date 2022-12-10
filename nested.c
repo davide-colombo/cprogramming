@@ -55,14 +55,14 @@ void _loop_rowise_optim() {
 	/*
 	 * Unrolling the loop with factor k = 4
 	 */
-	int row, _col2;
-	int col, col2;
+	int row;
+	int itercol, col;
 
 	/*
 	 * Efficiently compute the division by k = 4 + s = 4 by shifting right N 
 	 * by log2(k+s) = 4 positions.
 	 */
-	int unrolled_iterations = NCOLS >> 4;
+	int unrolled_iterations = (NCOLS >> 4) - 1;
 
 	/*
 	 * Since k = 4 is a Marsenne number it's possible to compute the remainder 
@@ -71,31 +71,7 @@ void _loop_rowise_optim() {
 	int residual_iterations = NCOLS & 15;
 
 	/*
-	 * Explanation:
-	 *
-	 * a - (a&b)
-	 *
-	 * Suppose c = a&b
-	 *
-	 * `a - b` can be written using the XOR operator.
-	 *
-	 * a - b = ~(a^b) + 1
-	 *
-	 * The difference between a and b is equal to the TWO'S COMPLEMENT of a 
-	 * and b.
-	 *
-	 * In this particular case:
-	 * 		a - (a&b)
-	 * is equal to:
-	 * 		a & (~b)
-	 *
-	 */
-	int residual_start = NCOLS - residual_iterations;
-
-	/*
 	 * Cycle on the rows
-	 *
-	 * TODO: change unrolled iterations
 	 */
 	for(row = 0; row < NROWS; ++row){
 		/*
@@ -103,45 +79,40 @@ void _loop_rowise_optim() {
 		 * another, so the total coverage in one pass is k = 4 times s = 4 where s 
 		 * is equal to the shift of the 4 variables.
 		 */
-		for(col = 0; col < NCOLS; col+=16){
+		//for(col = 0; col < NCOLS; col+=16)
+		/*
+		 * col = N / 16
+		 */
+		itercol = unrolled_iterations;
+		col = 0;
+		do{
 			/*
 			 * Loop performs k = 4 iterations
 			 */
-			col2 = col;
-			_col2 = 0;
-			while(1) {
-				col0ptr[col2] = 1;
-				col1ptr[col2] = 1;
-				col2ptr[col2] = 1;
-				/*
-				 * NOTE: writing `col3ptr[col2++]` causes a slowdown!
-				 * Reduces the out of order execution of the processor!
-				 */
-				col3ptr[col2] = 1;
-				if( ((++_col2)^4) == 0 ){
-					break;
-				}
-				++col2;
-			} // col2
-		} // col, unrolled iterations
-	
+			do{
+				col0ptr[col] = 1;
+				col1ptr[col] = 1;
+				col2ptr[col] = 1;
+				col3ptr[col] = 1;
+				col+=1;
+			}while( !(col & 3) );// col2
+			col+=16;
+			itercol-=1;
+		}while(itercol); // col, unrolled iterations
+
 		/*
 		 * Residual iterations on a single matrix line
 		 */
-		col2 = residual_start;
-		_col2 = residual_iterations;
-		while(_col2){
-		//for(col = residual_start; col < NCOLS; ++col){
-			col0ptr[col2] = 1;
-			col1ptr[col2] = 1;
-			col2ptr[col2] = 1;
-			col3ptr[col2] = 1;
-			if( --_col2 == 0 ){
-				break;
-			}
-			++col2;
-		} // col, residual iterations
-
+		if( (itercol = residual_iterations) ){
+			do{
+				col0ptr[col] = 1;
+				col1ptr[col] = 1;
+				col2ptr[col] = 1;
+				col3ptr[col] = 1;
+				col+=1;
+				itercol-=1;
+			}while(itercol); // col, residual iterations
+		}
 		/*
 		 * Move the 4 pointers down a row completely.
 		 */
@@ -152,9 +123,6 @@ void _loop_rowise_optim() {
 	} // row, unrolled iterations
 
 }
-
-
-
 
 
 void _loop_colwise() {
