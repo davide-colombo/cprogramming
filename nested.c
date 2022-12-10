@@ -108,10 +108,10 @@ void _loop_rowise_optim() {
 			 * Loop performs k = 4 iterations
 			 */
 			for(_col2 = 0, col2 = col; _col2 < 4 ; ++col2, ++_col2) {
-				*(col0ptr+col2) = 1;
-				*(col1ptr+col2) = 1;
-				*(col2ptr+col2) = 1;
-				*(col3ptr+col2) = 1;
+				col0ptr[col2] = 1;
+				col1ptr[col2] = 1;
+				col2ptr[col2] = 1;
+				col3ptr[col2] = 1;
 			} // col2
 		} // col, unrolled iterations
 	
@@ -119,10 +119,10 @@ void _loop_rowise_optim() {
 		 * Residual iterations on a single matrix line
 		 */
 		for(col = residual_start; col < NCOLS; ++col){
-			*(col0ptr+col) = 1;
-			*(col1ptr+col) = 1;
-			*(col2ptr+col) = 1;
-			*(col3ptr+col) = 1;
+			col0ptr[col] = 1;
+			col1ptr[col] = 1;
+			col2ptr[col] = 1;
+			col3ptr[col] = 1;
 		} // col, residual iterations
 
 		/*
