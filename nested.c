@@ -110,10 +110,13 @@ void _loop_rowise_optim() {
 			col2 = col;
 			_col2 = 0;
 			while(1) {
-			//for(_col2 = 0, col2 = col; _col2 < 4 ; ++col2, ++_col2) {
 				col0ptr[col2] = 1;
 				col1ptr[col2] = 1;
 				col2ptr[col2] = 1;
+				/*
+				 * NOTE: writing `col3ptr[col2++]` causes a slowdown!
+				 * Reduces the out of order execution of the processor!
+				 */
 				col3ptr[col2] = 1;
 				if( ((++_col2)^4) == 0 ){
 					break;
@@ -125,11 +128,18 @@ void _loop_rowise_optim() {
 		/*
 		 * Residual iterations on a single matrix line
 		 */
-		for(col = residual_start; col < NCOLS; ++col){
-			col0ptr[col] = 1;
-			col1ptr[col] = 1;
-			col2ptr[col] = 1;
-			col3ptr[col] = 1;
+		col2 = residual_start;
+		_col2 = residual_iterations;
+		while(_col2){
+		//for(col = residual_start; col < NCOLS; ++col){
+			col0ptr[col2] = 1;
+			col1ptr[col2] = 1;
+			col2ptr[col2] = 1;
+			col3ptr[col2] = 1;
+			if( --_col2 == 0 ){
+				break;
+			}
+			++col2;
 		} // col, residual iterations
 
 		/*
