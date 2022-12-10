@@ -27,6 +27,17 @@ int ia[NROWS][NCOLS];
  * 5 - try to increased parallelism with software pipelining.
  */
 
+/*
+ * Pass `ia` as argument instead of addressing it inside here.
+ *
+ * If the array if very large, it requires to load multiple memory pages and 
+ * this may slow down the performance of the function.
+ *
+ * TODO: divide the matrix in chunks that fits a memory page.
+ *
+ * It may be even better to use multiple threads that can process data in 
+ * parallel or vector instructions.
+ */
 void _loop_rowise_optim() {
 	/*
 	 * Initialize in bulk here to reduce the amount of times the memory 
@@ -44,7 +55,7 @@ void _loop_rowise_optim() {
 	/*
 	 * Unrolling the loop with factor k = 4
 	 */
-	int row;
+	int row, _col2;
 	int col, col2;
 
 	/*
@@ -96,7 +107,7 @@ void _loop_rowise_optim() {
 			/*
 			 * Loop performs k = 4 iterations
 			 */
-			for(col2 = col; (col2 - col) < 4 ; ++col2) {
+			for(_col2 = 0, col2 = col; _col2 < 4 ; ++col2, ++_col2) {
 				*(col0ptr+col2) = 1;
 				*(col1ptr+col2) = 1;
 				*(col2ptr+col2) = 1;
