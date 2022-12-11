@@ -9,6 +9,7 @@
 #define NCOLS 10000
 
 #define CACHE_LINE_SIZE 128
+
 /*
  * The division does not need to be converted because the size of an integer 
  * is a multiple of 2.
@@ -43,85 +44,128 @@ void _loop_rowise_optim() {
 	 * Initialize in bulk here to reduce the amount of times the memory 
 	 * address of the `ia` variable needs to be loaded.
 	 */
-	int *row0ptr = &ia[0][0];				// 8 bytes
-	int *row1ptr = &ia[4][0];				// 8 bytes
-	int *row2ptr = &ia[8][0];				// 8 bytes
-	int *row3ptr = &ia[12][0];				// 8 bytes
-	int *col0ptr = &ia[0][0];				// 8 bytes
-	int *col1ptr = &ia[0][4];				// 8 bytes
-	int *col2ptr = &ia[0][8];				// 8 bytes
-	int *col3ptr = &ia[0][12];				// 8 bytes
-
-	/*
-	 * Unrolling the loop with factor k = 4
-	 */
-	int row;
-	int itercol, col;
+	int *n0_0i = &ia[0][0];				// 1st row, 1st col
+	int *n0_4f = &ia[0][4];				// 1st row, 4th col
+	int *n0_8i = &ia[0][8];				// 1st row, 8th col
+	int *n0_12f = &ia[0][12];			// 1st row, 12th col
+	int *n4_0i = &ia[4][0];				// 4th row, 1st col
+	int *n4_4f = &ia[4][4];				// 4th row, 4st col
+	int *n4_8i = &ia[4][8];				// 4th row, 8st col
+	int *n4_12f = &ia[4][12];			// 4th row, 12st col
 
 	/*
 	 * Efficiently compute the division by k = 4 + s = 4 by shifting right N 
 	 * by log2(k+s) = 4 positions.
 	 */
-	int unrolled_iterations = (NCOLS >> 4) - 1;
+	int unrolled_iterations = (NCOLS >> 4);
 
 	/*
 	 * Since k = 4 is a Marsenne number it's possible to compute the remainder 
 	 * of the division by 4 by computing: N & (4-1).
 	 */
-	int residual_iterations = NCOLS & 15;
+	int residual_iterations = (NCOLS & 15);
 
 	/*
-	 * Cycle on the rows
+	 * Implementing the same technique on the rows.
+	 *
+	 * Multiply by k = 2 * s = 2
+	 *
+	 * k = 2 because 2 rows at a time are filled in PARALLEL
+	 * s = 2 because at every iteration the rows are shifted towards by 2
 	 */
-	for(row = 0; row < NROWS; ++row){
-		/*
-		 * Increase by 16 because the variables are shifted by 4 items one 
-		 * another, so the total coverage in one pass is k = 4 times s = 4 where s 
-		 * is equal to the shift of the 4 variables.
-		 */
-		//for(col = 0; col < NCOLS; col+=16)
-		/*
-		 * col = N / 16
-		 */
-		itercol = unrolled_iterations;
-		col = 0;
+	int unrolled_rowiter = (NROWS >> 3);
+	int residual_rowiter = (NROWS & 7);
+
+	/*
+	 * Local variable in which is accumulated the offset to the next items in 
+	 * the matrix at every iteration.
+	 */
+	int acc = 0;
+
+	/*
+	 * Counter that keeps track of the number of iterations on the rows
+	 */
+	int row = 0;
+	do{
 		do{
+// ========================== COLUMNS =======================================
+			int itercol = unrolled_iterations;
+			do{
+				/*
+				 * Shift columns by the shift factor s = 4
+				 */
+				do{
+					/*
+					 * 0th row in the matrix
+					 * Exploit both cache locality, out-of-order execution, 
+					 * pipelining and different execution units (int + float).
+					 */
+					*(n0_0i+acc) = 1;
+					*(n0_4f+acc) = 1;
+					*(n0_8i+acc) = 1;
+					*(n0_12f+acc) = 1;
+
+					/*
+					 * 4th row in the matrix
+					 */
+					*(n4_0i+acc) = 1;
+					*(n4_4f+acc) = 1;
+					*(n4_8i+acc) = 1;
+					*(n4_12f+acc) = 1;
+
+					/*
+					 * Move by 1 item to the right on the row
+					 */
+					acc += 1;
+				}while( (acc & 3) != 0 );
+				acc += 12;
+				itercol -= 1;
+			}while(itercol); // col, unrolled iterations
+
 			/*
-			 * Loop performs k = 4 iterations
+			 * Residual iterations on a single matrix line
 			 */
-			do{
-				col0ptr[col] = 1;
-				col1ptr[col] = 1;
-				col2ptr[col] = 1;
-				col3ptr[col] = 1;
-				col+=1;
-			}while( !(col & 3) );// col2
-			col+=16;
-			itercol-=1;
-		}while(itercol); // col, unrolled iterations
+			if( (itercol = residual_iterations) ){
+				do{
+					/*
+					 * 0th row in the matrix
+					 */
+					*(n0_0i+acc) = 1;
+					*(n0_4f+acc) = 1;
+					*(n0_8i+acc) = 1;
+					*(n0_12f+acc) = 1;
+
+					/*
+					 * 4th row in the matrix
+					 */
+					*(n4_0i+acc) = 1;
+					*(n4_4f+acc) = 1;
+					*(n4_8i+acc) = 1;
+					*(n4_12f+acc) = 1;
+					acc += 1;
+					itercol -= 1;
+				}while(itercol); // col, residual iterations
+			} // if, itercol
+// ========================== END COLUMNS ===================================
+
+			/*
+			 * Move down 1 row
+			 */
+			row += 1;
+			//acc += NCOLS;
+		}while( (row & 3) != 0 ); // check if row is a multiple of 2
 
 		/*
-		 * Residual iterations on a single matrix line
+		 * Move down 2 rows
 		 */
-		if( (itercol = residual_iterations) ){
-			do{
-				col0ptr[col] = 1;
-				col1ptr[col] = 1;
-				col2ptr[col] = 1;
-				col3ptr[col] = 1;
-				col+=1;
-				itercol-=1;
-			}while(itercol); // col, residual iterations
-		}
-		/*
-		 * Move the 4 pointers down a row completely.
-		 */
-		col0ptr+=NROWS;
-		col1ptr+=NROWS;
-		col2ptr+=NROWS;
-		col3ptr+=NROWS;
-	} // row, unrolled iterations
+		row += 4;
+		acc += ( NCOLS << 2 );
+		unrolled_rowiter -= 1;
+	}while(unrolled_rowiter); // row, unrolled iterations
 
+	/*
+	 * TODO: residual iterations on the rows!!
+	 */
 }
 
 
