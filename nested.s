@@ -48,25 +48,16 @@ LBB0_4:                                 ;   Parent Loop BB0_1 Depth=1
                                         ;       Parent Loop BB0_3 Depth=3
                                         ; =>      This Inner Loop Header: Depth=4
 	ldr	x9, [sp, #48]
-	ldrsw	x10, [sp, #24]
+	ldrsw	x10, [sp, #12]
 	mov	w8, #1
 	str	w8, [sp, #8]                    ; 4-byte Folded Spill
 	str	w8, [x9, x10, lsl #2]
 	ldr	x9, [sp, #40]
-	ldrsw	x10, [sp, #24]
+	ldrsw	x10, [sp, #12]
 	str	w8, [x9, x10, lsl #2]
-	ldr	w9, [sp, #24]
+	ldr	w9, [sp, #12]
 	add	w9, w9, #1
-	str	w9, [sp, #24]
-	ldr	x9, [sp, #48]
-	ldrsw	x10, [sp, #20]
-	str	w8, [x9, x10, lsl #2]
-	ldr	x9, [sp, #40]
-	ldrsw	x10, [sp, #20]
-	str	w8, [x9, x10, lsl #2]
-	ldr	w9, [sp, #20]
-	add	w9, w9, #1
-	str	w9, [sp, #20]
+	str	w9, [sp, #12]
 	ldr	x9, [sp, #48]
 	ldrsw	x10, [sp, #16]
 	str	w8, [x9, x10, lsl #2]
@@ -77,14 +68,23 @@ LBB0_4:                                 ;   Parent Loop BB0_1 Depth=1
 	add	w9, w9, #1
 	str	w9, [sp, #16]
 	ldr	x9, [sp, #48]
-	ldrsw	x10, [sp, #12]
+	ldrsw	x10, [sp, #20]
 	str	w8, [x9, x10, lsl #2]
 	ldr	x9, [sp, #40]
-	ldrsw	x10, [sp, #12]
+	ldrsw	x10, [sp, #20]
 	str	w8, [x9, x10, lsl #2]
-	ldr	w8, [sp, #12]
+	ldr	w9, [sp, #20]
+	add	w9, w9, #1
+	str	w9, [sp, #20]
+	ldr	x9, [sp, #48]
+	ldrsw	x10, [sp, #24]
+	str	w8, [x9, x10, lsl #2]
+	ldr	x9, [sp, #40]
+	ldrsw	x10, [sp, #24]
+	str	w8, [x9, x10, lsl #2]
+	ldr	w8, [sp, #24]
 	add	w8, w8, #1
-	str	w8, [sp, #12]
+	str	w8, [sp, #24]
 	b	LBB0_5
 LBB0_5:                                 ;   in Loop: Header=BB0_4 Depth=4
 	ldr	w8, [sp, #24]
