@@ -119,10 +119,11 @@ LBB0_7:                                 ;   in Loop: Header=BB0_3 Depth=3
 	b	LBB0_8
 LBB0_8:                                 ;   in Loop: Header=BB0_2 Depth=2
 	ldr	w8, [sp, #40]
-	str	w8, [sp, #20]
 	cbz	w8, LBB0_13
 	b	LBB0_9
 LBB0_9:                                 ;   in Loop: Header=BB0_2 Depth=2
+	ldr	w8, [sp, #40]
+	str	w8, [sp, #20]
 	b	LBB0_10
 LBB0_10:                                ;   Parent Loop BB0_1 Depth=1
                                         ;     Parent Loop BB0_2 Depth=2

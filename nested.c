@@ -126,7 +126,8 @@ void _loop_rowise_optim() {
 			/*
 			 * Residual iterations on a single matrix line
 			 */
-			if( (itercol = residual_iterations) ){
+			if(residual_iterations){
+				itercol = residual_iterations;
 				do{
 					/*
 					 * 0th row in the matrix
