@@ -44,13 +44,13 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 	 * Efficiently compute the division by k = 4 + s = 4 by shifting right N 
 	 * by log2(k+s) = 4 positions.
 	 */
-	int unrolled_iterations = (NCOLS >> 4);
+	int unrolled_iterations = (NCOLS >> 2);
 
 	/*
 	 * Since k = 4 is a Marsenne number it's possible to compute the remainder 
 	 * of the division by 4 by computing: N & (4-1).
 	 */
-	int residual_iterations = (NCOLS & 15);
+	int residual_iterations = (NCOLS & 3);
 
 	/*
 	 * Implementing the same technique on the rows.
@@ -60,8 +60,8 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 	 * k = 2 because 2 rows at a time are filled in PARALLEL
 	 * s = 2 because at every iteration the rows are shifted towards by 2
 	 */
-	int unrolled_rowiter = (NROWS >> 3);
-	int residual_rowiter = (NROWS & 7);
+	int unrolled_rowiter = (NROWS >> 2);
+	int residual_rowiter = (NROWS & 3);
 
 	/*
 	 * Counter that keeps track of the number of iterations on the rows
@@ -71,69 +71,46 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 		do{
 // ========================== COLUMNS =======================================
 			int *n0_0i = &ia32[row][0];				// 1st row, 1st col
-			int *n0_4f = &ia32[row][4];				// 1st row, 4th col
-			int *n0_8i = &ia32[row][8];				// 1st row, 8th col
-			int *n0_12f = &ia32[row][12];			// 1st row, 12th col
-			int *n4_0i = &ia32[row][0];				// 4th row, 1st col
-			int *n4_4f = &ia32[row][4];				// 4th row, 4st col
-			int *n4_8i = &ia32[row][8];				// 4th row, 8st col
-			int *n4_12f = &ia32[row][12];			// 4th row, 12st col
+			int *n0_4f = &ia32[row][2];				// 1st row, 4th col
+
+			int *n4_0i = &ia32[row+2][0];				// 4th row, 1st col
+			int *n4_4f = &ia32[row+2][2];				// 4th row, 4st col
 
 			int itercol = unrolled_iterations;
+			/*
+			 * USING LOCAL VARIABLE AVOIDS FALSE SHARING
+			 *
+			 * To fully take advantage of parallelism without the overhead of 
+			 * keep up-to-date the same data on multiple cache line in 
+			 * different caches owned by different cores it's better to use a 
+			 * local variable.
+			 *
+			 * Local variables are stored on the stack;
+			 * Each thread has it's own stack frame.
+			 * This allows one thread to work independently from the others.
+			 */
 			int col = 0;
 			do{
-				/*
-				 * Shift columns by the shift factor s = 4
-				 */
 				do{
-					/*
-					 * 0th row in the matrix
-					 * Exploit both cache locality, out-of-order execution, 
-					 * pipelining and different execution units (int + float).
-					 */
 					n0_0i[col] = 1;
 					n0_4f[col] = 1;
-					n0_8i[col] = 1;
-					n0_12f[col] = 1;
 
-					/*
-					 * 4th row in the matrix
-					 */
 					n4_0i[col] = 1;
 					n4_4f[col] = 1;
-					n4_8i[col] = 1;
-					n4_12f[col] = 1;
-
-					/*
-					 * Move by 1 item to the right on the row
-					 */
 					col += 1;
-				}while( (col & 3) != 0 );
-				col += 12;
+				}while( (col & 1) != 0 );
+				col += 2;
 				itercol -= 1;
 			}while(itercol); // col, unrolled iterations
 
-			/*
-			 * Residual iterations on a single matrix line
-			 */
 			if(residual_iterations){
 				itercol = residual_iterations;
 				do{
-					/*
-					 * 0th row in the matrix
-					 */
 					n0_0i[col] = 1;
 					n0_4f[col] = 1;
-					n0_8i[col] = 1;
-					n0_12f[col] = 1;
 
-					/*
-					 * 4th row in the matrix
-					 */
 					n4_0i[col] = 1;
 					n4_4f[col] = 1;
-					n4_8i[col] = 1;
-					n4_12f[col] = 1;
 					col += 1;
 					itercol -= 1;
 				}while(itercol); // col, residual iterations
@@ -144,12 +121,12 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 			 * Move down 1 row
 			 */
 			row += 1;
-		}while( (row & 3) != 0 ); // check if row is a multiple of s = 4
+		}while( (row & 1) != 0 ); // check if row is a multiple of s = 4
 
 		/*
 		 * Move down 4 rows
 		 */
-		row += 4;
+		row += 2;
 		unrolled_rowiter -= 1;
 	}while(unrolled_rowiter); // row, unrolled iterations
 
