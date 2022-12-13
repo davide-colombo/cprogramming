@@ -44,14 +44,14 @@ void _loop_rowise_optim() {
 	 * Initialize in bulk here to reduce the amount of times the memory 
 	 * address of the `ia` variable needs to be loaded.
 	 */
-	int *n0_0i = &ia[0][0];				// 1st row, 1st col
-	int *n0_4f = &ia[0][4];				// 1st row, 4th col
-	int *n0_8i = &ia[0][8];				// 1st row, 8th col
-	int *n0_12f = &ia[0][12];			// 1st row, 12th col
-	int *n4_0i = &ia[4][0];				// 4th row, 1st col
-	int *n4_4f = &ia[4][4];				// 4th row, 4st col
-	int *n4_8i = &ia[4][8];				// 4th row, 8st col
-	int *n4_12f = &ia[4][12];			// 4th row, 12st col
+//	int *n0_0i = &ia[0][0];				// 1st row, 1st col
+//	int *n0_4f = &ia[0][4];				// 1st row, 4th col
+//	int *n0_8i = &ia[0][8];				// 1st row, 8th col
+//	int *n0_12f = &ia[0][12];			// 1st row, 12th col
+//	int *n4_0i = &ia[4][0];				// 4th row, 1st col
+//	int *n4_4f = &ia[4][4];				// 4th row, 4st col
+//	int *n4_8i = &ia[4][8];				// 4th row, 8st col
+//	int *n4_12f = &ia[4][12];			// 4th row, 12st col
 
 	/*
 	 * Efficiently compute the division by k = 4 + s = 4 by shifting right N 
@@ -77,18 +77,21 @@ void _loop_rowise_optim() {
 	int residual_rowiter = (NROWS & 7);
 
 	/*
-	 * Local variable in which is accumulated the offset to the next items in 
-	 * the matrix at every iteration.
-	 */
-	int acc = 0;
-
-	/*
 	 * Counter that keeps track of the number of iterations on the rows
 	 */
 	int row = 0;
 	do{
 		do{
 // ========================== COLUMNS =======================================
+			int *n0_0i = &ia[row][0];				// 1st row, 1st col
+			int *n0_4f = &ia[row][4];				// 1st row, 4th col
+			int *n0_8i = &ia[row][8];				// 1st row, 8th col
+			int *n0_12f = &ia[row][12];			// 1st row, 12th col
+			int *n4_0i = &ia[row][0];				// 4th row, 1st col
+			int *n4_4f = &ia[row][4];				// 4th row, 4st col
+			int *n4_8i = &ia[row][8];				// 4th row, 8st col
+			int *n4_12f = &ia[row][12];			// 4th row, 12st col
+
 			int itercol = unrolled_iterations;
 			int col = 0;
 			do{
@@ -101,18 +104,18 @@ void _loop_rowise_optim() {
 					 * Exploit both cache locality, out-of-order execution, 
 					 * pipelining and different execution units (int + float).
 					 */
-					*(n0_0i+col) = 1;
-					*(n0_4f+col) = 1;
-					*(n0_8i+col) = 1;
-					*(n0_12f+col) = 1;
+					n0_0i[col] = 1;
+					n0_4f[col] = 1;
+					n0_8i[col] = 1;
+					n0_12f[col] = 1;
 
 					/*
 					 * 4th row in the matrix
 					 */
-					*(n4_0i+col) = 1;
-					*(n4_4f+col) = 1;
-					*(n4_8i+col) = 1;
-					*(n4_12f+col) = 1;
+					n4_0i[col] = 1;
+					n4_4f[col] = 1;
+					n4_8i[col] = 1;
+					n4_12f[col] = 1;
 
 					/*
 					 * Move by 1 item to the right on the row
@@ -132,18 +135,18 @@ void _loop_rowise_optim() {
 					/*
 					 * 0th row in the matrix
 					 */
-					*(n0_0i+col) = 1;
-					*(n0_4f+col) = 1;
-					*(n0_8i+col) = 1;
-					*(n0_12f+col) = 1;
+					n0_0i[col] = 1;
+					n0_4f[col] = 1;
+					n0_8i[col] = 1;
+					n0_12f[col] = 1;
 
 					/*
 					 * 4th row in the matrix
 					 */
-					*(n4_0i+col) = 1;
-					*(n4_4f+col) = 1;
-					*(n4_8i+col) = 1;
-					*(n4_12f+col) = 1;
+					n4_0i[col] = 1;
+					n4_4f[col] = 1;
+					n4_8i[col] = 1;
+					n4_12f[col] = 1;
 					col += 1;
 					itercol -= 1;
 				}while(itercol); // col, residual iterations
@@ -154,14 +157,12 @@ void _loop_rowise_optim() {
 			 * Move down 1 row
 			 */
 			row += 1;
-			acc += NCOLS;
-		}while( (row & 3) != 0 ); // check if row is a multiple of 2
+		}while( (row & 3) != 0 ); // check if row is a multiple of s = 4
 
 		/*
-		 * Move down 2 rows
+		 * Move down 4 rows
 		 */
 		row += 4;
-		acc += ( NCOLS << 2 );
 		unrolled_rowiter -= 1;
 	}while(unrolled_rowiter); // row, unrolled iterations
 
