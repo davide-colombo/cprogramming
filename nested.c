@@ -22,19 +22,25 @@ int ia[NROWS][NCOLS];
  * Optimized version
  */
 void _loop_rowise_optim(int (*ia32)[NCOLS]) {
+	/*
+	 * Take the address of the 0th row (shift factor on the columns is 4).
+	 */
+	int *n0_0i = &ia32[0][0];
+	int *n0_4f = &ia32[0][4];
+	int *n0_8i = &ia32[0][8];
+	int *n0_12f = &ia32[0][12];
+	/*
+	 * Take the address of the fourth row (shift factor on the rows is 4).
+	 */
+	int *n4_0i = &ia32[4][0];
+	int *n4_4f = &ia32[4][4];
+	int *n4_8i = &ia32[4][8];
+	int *n4_12f = &ia32[4][12];
+
 	int unrolled_rowiter = (NROWS >> 3);
 	int row = 0;
 	do{ // unrolled rowiter
-		do{
-			int *n0_0i = &ia32[row][0];
-			int *n0_4f = &ia32[row][4];
-			int *n0_8i = &ia32[row][8];
-			int *n0_12f = &ia32[row][12];
-
-			int *n4_0i = &ia32[row+4][0];
-			int *n4_4f = &ia32[row+4][4];
-			int *n4_8i = &ia32[row+4][8];
-			int *n4_12f = &ia32[row+4][12];
+		do{ // shifted rowiter
 
 			int unrolled_coliter = (NCOLS >> 4);
 			int col = 0;
@@ -75,8 +81,27 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 			} // if ncols multiple of 16
 
 			row += 1;
+			n0_0i += NCOLS;
+			n0_4f += NCOLS;
+			n0_8i += NCOLS;
+			n0_12f += NCOLS;
+
+			n4_0i += NCOLS;
+			n4_4f += NCOLS;
+			n4_8i += NCOLS;
+			n4_12f += NCOLS;
 		}while( (row & 3) != 0 );
 		row += 4;
+		n0_0i += (NCOLS << 2);
+		n0_4f += (NCOLS << 2);
+		n0_8i += (NCOLS << 2);
+		n0_12f += (NCOLS << 2);
+
+		n4_0i += (NCOLS << 2);
+		n4_4f += (NCOLS << 2);
+		n4_8i += (NCOLS << 2);
+		n4_12f += (NCOLS << 2);
+
 		unrolled_rowiter -= 1;
 	}while(unrolled_rowiter);
 
@@ -86,11 +111,6 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 	if( (NROWS & 7) != 0 ){
 		int residual_rowiter = (NROWS & 7);
 		do{ // residual_rowiter
-			int *n0_0i = &ia32[row][0];
-			int *n0_4f = &ia32[row][4];
-			int *n0_8i = &ia32[row][8];
-			int *n0_12f = &ia32[row][12];
-
 			int unrolled_coliter = (NCOLS >> 4);
 			int col = 0;
 			do{ // unrolled coliter
@@ -121,6 +141,10 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 				}while(residual_coliter);
 			} // if
 			row += 1;
+			n0_0i += NCOLS;
+			n0_4f += NCOLS;
+			n0_8i += NCOLS;
+			n0_12f += NCOLS;
 			residual_rowiter -= 1;
 		}while(residual_rowiter);
 	}
