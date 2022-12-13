@@ -22,47 +22,37 @@ int ia[NROWS][NCOLS];
  * Optimized version
  */
 void _loop_rowise_optim(int (*ia32)[NCOLS]) {
-	/*
-	 * Take the address of the 0th row (shift factor on the columns is 4).
-	 */
-	int *row0 = &ia32[0][0];
-
-	/*
-	 * Take the address of the fourth row (shift factor on the rows is 4).
-	 */
-	int *row4 = &ia32[4][0];
 
 	int unrolled_rowiter = (NROWS >> 3);
 	int row = 0;
-	do{ // unrolled rowiter
-		do{ // shifted rowiter
+	do{
+		do{
+			int *n0_0i = &ia32[row][0];				// 1st row, 1st col
+			int *n0_4f = &ia32[row][4];				// 1st row, 4th col
+			int *n0_8i = &ia32[row][8];				// 1st row, 8th col
+			int *n0_12f = &ia32[row][12];			// 1st row, 12th col
+			int *n4_0i = &ia32[row+4][0];			// 4th row, 1st col
+			int *n4_4f = &ia32[row+4][4];			// 4th row, 4st col
+			int *n4_8i = &ia32[row+4][8];			// 4th row, 8st col
+			int *n4_12f = &ia32[row+4][12];			// 4th row, 12st col
 
 			int unrolled_coliter = (NCOLS >> 4);
-			int col0 = 0;
-			int col4 = 4;
-			int col8 = 8;
-			int col12 = 12;
+			int col = 0;
 			do{ // unrolled coliter
 				do{ // shifted coliter
-					row0[col0] = 1;
-					row0[col4] = 1;
-					row0[col8] = 1;
-					row0[col12] = 1;
+					n0_0i[col] = 1;
+					n0_4f[col] = 1;
+					n0_8i[col] = 1;
+					n0_12f[col] = 1;
 
-					row4[col0] = 1;
-					row4[col4] = 1;
-					row4[col8] = 1;
-					row4[col12] = 1;
+					n4_0i[col] = 1;
+					n4_4f[col] = 1;
+					n4_8i[col] = 1;
+					n4_12f[col] = 1;
 
-					col0 += 1;
-					col4 += 1;
-					col8 += 1;
-					col12 += 1;
-				}while( (col0 & 3) != 0 );
-				col0 += 12;
-				col4 += 12;
-				col8 += 12;
-				col12 += 12;
+					col += 1;
+				}while( (col & 3) != 0 );
+				col += 12;
 				unrolled_coliter -= 1;
 			}while(unrolled_coliter);
 
@@ -77,20 +67,16 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 					 * variables for accessing the columns other than the one 
 					 * starting at index 0.
 					 */
-					row0[col0] = 1;
-					row4[col0] = 1;
-					col0 += 1;
+					n0_0i[col] = 1;
+					n4_0i[col] = 1;
+					col += 1;
 					residual_coliter -= 1;
 				}while(residual_coliter);
 			} // if ncols multiple of 16
 
 			row += 1;
-			row0 += NCOLS;
-			row4 += NCOLS;
 		}while( (row & 3) != 0 );
 		row += 4;
-		row0 += (NCOLS << 2);
-		row4 += (NCOLS << 2);
 		unrolled_rowiter -= 1;
 	}while(unrolled_rowiter);
 
@@ -101,26 +87,23 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 		int residual_rowiter = (NROWS & 7);
 		do{ // residual_rowiter
 			int unrolled_coliter = (NCOLS >> 4);
-			int col0 = 0;
-			int col4 = 4;
-			int col8 = 8;
-			int col12 = 12;
+
+			int *n0_0i = &ia32[row][0];				// 1st row, 1st col
+			int *n0_4f = &ia32[row][4];				// 1st row, 4th col
+			int *n0_8i = &ia32[row][8];				// 1st row, 8th col
+			int *n0_12f = &ia32[row][12];			// 1st row, 12th col
+
+			int col = 0;
 			do{ // unrolled coliter
 				do{ // shifted coliter
-					row0[col0] = 1;
-					row0[col4] = 1;
-					row0[col8] = 1;
-					row0[col12] = 1;
+					n0_0i[col] = 1;
+					n0_4f[col] = 1;
+					n0_8i[col] = 1;
+					n0_12f[col] = 1;
 
-					col0 += 1;
-					col4 += 1;
-					col8 += 1;
-					col12 += 1;
-				}while( (col0 & 3) != 0 );
-				col0 += 12;
-				col4 += 12;
-				col8 += 12;
-				col12 += 12;
+					col += 1;
+				}while( (col & 3) != 0 );
+				col += 12;
 				unrolled_coliter -= 1;
 			}while(unrolled_coliter);
 
@@ -134,13 +117,12 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 					 * IMPORTANT: only the rows corresponding to the lowest 
 					 * index must be used to access memory in this cycle!
 					 */
-					row0[col0] = 1;
-					col0 += 1;
+					n0_0i[col] = 1;
+					col += 1;
 					residual_coliter -= 1;
 				}while(residual_coliter);
 			} // if
 			row += 1;
-			row0 += NCOLS;
 			residual_rowiter -= 1;
 		}while(residual_rowiter);
 	}
