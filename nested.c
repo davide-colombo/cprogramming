@@ -60,8 +60,8 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 	 * k = 2 because 2 rows at a time are filled in PARALLEL
 	 * s = 2 because at every iteration the rows are shifted towards by 2
 	 */
-	int unrolled_rowiter = (NROWS >> 2);
-	int residual_rowiter = (NROWS & 3);
+	int unrolled_rowiter = (NROWS >> 4);
+	int residual_rowiter = (NROWS & 15);
 
 	/*
 	 * Counter that keeps track of the number of iterations on the rows
@@ -75,10 +75,20 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 			int *n0_8i = &ia32[row][8];				// 1st row, 1st col
 			int *n0_12f = &ia32[row][12];				// 1st row, 4th col
 
-			int *n4_0i = &ia32[row+2][0];				// 4th row, 1st col
-			int *n4_4f = &ia32[row+2][4];				// 4th row, 4st col
-			int *n4_8i = &ia32[row+2][8];				// 1st row, 1st col
-			int *n4_12f = &ia32[row+2][12];				// 1st row, 4th col
+			int *n4_0i = &ia32[row+4][0];				// 4th row, 1st col
+			int *n4_4f = &ia32[row+4][4];				// 4th row, 4st col
+			int *n4_8i = &ia32[row+4][8];				// 1st row, 1st col
+			int *n4_12f = &ia32[row+4][12];				// 1st row, 4th col
+
+			int *n8_0i = &ia32[row+8][0];				// 1st row, 1st col
+			int *n8_4f = &ia32[row+8][4];				// 1st row, 4th col
+			int *n8_8i = &ia32[row+8][8];				// 1st row, 1st col
+			int *n8_12f = &ia32[row+8][12];				// 1st row, 4th col
+
+			int *n12_0i = &ia32[row+12][0];				// 4th row, 1st col
+			int *n12_4f = &ia32[row+12][4];				// 4th row, 4st col
+			int *n12_8i = &ia32[row+12][8];				// 1st row, 1st col
+			int *n12_12f = &ia32[row+12][12];				// 1st row, 4th col
 
 			int itercol = unrolled_iterations;
 			/*
@@ -106,6 +116,15 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 					n4_8i[col] = 1;
 					n4_12f[col] = 1;
 
+					n8_0i[col] = 1;
+					n8_4f[col] = 1;
+					n8_8i[col] = 1;
+					n8_12f[col] = 1;
+
+					n12_0i[col] = 1;
+					n12_4f[col] = 1;
+					n12_8i[col] = 1;
+					n12_12f[col] = 1;
 					col += 1;
 				}while( (col & 3) != 0 );
 				col += 12;
@@ -117,9 +136,23 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 				do{
 					n0_0i[col] = 1;
 					n0_4f[col] = 1;
+					n0_8i[col] = 1;
+					n0_12f[col] = 1;
 
 					n4_0i[col] = 1;
 					n4_4f[col] = 1;
+					n4_8i[col] = 1;
+					n4_12f[col] = 1;
+
+					n8_0i[col] = 1;
+					n8_4f[col] = 1;
+					n8_8i[col] = 1;
+					n8_12f[col] = 1;
+
+					n12_0i[col] = 1;
+					n12_4f[col] = 1;
+					n12_8i[col] = 1;
+					n12_12f[col] = 1;
 					col += 1;
 					itercol -= 1;
 				}while(itercol); // col, residual iterations
@@ -130,12 +163,12 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 			 * Move down 1 row
 			 */
 			row += 1;
-		}while( (row & 1) != 0 ); // check if row is a multiple of s = 4
+		}while( (row & 3) != 0 ); // check if row is a multiple of s = 4
 
 		/*
 		 * Move down 4 rows
 		 */
-		row += 2;
+		row += 12;
 		unrolled_rowiter -= 1;
 	}while(unrolled_rowiter); // row, unrolled iterations
 
@@ -170,6 +203,7 @@ int main(int argc, char **argv) {
 	clock_t start, end;
 	start = clock();
 	_loop_rowise_optim(&ia[0]);
+	//_loop_rowise_baseline();
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
 	printf("Elapsed = %.20lf\n", elapsed);
