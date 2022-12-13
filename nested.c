@@ -28,48 +28,16 @@ int ia[NROWS][NCOLS];
  * 5 - try to increased parallelism with software pipelining.
  */
 
-/*
- * Pass `ia` as argument instead of addressing it inside here.
- *
- * If the array if very large, it requires to load multiple memory pages and 
- * this may slow down the performance of the function.
- *
- * TODO: divide the matrix in chunks that fits a memory page.
- *
- * It may be even better to use multiple threads that can process data in 
- * parallel or vector instructions.
- */
 void _loop_rowise_optim(int (*ia32)[NCOLS]) {
-	/*
-	 * Efficiently compute the division by k = 4 + s = 4 by shifting right N 
-	 * by log2(k+s) = 4 positions.
-	 */
 	int unrolled_iterations = (NCOLS >> 4);
-
-	/*
-	 * Since k = 4 is a Marsenne number it's possible to compute the remainder 
-	 * of the division by 4 by computing: N & (4-1).
-	 */
 	int residual_iterations = (NCOLS & 15);
 
-	/*
-	 * Implementing the same technique on the rows.
-	 *
-	 * Multiply by k = 2 * s = 2
-	 *
-	 * k = 2 because 2 rows at a time are filled in PARALLEL
-	 * s = 2 because at every iteration the rows are shifted towards by 2
-	 */
-	int unrolled_rowiter = (NROWS >> 4);
-	int residual_rowiter = (NROWS & 15);
+	int unrolled_rowiter = (NROWS >> 3);
+	int residual_rowiter = (NROWS & 7);
 
-	/*
-	 * Counter that keeps track of the number of iterations on the rows
-	 */
 	int row = 0;
 	do{
 		do{
-// ========================== COLUMNS =======================================
 			int *n0_0i = &ia32[row][0];				// 1st row, 1st col
 			int *n0_4f = &ia32[row][4];				// 1st row, 4th col
 			int *n0_8i = &ia32[row][8];				// 1st row, 1st col
@@ -80,29 +48,7 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 			int *n4_8i = &ia32[row+4][8];				// 1st row, 1st col
 			int *n4_12f = &ia32[row+4][12];				// 1st row, 4th col
 
-			int *n8_0i = &ia32[row+8][0];				// 1st row, 1st col
-			int *n8_4f = &ia32[row+8][4];				// 1st row, 4th col
-			int *n8_8i = &ia32[row+8][8];				// 1st row, 1st col
-			int *n8_12f = &ia32[row+8][12];				// 1st row, 4th col
-
-			int *n12_0i = &ia32[row+12][0];				// 4th row, 1st col
-			int *n12_4f = &ia32[row+12][4];				// 4th row, 4st col
-			int *n12_8i = &ia32[row+12][8];				// 1st row, 1st col
-			int *n12_12f = &ia32[row+12][12];				// 1st row, 4th col
-
 			int itercol = unrolled_iterations;
-			/*
-			 * USING LOCAL VARIABLE AVOIDS FALSE SHARING
-			 *
-			 * To fully take advantage of parallelism without the overhead of 
-			 * keep up-to-date the same data on multiple cache line in 
-			 * different caches owned by different cores it's better to use a 
-			 * local variable.
-			 *
-			 * Local variables are stored on the stack;
-			 * Each thread has it's own stack frame.
-			 * This allows one thread to work independently from the others.
-			 */
 			int col = 0;
 			do{
 				do{
@@ -116,15 +62,6 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 					n4_8i[col] = 1;
 					n4_12f[col] = 1;
 
-					n8_0i[col] = 1;
-					n8_4f[col] = 1;
-					n8_8i[col] = 1;
-					n8_12f[col] = 1;
-
-					n12_0i[col] = 1;
-					n12_4f[col] = 1;
-					n12_8i[col] = 1;
-					n12_12f[col] = 1;
 					col += 1;
 				}while( (col & 3) != 0 );
 				col += 12;
@@ -143,39 +80,72 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 					n4_4f[col] = 1;
 					n4_8i[col] = 1;
 					n4_12f[col] = 1;
-
-					n8_0i[col] = 1;
-					n8_4f[col] = 1;
-					n8_8i[col] = 1;
-					n8_12f[col] = 1;
-
-					n12_0i[col] = 1;
-					n12_4f[col] = 1;
-					n12_8i[col] = 1;
-					n12_12f[col] = 1;
 					col += 1;
 					itercol -= 1;
 				}while(itercol); // col, residual iterations
 			} // if, itercol
-// ========================== END COLUMNS ===================================
-
-			/*
-			 * Move down 1 row
-			 */
 			row += 1;
-		}while( (row & 3) != 0 ); // check if row is a multiple of s = 4
+		}while( (row & 3) != 0 );
 
-		/*
-		 * Move down 4 rows
-		 */
-		row += 12;
+		row += 4;
 		unrolled_rowiter -= 1;
 	}while(unrolled_rowiter); // row, unrolled iterations
 
-	/*
-	 * TODO: residual iterations on the rows!!
-	 */
-}
+	if(residual_rowiter){
+		do{
+			int *n0_0i = &ia32[row][0];				// 1st row, 1st col
+			int *n0_4f = &ia32[row][4];				// 1st row, 4th col
+			int *n0_8i = &ia32[row][8];				// 1st row, 1st col
+			int *n0_12f = &ia32[row][12];				// 1st row, 4th col
+
+			int *n4_0i = &ia32[row+4][0];				// 4th row, 1st col
+			int *n4_4f = &ia32[row+4][4];				// 4th row, 4st col
+			int *n4_8i = &ia32[row+4][8];				// 1st row, 1st col
+			int *n4_12f = &ia32[row+4][12];				// 1st row, 4th col
+
+			int itercol = unrolled_iterations;
+			int col = 0;
+			do{
+				do{
+					n0_0i[col] = 1;
+					n0_4f[col] = 1;
+					n0_8i[col] = 1;
+					n0_12f[col] = 1;
+
+					n4_0i[col] = 1;
+					n4_4f[col] = 1;
+					n4_8i[col] = 1;
+					n4_12f[col] = 1;
+
+					col += 1;
+				}while( (col & 3) != 0 );
+				col += 12;
+				itercol -= 1;
+			}while(itercol); // col, unrolled iterations
+
+			if(residual_iterations){
+				itercol = residual_iterations;
+				do{
+					n0_0i[col] = 1;
+					n0_4f[col] = 1;
+					n0_8i[col] = 1;
+					n0_12f[col] = 1;
+
+					n4_0i[col] = 1;
+					n4_4f[col] = 1;
+					n4_8i[col] = 1;
+					n4_12f[col] = 1;
+					col += 1;
+					itercol -= 1;
+				}while(itercol); // col, residual iterations
+			} // if, itercol
+			row += 1;
+			residual_rowiter -= 1;
+		}while(residual_rowiter); // row, unrolled iterations
+
+	} // row, residual iterations
+
+} // end function
 
 
 void _loop_colwise() {
