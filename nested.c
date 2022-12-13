@@ -44,13 +44,13 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 	 * Efficiently compute the division by k = 4 + s = 4 by shifting right N 
 	 * by log2(k+s) = 4 positions.
 	 */
-	int unrolled_iterations = (NCOLS >> 2);
+	int unrolled_iterations = (NCOLS >> 4);
 
 	/*
 	 * Since k = 4 is a Marsenne number it's possible to compute the remainder 
 	 * of the division by 4 by computing: N & (4-1).
 	 */
-	int residual_iterations = (NCOLS & 3);
+	int residual_iterations = (NCOLS & 15);
 
 	/*
 	 * Implementing the same technique on the rows.
@@ -71,10 +71,14 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 		do{
 // ========================== COLUMNS =======================================
 			int *n0_0i = &ia32[row][0];				// 1st row, 1st col
-			int *n0_4f = &ia32[row][2];				// 1st row, 4th col
+			int *n0_4f = &ia32[row][4];				// 1st row, 4th col
+			int *n0_8i = &ia32[row][8];				// 1st row, 1st col
+			int *n0_12f = &ia32[row][12];				// 1st row, 4th col
 
 			int *n4_0i = &ia32[row+2][0];				// 4th row, 1st col
-			int *n4_4f = &ia32[row+2][2];				// 4th row, 4st col
+			int *n4_4f = &ia32[row+2][4];				// 4th row, 4st col
+			int *n4_8i = &ia32[row+2][8];				// 1st row, 1st col
+			int *n4_12f = &ia32[row+2][12];				// 1st row, 4th col
 
 			int itercol = unrolled_iterations;
 			/*
@@ -94,12 +98,17 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 				do{
 					n0_0i[col] = 1;
 					n0_4f[col] = 1;
+					n0_8i[col] = 1;
+					n0_12f[col] = 1;
 
 					n4_0i[col] = 1;
 					n4_4f[col] = 1;
+					n4_8i[col] = 1;
+					n4_12f[col] = 1;
+
 					col += 1;
-				}while( (col & 1) != 0 );
-				col += 2;
+				}while( (col & 3) != 0 );
+				col += 12;
 				itercol -= 1;
 			}while(itercol); // col, unrolled iterations
 
