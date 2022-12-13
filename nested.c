@@ -39,11 +39,12 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 
 	int unrolled_rowiter = (NROWS >> 3);
 	int row = 0;
+	int acc = 0;
 	do{ // unrolled rowiter
 		do{ // shifted rowiter
 
 			int unrolled_coliter = (NCOLS >> 4);
-			int col = 0;
+			int col = acc;
 			do{ // unrolled coliter
 				do{ // shifted coliter
 					n0_0i[col] = 1;
@@ -81,27 +82,10 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 			} // if ncols multiple of 16
 
 			row += 1;
-			n0_0i += NCOLS;
-			n0_4f += NCOLS;
-			n0_8i += NCOLS;
-			n0_12f += NCOLS;
-
-			n4_0i += NCOLS;
-			n4_4f += NCOLS;
-			n4_8i += NCOLS;
-			n4_12f += NCOLS;
+			acc += NCOLS;
 		}while( (row & 3) != 0 );
 		row += 4;
-		n0_0i += (NCOLS << 2);
-		n0_4f += (NCOLS << 2);
-		n0_8i += (NCOLS << 2);
-		n0_12f += (NCOLS << 2);
-
-		n4_0i += (NCOLS << 2);
-		n4_4f += (NCOLS << 2);
-		n4_8i += (NCOLS << 2);
-		n4_12f += (NCOLS << 2);
-
+		acc += (NCOLS << 2);
 		unrolled_rowiter -= 1;
 	}while(unrolled_rowiter);
 
@@ -112,7 +96,7 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 		int residual_rowiter = (NROWS & 7);
 		do{ // residual_rowiter
 			int unrolled_coliter = (NCOLS >> 4);
-			int col = 0;
+			int col = acc;
 			do{ // unrolled coliter
 				do{ // shifted coliter
 					n0_0i[col] = 1;
@@ -141,11 +125,7 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 				}while(residual_coliter);
 			} // if
 			row += 1;
-			n0_0i += NCOLS;
-			n0_4f += NCOLS;
-			n0_8i += NCOLS;
-			n0_12f += NCOLS;
-			residual_rowiter -= 1;
+			acc += NCOLS;
 		}while(residual_rowiter);
 	}
 }
