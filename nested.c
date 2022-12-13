@@ -45,19 +45,21 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 			do{ // unrolled coliter
 				do{ // shifted coliter
 					row0[col0] = 1;
-					row0[col4] = 1;
-					row0[col8] = 1;
-					row0[col12] = 1;
-
 					row4[col0] = 1;
-					row4[col4] = 1;
-					row4[col8] = 1;
-					row4[col12] = 1;
-
 					col0 += 1;
+
+					row0[col4] = 1;
+					row4[col4] = 1;
 					col4 += 1;
+
+					row0[col8] = 1;
+					row4[col8] = 1;
 					col8 += 1;
+
+					row0[col12] = 1;
+					row4[col12] = 1;
 					col12 += 1;
+
 				}while( (col0 & 3) != 0 );
 				col0 += 12;
 				col4 += 12;
@@ -108,13 +110,15 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 			do{ // unrolled coliter
 				do{ // shifted coliter
 					row0[col0] = 1;
-					row0[col4] = 1;
-					row0[col8] = 1;
-					row0[col12] = 1;
-
 					col0 += 1;
+
+					row0[col4] = 1;
 					col4 += 1;
+
+					row0[col8] = 1;
 					col8 += 1;
+
+					row0[col12] = 1;
 					col12 += 1;
 				}while( (col0 & 3) != 0 );
 				col0 += 12;
