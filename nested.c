@@ -28,124 +28,79 @@ int ia[NROWS][NCOLS];
  * 5 - try to increased parallelism with software pipelining.
  */
 
-void _loop_rowise_optim(int (*ia32)[NCOLS]) {
+void _loop_rowise_optim_internal_column(int *row0, int *row4){
 	int unrolled_iterations = (NCOLS >> 4);
-	int residual_iterations = (NCOLS & 15);
+	int col0 = 0;
+	int col4 = 4;
+	int col8 = 8;
+	int col12 = 12;
+	do{
+		do{
+			row0[col0] = 1;
+			row0[col4] = 1;
+			row0[col8] = 1;
+			row0[col12] = 1;
 
+			row4[col0] = 1;
+			row4[col4] = 1;
+			row4[col8] = 1;
+			row4[col12] = 1;
+
+			col0 += 1;
+			col4 += 1;
+			col8 += 1;
+			col12 += 1;
+		}while( (col0 & 3) != 0 );
+			col0 += 12;
+			col4 += 12;
+			col8 += 12;
+			col12 += 12;
+		unrolled_iterations -= 1;
+	}while(unrolled_iterations);
+
+	if( (NCOLS & 15) ){
+		int residual_iterations = (NCOLS & 15);
+		do{
+			row0[col0] = 1;
+			row0[col4] = 1;
+			row0[col8] = 1;
+			row0[col12] = 1;
+
+			row4[col0] = 1;
+			row4[col4] = 1;
+			row4[col8] = 1;
+			row4[col12] = 1;
+
+			col0 += 1;
+			col4 += 1;
+			col8 += 1;
+			col12 += 1;
+			residual_iterations -= 1;
+		}while(residual_iterations);
+	}
+}
+
+void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 	int unrolled_rowiter = (NROWS >> 3);
-	int residual_rowiter = (NROWS & 7);
-
 	int row = 0;
 	do{
 		do{
-			int *n0_0i = &ia32[row][0];				// 1st row, 1st col
-			int *n0_4f = &ia32[row][4];				// 1st row, 4th col
-			int *n0_8i = &ia32[row][8];				// 1st row, 1st col
-			int *n0_12f = &ia32[row][12];				// 1st row, 4th col
-
-			int *n4_0i = &ia32[row+4][0];				// 4th row, 1st col
-			int *n4_4f = &ia32[row+4][4];				// 4th row, 4st col
-			int *n4_8i = &ia32[row+4][8];				// 1st row, 1st col
-			int *n4_12f = &ia32[row+4][12];				// 1st row, 4th col
-
-			int itercol = unrolled_iterations;
-			int col = 0;
-			do{
-				do{
-					n0_0i[col] = 1;
-					n0_4f[col] = 1;
-					n0_8i[col] = 1;
-					n0_12f[col] = 1;
-
-					n4_0i[col] = 1;
-					n4_4f[col] = 1;
-					n4_8i[col] = 1;
-					n4_12f[col] = 1;
-
-					col += 1;
-				}while( (col & 3) != 0 );
-				col += 12;
-				itercol -= 1;
-			}while(itercol); // col, unrolled iterations
-
-			if(residual_iterations){
-				itercol = residual_iterations;
-				do{
-					n0_0i[col] = 1;
-					n0_4f[col] = 1;
-					n0_8i[col] = 1;
-					n0_12f[col] = 1;
-
-					n4_0i[col] = 1;
-					n4_4f[col] = 1;
-					n4_8i[col] = 1;
-					n4_12f[col] = 1;
-					col += 1;
-					itercol -= 1;
-				}while(itercol); // col, residual iterations
-			} // if, itercol
+			_loop_rowise_optim_internal_column(&ia32[row][0], &ia32[row+4][0]);
 			row += 1;
 		}while( (row & 3) != 0 );
-
 		row += 4;
 		unrolled_rowiter -= 1;
-	}while(unrolled_rowiter); // row, unrolled iterations
+	}while(unrolled_rowiter);
 
-	if(residual_rowiter){
+	if( (NROWS & 7) ){
+		int residual_rowiter = (NROWS & 7);
 		do{
-			int *n0_0i = &ia32[row][0];				// 1st row, 1st col
-			int *n0_4f = &ia32[row][4];				// 1st row, 4th col
-			int *n0_8i = &ia32[row][8];				// 1st row, 1st col
-			int *n0_12f = &ia32[row][12];				// 1st row, 4th col
-
-			int *n4_0i = &ia32[row+4][0];				// 4th row, 1st col
-			int *n4_4f = &ia32[row+4][4];				// 4th row, 4st col
-			int *n4_8i = &ia32[row+4][8];				// 1st row, 1st col
-			int *n4_12f = &ia32[row+4][12];				// 1st row, 4th col
-
-			int itercol = unrolled_iterations;
-			int col = 0;
-			do{
-				do{
-					n0_0i[col] = 1;
-					n0_4f[col] = 1;
-					n0_8i[col] = 1;
-					n0_12f[col] = 1;
-
-					n4_0i[col] = 1;
-					n4_4f[col] = 1;
-					n4_8i[col] = 1;
-					n4_12f[col] = 1;
-
-					col += 1;
-				}while( (col & 3) != 0 );
-				col += 12;
-				itercol -= 1;
-			}while(itercol); // col, unrolled iterations
-
-			if(residual_iterations){
-				itercol = residual_iterations;
-				do{
-					n0_0i[col] = 1;
-					n0_4f[col] = 1;
-					n0_8i[col] = 1;
-					n0_12f[col] = 1;
-
-					n4_0i[col] = 1;
-					n4_4f[col] = 1;
-					n4_8i[col] = 1;
-					n4_12f[col] = 1;
-					col += 1;
-					itercol -= 1;
-				}while(itercol); // col, residual iterations
-			} // if, itercol
+			_loop_rowise_optim_internal_column(&ia32[row][0], &ia32[row+4][0]);
 			row += 1;
 			residual_rowiter -= 1;
-		}while(residual_rowiter); // row, unrolled iterations
-
-	} // row, residual iterations
-
-} // end function
+		}while(residual_rowiter);
+	}
+}
 
 
 void _loop_colwise() {
