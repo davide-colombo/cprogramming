@@ -39,20 +39,7 @@ int ia[NROWS][NCOLS];
  * It may be even better to use multiple threads that can process data in 
  * parallel or vector instructions.
  */
-void _loop_rowise_optim() {
-	/*
-	 * Initialize in bulk here to reduce the amount of times the memory 
-	 * address of the `ia` variable needs to be loaded.
-	 */
-//	int *n0_0i = &ia[0][0];				// 1st row, 1st col
-//	int *n0_4f = &ia[0][4];				// 1st row, 4th col
-//	int *n0_8i = &ia[0][8];				// 1st row, 8th col
-//	int *n0_12f = &ia[0][12];			// 1st row, 12th col
-//	int *n4_0i = &ia[4][0];				// 4th row, 1st col
-//	int *n4_4f = &ia[4][4];				// 4th row, 4st col
-//	int *n4_8i = &ia[4][8];				// 4th row, 8st col
-//	int *n4_12f = &ia[4][12];			// 4th row, 12st col
-
+void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 	/*
 	 * Efficiently compute the division by k = 4 + s = 4 by shifting right N 
 	 * by log2(k+s) = 4 positions.
@@ -83,14 +70,14 @@ void _loop_rowise_optim() {
 	do{
 		do{
 // ========================== COLUMNS =======================================
-			int *n0_0i = &ia[row][0];				// 1st row, 1st col
-			int *n0_4f = &ia[row][4];				// 1st row, 4th col
-			int *n0_8i = &ia[row][8];				// 1st row, 8th col
-			int *n0_12f = &ia[row][12];			// 1st row, 12th col
-			int *n4_0i = &ia[row][0];				// 4th row, 1st col
-			int *n4_4f = &ia[row][4];				// 4th row, 4st col
-			int *n4_8i = &ia[row][8];				// 4th row, 8st col
-			int *n4_12f = &ia[row][12];			// 4th row, 12st col
+			int *n0_0i = &ia32[row][0];				// 1st row, 1st col
+			int *n0_4f = &ia32[row][4];				// 1st row, 4th col
+			int *n0_8i = &ia32[row][8];				// 1st row, 8th col
+			int *n0_12f = &ia32[row][12];			// 1st row, 12th col
+			int *n4_0i = &ia32[row][0];				// 4th row, 1st col
+			int *n4_4f = &ia32[row][4];				// 4th row, 4st col
+			int *n4_8i = &ia32[row][8];				// 4th row, 8st col
+			int *n4_12f = &ia32[row][12];			// 4th row, 12st col
 
 			int itercol = unrolled_iterations;
 			int col = 0;
@@ -196,7 +183,7 @@ void _loop_rowise_baseline(){
 int main(int argc, char **argv) {
 	clock_t start, end;
 	start = clock();
-	_loop_rowise_optim();
+	_loop_rowise_optim(&ia[0]);
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
 	printf("Elapsed = %.20lf\n", elapsed);
