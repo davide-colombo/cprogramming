@@ -90,6 +90,7 @@ void _loop_rowise_optim() {
 		do{
 // ========================== COLUMNS =======================================
 			int itercol = unrolled_iterations;
+			int col = 0;
 			do{
 				/*
 				 * Shift columns by the shift factor s = 4
@@ -100,25 +101,25 @@ void _loop_rowise_optim() {
 					 * Exploit both cache locality, out-of-order execution, 
 					 * pipelining and different execution units (int + float).
 					 */
-					*(n0_0i+acc) = 1;
-					*(n0_4f+acc) = 1;
-					*(n0_8i+acc) = 1;
-					*(n0_12f+acc) = 1;
+					*(n0_0i+col) = 1;
+					*(n0_4f+col) = 1;
+					*(n0_8i+col) = 1;
+					*(n0_12f+col) = 1;
 
 					/*
 					 * 4th row in the matrix
 					 */
-					*(n4_0i+acc) = 1;
-					*(n4_4f+acc) = 1;
-					*(n4_8i+acc) = 1;
-					*(n4_12f+acc) = 1;
+					*(n4_0i+col) = 1;
+					*(n4_4f+col) = 1;
+					*(n4_8i+col) = 1;
+					*(n4_12f+col) = 1;
 
 					/*
 					 * Move by 1 item to the right on the row
 					 */
-					acc += 1;
-				}while( (acc & 3) != 0 );
-				acc += 12;
+					col += 1;
+				}while( (col & 3) != 0 );
+				col += 12;
 				itercol -= 1;
 			}while(itercol); // col, unrolled iterations
 
@@ -130,19 +131,19 @@ void _loop_rowise_optim() {
 					/*
 					 * 0th row in the matrix
 					 */
-					*(n0_0i+acc) = 1;
-					*(n0_4f+acc) = 1;
-					*(n0_8i+acc) = 1;
-					*(n0_12f+acc) = 1;
+					*(n0_0i+col) = 1;
+					*(n0_4f+col) = 1;
+					*(n0_8i+col) = 1;
+					*(n0_12f+col) = 1;
 
 					/*
 					 * 4th row in the matrix
 					 */
-					*(n4_0i+acc) = 1;
-					*(n4_4f+acc) = 1;
-					*(n4_8i+acc) = 1;
-					*(n4_12f+acc) = 1;
-					acc += 1;
+					*(n4_0i+col) = 1;
+					*(n4_4f+col) = 1;
+					*(n4_8i+col) = 1;
+					*(n4_12f+col) = 1;
+					col += 1;
 					itercol -= 1;
 				}while(itercol); // col, residual iterations
 			} // if, itercol
@@ -152,7 +153,7 @@ void _loop_rowise_optim() {
 			 * Move down 1 row
 			 */
 			row += 1;
-			//acc += NCOLS;
+			acc += NCOLS;
 		}while( (row & 3) != 0 ); // check if row is a multiple of 2
 
 		/*
