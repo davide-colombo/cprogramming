@@ -19,106 +19,60 @@
 int ia[NROWS][NCOLS];
 
 /*
- * 1 - declare INDUCTION VARIABLES outside the for loop.
- * 2 - since `ia` is a statically allocated GLOBAL array, it means that every 
- *   time the memory page associated to the variable must be loaded.
- * 3 - split the problem into subproblems to increase cache locality.
- * 4 - unroll the inner loop; try to reduce the number of iterations (i.e., 
- *   the number of times the condition is evaluated).
- * 5 - try to increased parallelism with software pipelining.
+ * Optimized version
  */
-//void _loop_rowise_optim_internal_column(int (*row0)[NCOLS]){
-//	printf("&row0[0][0] = %p\n", &row0[0][0]);
-//	printf("&row0[4][0] = %p\n", &row0[4][0]);
-//	printf("&ia[0][0] = %p\n", &ia[0][0]);
-//	printf("&ia[NROWS][NCOLS] = %p\n", &ia[NROWS][NCOLS]);
-//	int *n0_0i = &row0[0][0];
-//	int *n0_4f = &row0[0][4];
-//	int *n0_8i = &row0[0][8];
-//	int *n0_12f = &row0[0][12];
-//
-//	int *n4_0i = &row0[4][0];
-//	int *n4_4f = &row0[4][4];
-//	int *n4_8i = &row0[4][8];
-//	int *n4_12f = &row0[4][12];
-//
-//	int unrolled_iterations = (NCOLS >> 4);
-//	printf("iter = %d\n", unrolled_iterations);
-//	int col = 0;
-//	do{
-//		do{
-//			n0_0i[col] = 1;
-//			n0_4f[col] = 1;
-//			n0_8i[col] = 1;
-//			n0_12f[col] = 1;
-//
-//			n4_0i[col] = 1;
-//			n4_4f[col] = 1;
-//			n4_8i[col] = 1;
-//			n4_12f[col] = 1;
-//
-//			col += 1;
-//		}while( (col & 3) != 0 );
-//		col += 12;
-//		unrolled_iterations -= 1;
-//	}while(unrolled_iterations);
-//	printf("done unrolled\n");
-//	if( (NCOLS & 15) != 0 ){
-//		int residual_iterations = (NCOLS & 15);
-//		do{
-//			n0_0i[col] = 1;
-//			n4_0i[col] = 1;
-//			col += 1;
-//			residual_iterations -= 1;
-//		}while(residual_iterations);
-//	}
-//	printf("end\n");
-//}
-
 void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 	int unrolled_rowiter = (NROWS >> 3);
 	int row = 0;
-	do{
+	do{ // unrolled rowiter
 		do{
 			int *n0_0i = &ia32[row][0];
 			int *n0_4f = &ia32[row][4];
 			int *n0_8i = &ia32[row][8];
 			int *n0_12f = &ia32[row][12];
-		
+
 			int *n4_0i = &ia32[row+4][0];
 			int *n4_4f = &ia32[row+4][4];
 			int *n4_8i = &ia32[row+4][8];
 			int *n4_12f = &ia32[row+4][12];
-		
-			int unrolled_iterations = (NCOLS >> 4);
+
+			int unrolled_coliter = (NCOLS >> 4);
 			int col = 0;
-			do{
-				do{
+			do{ // unrolled coliter
+				do{ // shifted coliter
 					n0_0i[col] = 1;
 					n0_4f[col] = 1;
 					n0_8i[col] = 1;
 					n0_12f[col] = 1;
-		
+
 					n4_0i[col] = 1;
 					n4_4f[col] = 1;
 					n4_8i[col] = 1;
 					n4_12f[col] = 1;
-		
+
 					col += 1;
 				}while( (col & 3) != 0 );
 				col += 12;
-				unrolled_iterations -= 1;
-			}while(unrolled_iterations);
+				unrolled_coliter -= 1;
+			}while(unrolled_coliter);
 
+			/*
+			 * Residual coliter
+			 */
 			if( (NCOLS & 15) != 0 ){
-				int residual_iterations = (NCOLS & 15);
-				do{
+				int residual_coliter = (NCOLS & 15);
+				do{ // residual coliter
+					/*
+					 * IMPORTANT: keep rows in parallel but DO NOT USE the 
+					 * variables for accessing the columns other than the one 
+					 * starting at index 0.
+					 */
 					n0_0i[col] = 1;
 					n4_0i[col] = 1;
 					col += 1;
-					residual_iterations -= 1;
-				}while(residual_iterations);
-			}
+					residual_coliter -= 1;
+				}while(residual_coliter);
+			} // if ncols multiple of 16
 
 			row += 1;
 		}while( (row & 3) != 0 );
@@ -126,18 +80,21 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 		unrolled_rowiter -= 1;
 	}while(unrolled_rowiter);
 
+	/*
+	 * Residual iterations on the rows
+	 */
 	if( (NROWS & 7) != 0 ){
 		int residual_rowiter = (NROWS & 7);
-		do{
+		do{ // residual_rowiter
 			int *n0_0i = &ia32[row][0];
 			int *n0_4f = &ia32[row][4];
 			int *n0_8i = &ia32[row][8];
 			int *n0_12f = &ia32[row][12];
 
-			int unrolled_iterations = (NCOLS >> 4);
+			int unrolled_coliter = (NCOLS >> 4);
 			int col = 0;
-			do{
-				do{
+			do{ // unrolled coliter
+				do{ // shifted coliter
 					n0_0i[col] = 1;
 					n0_4f[col] = 1;
 					n0_8i[col] = 1;
@@ -145,17 +102,24 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 					col += 1;
 				}while( (col & 3) != 0 );
 				col += 12;
-				unrolled_iterations -= 1;
-			}while(unrolled_iterations);
+				unrolled_coliter -= 1;
+			}while(unrolled_coliter);
 
+			/*
+			 * Residual iterations on columns
+			 */
 			if( (NCOLS & 15) != 0 ){
-				int residual_iterations = (NCOLS & 15);
-				do{
+				int residual_coliter = (NCOLS & 15);
+				do{ // residual coliter
+					/*
+					 * IMPORTANT: only the rows corresponding to the lowest 
+					 * index must be used to access memory in this cycle!
+					 */
 					n0_0i[col] = 1;
 					col += 1;
-					residual_iterations -= 1;
-				}while(residual_iterations);
-			}
+					residual_coliter -= 1;
+				}while(residual_coliter);
+			} // if
 			row += 1;
 			residual_rowiter -= 1;
 		}while(residual_rowiter);
