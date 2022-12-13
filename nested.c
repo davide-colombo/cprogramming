@@ -89,11 +89,11 @@ void _loop_rowise_optim(int (*ia32)[NCOLS]) {
 		int residual_rowiter = (NROWS & 7);
 		do{ // residual_rowiter
 			int unrolled_coliter = (NCOLS >> 4);
-
-			int *n0_0i = &ia32[row][0];				// 1st row, 1st col
-			int *n0_4f = &ia32[row][4];				// 1st row, 4th col
-			int *n0_8i = &ia32[row][8];				// 1st row, 8th col
-			int *n0_12f = &ia32[row][12];			// 1st row, 12th col
+			int (*row0)[NCOLS] = &ia32[row];
+			int *n0_0i = &row0[0][0];				// 1st row, 1st col
+			int *n0_4f = &row0[0][4];				// 1st row, 4th col
+			int *n0_8i = &row0[0][8];				// 1st row, 8th col
+			int *n0_12f = &row0[0][12];			// 1st row, 12th col
 
 			int col = 0;
 			do{ // unrolled coliter
