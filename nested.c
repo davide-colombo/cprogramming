@@ -30,21 +30,135 @@
  */
 #define CACHE_LINE_RES(n) ( (n) & 31 )
 
-int32_t ia[NROWS][NCOLS];
+/*
+ * The type interface for the definition of the array type.
+ */
+typedef int32_t arr_t;
 
 /*
- * Optimized version
+ * Consider the layout of the data in memory.
+ *
+ * A matrix is still an array of NROWS * NCOLS items layed out sequentially in 
+ * memory.
+ *
+ * If each item is of size S, the total memory occupied by the matrix is:
+ *
+ * 		NROWS * NCOLS * S
+ *
+ * To maximize the performance the program needs to minimize the number of 
+ * transaction with a high cost and rely on those transactions that are 
+ * cheaper.
+ *
+ * Costly transactions are load and store from the main memory.
+ * Cheaper transactions are load and store from the cache.
+ *
+ * If the program is capable to maximize the number of accesses to the data in 
+ * cache by keeping the same number of operations (ideally the minimum number 
+ * of operations required to transform the information encoded by the data 
+ * structure) the program's efficiency will significantly increase.
+ *
+ * Suppose a cache line is C bytes.
+ *
+ * Suppose the cache size is K bytes.
+ *
+ * Suppose the cache has an associativity equal to W (no unit, just a number).
+ *
+ * Given the above specification it's possible to compute the number of cache 
+ * sets T for this particular cache:
+ *
+ * 		T = K / (C * W)
+ *
+ * For example, a cache of K = 64KB with a cache line size C = 128B and W = 8 
+ * has a T = 64 cache sets.
+ *
+ * The problem with cache associativity will arise for data which memory 
+ * address is a multiple of:
+ *
+ * 		T * C * A
+ *
+ * Where A is the instruction size (e.g., 4 bytes on ARM).
+ *
+ * For the above cache specifications, data stored at a multiple of 2^15 will 
+ * race for the same cache set.
+ *
+ * Back to the matrix problem.
+ *
+ * Give the number of bytes of the matrix computed as:
+ *
+ * 		NROWS * NCOLS * S
+ *
+ * And given the cache line size equal to C, we can compute the number of 
+ * cache lines needed to store the entire matrix in cache.
+ *
+ * For example, if NROWS = NCOLS = 32 and S = 4bytes, the matrix occupies a 
+ * total of 2^12 bytes (4Kb, 4096bytes).
+ *
+ * If a single cache line is C = 128 bytes, it's necessary to use 2^5 = 32 
+ * full cache lines to store the matrix in the cache.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
-void _loop_rowise_optim(int32_t (*ia32)[NCOLS]) {
-	int32_t cache_lines_full_per_row = CACHE_LINE_FULLS(NCOLS);
-	int32_t cache_lines_full_per_col = CACHE_LINE_FULLS(NROWS);
-	int32_t extra_items_per_row = CACHE_LINE_RES(NCOLS);
-	int32_t extra_items_per_col = CACHE_LINE_RES(NROWS);
+void _loop_rowise_optim(arr_t *ia32[], size_t nrows, size_t ncols) {
+	/*
+	 * If both `nrows` and `ncols` are less than 32 it's better to compute the 
+	 * number of cache line for the whole matrix instead of computing the 
+	 * number of cache lines for each row and column.
+	 *
+	 * The maximum number of items is 31 * 31 = 961
+	 *
+	 * This is better otherwise there is a high waste in the number of cache 
+	 * lines used when `ncols` is less than 32.
+	 *
+	 * The waste increases with the number of rows.
+	 */
+	if( (nrows < CACHE_LINE_ELEMS) && (ncols < CACHE_LINE_ELEMS) ){
+		printf("Undersized matrix\n");
+		printf("Total items = %lu\n", nrows * ncols);
+		printf("Total cache lines = %lu\n", CACHE_LINE_FULLS((nrows*ncols)) );
+		printf("Extra items = %lu\n", CACHE_LINE_RES((nrows*ncols)));
+	} else {
+		/*
+		 * A row is a set of `ncols` items.
+		 */
+		size_t cache_lines_full_per_row = CACHE_LINE_FULLS(ncols);
 
-	printf("lpr = %d\n", cache_lines_full_per_row);
-	printf("lpc = %d\n", cache_lines_full_per_col);
-	printf("er = %d\n", extra_items_per_row);
-	printf("ec = %d\n", extra_items_per_col);
+		/*
+		 * Total number of cache lines.
+		 */
+		size_t tot_full_cache_lines = cache_lines_full_per_row * nrows;
+
+		/*
+		 * Number of extra items (requires 1 extra cache line).
+		 *
+		 * This is equal to 0 if `ncols` is a multiple or a divisor of:
+		 *		C / S
+		 * (see above for the definition of C and S).
+		 *
+		 * Using `uint8_t` because the number of items in a cache line cannot be 
+		 * greater than C = 128B
+		 */
+		uint8_t extra_items_per_row = CACHE_LINE_RES(ncols);
+		size_t tot_extra_cache_lines = extra_items_per_row * nrows;
+		size_t extra_full_cache_lines = CACHE_LINE_FULLS(tot_extra_cache_lines);
+		uint8_t tot_extra_items = CACHE_LINE_RES(tot_extra_cache_lines);
+
+		printf("Full cache lines x Row = %zu\n", cache_lines_full_per_row);
+		printf("Extra items x Row = %d\n", extra_items_per_row);
+		printf("Total cache lines = %zu\n", tot_full_cache_lines);
+		printf("Extra full cache lines = %zu\n", extra_full_cache_lines);
+		printf("Tot extra items = %d\n", tot_extra_items);
+	}
+
 
 //	int unrolled_rowiter = (NROWS >> 3);
 //	int row = 0;
@@ -151,31 +265,38 @@ void _loop_rowise_optim(int32_t (*ia32)[NCOLS]) {
 }
 
 
-void _loop_colwise() {
-	int i, j;
-	for(j = 0; j < NROWS; j++) {
-		for(i = 0; i < NCOLS; i++) {
-			ia[i][j] = 1;
-		}
-	}
-}
+//void _loop_colwise() {
+//	int i, j;
+//	for(j = 0; j < NROWS; j++) {
+//		for(i = 0; i < NCOLS; i++) {
+//			ia[i][j] = 1;
+//		}
+//	}
+//}
+//
+//
+//void _loop_rowise_baseline(){
+//	int i, j;
+//	for(j = 0; j < NROWS; j++) {
+//		for(i = 0; i < NCOLS; i++) {
+//			ia[j][i] = 1;
+//		}
+//	}
+//}
 
 
-void _loop_rowise_baseline(){
-	int i, j;
-	for(j = 0; j < NROWS; j++) {
-		for(i = 0; i < NCOLS; i++) {
-			ia[j][i] = 1;
-		}
-	}
-}
+/*
+ * Static array of NROWS * NCOLS * sizeof(int32_t) bytes
+ */
+arr_t ia[NROWS][NCOLS];
 
-
-
+/*
+ * Main function
+ */
 int main(int argc, char **argv) {
 	clock_t start, end;
 	start = clock();
-	_loop_rowise_optim(&ia[0]);
+	_loop_rowise_optim(NULL, 10000, 17);
 	//_loop_rowise_baseline();
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
