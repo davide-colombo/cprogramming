@@ -5,6 +5,8 @@
 _for1_inc:                              ; @for1_inc
 	.cfi_startproc
 ; %bb.0:
+	mov	w0, #57600
+	movk	w0, #1525, lsl #16
 	ret
 	.cfi_endproc
                                         ; -- End function
@@ -13,6 +15,8 @@ _for1_inc:                              ; @for1_inc
 _do1_inc:                               ; @do1_inc
 	.cfi_startproc
 ; %bb.0:
+	mov	w0, #57600
+	movk	w0, #1525, lsl #16
 	ret
 	.cfi_endproc
                                         ; -- End function
@@ -21,6 +25,8 @@ _do1_inc:                               ; @do1_inc
 _inf_plus_if1_inc:                      ; @inf_plus_if1_inc
 	.cfi_startproc
 ; %bb.0:
+	mov	w0, #57600
+	movk	w0, #1525, lsl #16
 	ret
 	.cfi_endproc
                                         ; -- End function
