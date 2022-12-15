@@ -15,6 +15,15 @@ void for1_inc(){
 	}
 }
 
+void do1_inc(){
+	uint64_t sum = 0;
+	size_t i = 0;
+	do{
+		sum = sum + 1;
+		i = i + 1;
+	}while(i < N);
+}
+
 int main(int argc, char *argv[]){
 	clock_t start, end;
 	start = clock();
