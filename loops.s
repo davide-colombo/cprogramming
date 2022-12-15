@@ -5,30 +5,6 @@
 _for1_inc:                              ; @for1_inc
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #16
-	.cfi_def_cfa_offset 16
-	str	xzr, [sp, #8]
-	str	xzr, [sp]
-	b	LBB0_1
-LBB0_1:                                 ; =>This Inner Loop Header: Depth=1
-	ldr	x8, [sp]
-	mov	x9, #57600
-	movk	x9, #1525, lsl #16
-	subs	x8, x8, x9
-	b.hs	LBB0_4
-	b	LBB0_2
-LBB0_2:                                 ;   in Loop: Header=BB0_1 Depth=1
-	ldr	x8, [sp, #8]
-	add	x8, x8, #1
-	str	x8, [sp, #8]
-	b	LBB0_3
-LBB0_3:                                 ;   in Loop: Header=BB0_1 Depth=1
-	ldr	x8, [sp]
-	add	x8, x8, #1
-	str	x8, [sp]
-	b	LBB0_1
-LBB0_4:
-	add	sp, sp, #16
 	ret
 	.cfi_endproc
                                         ; -- End function
@@ -37,28 +13,6 @@ LBB0_4:
 _do1_inc:                               ; @do1_inc
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #16
-	.cfi_def_cfa_offset 16
-	str	xzr, [sp, #8]
-	str	xzr, [sp]
-	b	LBB1_1
-LBB1_1:                                 ; =>This Inner Loop Header: Depth=1
-	ldr	x8, [sp, #8]
-	add	x8, x8, #1
-	str	x8, [sp, #8]
-	ldr	x8, [sp]
-	add	x8, x8, #1
-	str	x8, [sp]
-	b	LBB1_2
-LBB1_2:                                 ;   in Loop: Header=BB1_1 Depth=1
-	ldr	x8, [sp]
-	mov	x9, #57600
-	movk	x9, #1525, lsl #16
-	subs	x8, x8, x9
-	b.lo	LBB1_1
-	b	LBB1_3
-LBB1_3:
-	add	sp, sp, #16
 	ret
 	.cfi_endproc
                                         ; -- End function
@@ -67,75 +21,44 @@ LBB1_3:
 _inf_plus_if1_inc:                      ; @inf_plus_if1_inc
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #16
-	.cfi_def_cfa_offset 16
-	str	xzr, [sp, #8]
-	str	xzr, [sp]
-	b	LBB2_1
-LBB2_1:                                 ; =>This Inner Loop Header: Depth=1
-	ldr	x8, [sp, #8]
-	add	x8, x8, #1
-	str	x8, [sp, #8]
-	ldr	x8, [sp]
-	add	x8, x8, #1
-	str	x8, [sp]
-	ldr	x8, [sp]
-	mov	x9, #57600
-	movk	x9, #1525, lsl #16
-	subs	x8, x8, x9
-	b.ne	LBB2_3
-	b	LBB2_2
-LBB2_2:
-	b	LBB2_4
-LBB2_3:                                 ;   in Loop: Header=BB2_1 Depth=1
-	b	LBB2_1
-LBB2_4:
-	add	sp, sp, #16
 	ret
 	.cfi_endproc
                                         ; -- End function
-	.section	__TEXT,__literal8,8byte_literals
-	.p2align	3                               ; -- Begin function main
-lCPI3_0:
-	.quad	0x412e848000000000              ; double 1.0E+6
-	.section	__TEXT,__text,regular,pure_instructions
-	.globl	_main
+	.globl	_main                           ; -- Begin function main
 	.p2align	2
 _main:                                  ; @main
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #64
-	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
-	add	x29, sp, #48
+	sub	sp, sp, #48
+	stp	x20, x19, [sp, #16]             ; 16-byte Folded Spill
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	mov	w8, #0
-	str	w8, [sp, #12]                   ; 4-byte Folded Spill
-	stur	wzr, [x29, #-4]
-	stur	w0, [x29, #-8]
-	stur	x1, [x29, #-16]
+	.cfi_offset w19, -24
+	.cfi_offset w20, -32
 	bl	_clock
-	str	x0, [sp, #24]
-	bl	_inf_plus_if1_inc
+	mov	x19, x0
 	bl	_clock
-	str	x0, [sp, #16]
-	ldr	x8, [sp, #16]
-	ldr	x9, [sp, #24]
-	subs	x8, x8, x9
+	sub	x8, x0, x19
 	ucvtf	d0, x8
-	adrp	x8, lCPI3_0@PAGE
-	ldr	d1, [x8, lCPI3_0@PAGEOFF]
+	mov	x8, #145685290680320
+	movk	x8, #16686, lsl #48
+	fmov	d1, x8
 	fdiv	d0, d0, d1
-	mov	x8, sp
-	str	d0, [x8]
+	str	d0, [sp]
+Lloh0:
 	adrp	x0, l_.str@PAGE
+Lloh1:
 	add	x0, x0, l_.str@PAGEOFF
 	bl	_printf
-	ldr	w0, [sp, #12]                   ; 4-byte Folded Reload
-	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
-	add	sp, sp, #64
+	mov	w0, #0
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	ldp	x20, x19, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #48
 	ret
+	.loh AdrpAdd	Lloh0, Lloh1
 	.cfi_endproc
                                         ; -- End function
 	.section	__TEXT,__cstring,cstring_literals
