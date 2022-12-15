@@ -62,9 +62,41 @@ LBB1_3:
 	ret
 	.cfi_endproc
                                         ; -- End function
+	.globl	_inf_plus_if1_inc               ; -- Begin function inf_plus_if1_inc
+	.p2align	2
+_inf_plus_if1_inc:                      ; @inf_plus_if1_inc
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #16
+	.cfi_def_cfa_offset 16
+	str	xzr, [sp, #8]
+	str	xzr, [sp]
+	b	LBB2_1
+LBB2_1:                                 ; =>This Inner Loop Header: Depth=1
+	ldr	x8, [sp, #8]
+	add	x8, x8, #1
+	str	x8, [sp, #8]
+	ldr	x8, [sp]
+	add	x8, x8, #1
+	str	x8, [sp]
+	ldr	x8, [sp]
+	mov	x9, #57600
+	movk	x9, #1525, lsl #16
+	subs	x8, x8, x9
+	b.ne	LBB2_3
+	b	LBB2_2
+LBB2_2:
+	b	LBB2_4
+LBB2_3:                                 ;   in Loop: Header=BB2_1 Depth=1
+	b	LBB2_1
+LBB2_4:
+	add	sp, sp, #16
+	ret
+	.cfi_endproc
+                                        ; -- End function
 	.section	__TEXT,__literal8,8byte_literals
 	.p2align	3                               ; -- Begin function main
-lCPI2_0:
+lCPI3_0:
 	.quad	0x412e848000000000              ; double 1.0E+6
 	.section	__TEXT,__text,regular,pure_instructions
 	.globl	_main
@@ -85,15 +117,15 @@ _main:                                  ; @main
 	stur	x1, [x29, #-16]
 	bl	_clock
 	str	x0, [sp, #24]
-	bl	_for1_inc
+	bl	_inf_plus_if1_inc
 	bl	_clock
 	str	x0, [sp, #16]
 	ldr	x8, [sp, #16]
 	ldr	x9, [sp, #24]
 	subs	x8, x8, x9
 	ucvtf	d0, x8
-	adrp	x8, lCPI2_0@PAGE
-	ldr	d1, [x8, lCPI2_0@PAGEOFF]
+	adrp	x8, lCPI3_0@PAGE
+	ldr	d1, [x8, lCPI3_0@PAGEOFF]
 	fdiv	d0, d0, d1
 	mov	x8, sp
 	str	d0, [x8]
