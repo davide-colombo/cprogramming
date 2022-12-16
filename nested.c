@@ -1,40 +1,3 @@
-
-#include <stdio.h>
-#include <stdint.h>
-#include <time.h>
-
-/*
- * Nested for loop optimization
- */
-#define NROWS 10000
-#define NCOLS 10000
-
-/*
- * Each cache line is 128 bytes on this machine
- */
-#define CACHE_LINE_SIZE 128
-
-/*
- * In every cache line there is room for 32 integers each one of 4 bytes
- */
-#define CACHE_LINE_ELEMS 32
-
-/*
- * Divide by 32 to get the number of cache lines needed to store `n` values
- */
-#define CACHE_LINE_FULLS(n) ( (n) >> 5 )
-
-/*
- * Remainder of the division to get the number of items (NOT THE NUMBER OF 
- * CACHE LINES) remaining. This implies using an extra cache line.
- */
-#define CACHE_LINE_RES(n) ( (n) & 31 )
-
-/*
- * The type interface for the definition of the array type.
- */
-typedef int32_t arr_t;
-
 /*
  * Consider the layout of the data in memory.
  *
@@ -108,20 +71,93 @@ typedef int32_t arr_t;
  *
  *
  */
-void _loop_rowise_optim(arr_t *ia32[], size_t nrows, size_t ncols) {
+
+#include <stdio.h>
+#include <stdint.h>
+#include <time.h>
+
+/*
+ * Nested for loop optimization
+ */
+#define NROWS 10000
+#define NCOLS 10000
+
+/*
+ * Each cache line is 128 bytes on this machine
+ */
+#define CACHE_LINE_SIZE 128
+
+/*
+ * In every cache line there is room for 32 integers each one of 4 bytes
+ */
+#define CACHE_LINE_ELEMS 32
+
+/*
+ * Divide by 32 to get the number of cache lines needed to store `n` values
+ */
+#define CACHE_LINE_FULLS(n) ( (n) >> 5 )
+
+/*
+ * Remainder of the division is the number of items (NOT THE NUMBER OF CACHE 
+ * LINES) remaining. This implies using an extra cache line.
+ */
+#define CACHE_LINE_RES(n) ( (n) & 31 )
+
+/*
+ * The type interface for the definition of the array type.
+ */
+typedef int32_t item_t;
+
+
+void _loop_rowise_optim(item_t *ia32[], size_t nrows, size_t ncols) {
 	/*
-	 * If both `nrows` and `ncols` are less than 32 it's better to compute the 
-	 * number of cache line for the whole matrix instead of computing the 
-	 * number of cache lines for each row and column.
+	 * If `ncols` is not a multiple or a divisor of `CACHE_LINE_ELEMS` the 
+	 * program's efficiency may be affected because the rows of the matrix 
+	 * will not be well aligned to the cache line size.
 	 *
-	 * The maximum number of items is 31 * 31 = 961
+	 * The maximum waste is when the number of columns is a multiple of:
 	 *
-	 * This is better otherwise there is a high waste in the number of cache 
-	 * lines used when `ncols` is less than 32.
+	 * 		CACHE_LINE_ELEMS + (CACHE_LINE_ELEMS/2) + 1
 	 *
-	 * The waste increases with the number of rows.
+	 * Translated, one items after the half size of the number of items that 
+	 * fits a cache line.
+	 *
+	 * For example, if CACHE_LINE_ELEMS = 32, the worst case scenario is 
+	 * working on a matrix with 17 columns because 17 * 2 = 34 items needs 2 
+	 * cache lines in which the first cache lines contains the items in the 
+	 * first row and 15/17 = 88.23% of the items in the second row BUT THE 
+	 * PROCESSOR STILL NEEDS TO LOAD A SECOND CACHE LINE TO FINISH THE 
+	 * OPERATIONS on the items in the second row.
+	 *
+	 * However, for that operation only the 6.25% of the additional cache line 
+	 * loaded is used (93.75% not used!).
+	 *
+	 * So, this may not be a problem since the items not used in the second 
+	 * cache line loaded WILL BE USED in the next iteration for doing the 
+	 * compution on the next row in the matrix.
+	 *
+	 * Anyway this may be suboptimal.
 	 */
-	if( (nrows < CACHE_LINE_ELEMS) && (ncols < CACHE_LINE_ELEMS) ){
+	uint32_t extra_items_per_row = CACHE_LINE_RES(ncols);
+	uint32_t extra_items_zero = extra_items_per_row ^ extra_items_per_row;
+	if(extra_items_zero){
+		printf("Perfectly aligned!\n");
+	}else{
+		int32_t delta = (int32_t)(CACHE_LINE_ELEMS - ncols);
+		uint32_t mask = (uint32_t)( (int32_t)(delta >> 31) );
+		uint32_t cache_lines_per_row = mask ? 0 : (CACHE_LINE_ELEMS / ncols);
+		uint32_t items_in_full_cache_lines_per_row = extra_items_per_row * cache_lines_per_row;
+
+		printf("%u items out of %d belongs to this cache line\n", items_in_full_cache_lines_per_row, CACHE_LINE_ELEMS);
+
+		uint32_t empty_spots = CACHE_LINE_ELEMS - items_in_full_cache_lines_per_row;
+		printf("%u items out of %d filled by the next row's items\n", empty_spots, CACHE_LINE_ELEMS);
+
+		uint32_t spots_in_next_cl = items_in_full_cache_lines_per_row + ncols - CACHE_LINE_ELEMS;
+		printf("%u items out of %zu are stored in the next cache line\n", spots_in_next_cl, ncols);
+	}
+
+	if(ncols < CACHE_LINE_ELEMS){
 		printf("Undersized matrix\n");
 		printf("Total items = %lu\n", nrows * ncols);
 		printf("Total cache lines = %lu\n", CACHE_LINE_FULLS((nrows*ncols)) );
@@ -286,9 +322,9 @@ void _loop_rowise_optim(arr_t *ia32[], size_t nrows, size_t ncols) {
 
 
 /*
- * Static array of NROWS * NCOLS * sizeof(int32_t) bytes
+ * Static array of NROWS * NCOLS * sizeof(item_t) bytes
  */
-arr_t ia[NROWS][NCOLS];
+item_t ia[NROWS][NCOLS];
 
 /*
  * Main function
@@ -296,7 +332,7 @@ arr_t ia[NROWS][NCOLS];
 int main(int argc, char **argv) {
 	clock_t start, end;
 	start = clock();
-	_loop_rowise_optim(NULL, 10000, 17);
+	_loop_rowise_optim(NULL, 10000, 3);
 	//_loop_rowise_baseline();
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
