@@ -76,9 +76,6 @@
 #include <stdint.h>
 #include <time.h>
 
-/*
- * Nested for loop optimization
- */
 #define NROWS 10000
 #define NCOLS 10000
 
@@ -88,7 +85,7 @@
 #define CACHE_LINE_SIZE 128
 
 /*
- * In every cache line there is room for 32 integers each one of 4 bytes
+ * In every cache line there is room for 32 signed 32-bit integers
  */
 #define CACHE_LINE_ELEMS 32
 
@@ -109,6 +106,14 @@
 typedef int32_t item_t;
 
 
+/*
+ * Function that loops on the items of an array and assigns each item by using 
+ * the following expression:
+ *
+ * 		i * 4 / 3.0
+ *
+ * where `i` is the array index of that item.
+ */
 void _loop_rowise_optim(item_t *ia32[], size_t nrows, size_t ncols) {
 	/*
 	 * If `ncols` is not a multiple or a divisor of `CACHE_LINE_ELEMS` the 
@@ -143,18 +148,70 @@ void _loop_rowise_optim(item_t *ia32[], size_t nrows, size_t ncols) {
 	if(extra_items_zero){
 		printf("Perfectly aligned!\n");
 	}else{
+		/*
+		 * The difference between the number of elements in a cache line and 
+		 * the number of items in a row.
+		 *
+		 * Negative: more than 1 cache line to store a single ROW.
+		 * Positive: less than 1 cache line to store a single ROW.
+		 * Zero: exactly 1 cache line to store a single ROW.
+		 */
 		int32_t delta = (int32_t)(CACHE_LINE_ELEMS - ncols);
+
+		/*
+		 * Arithmetical shift right fills in the bytes with the most 
+		 * significant bit.
+		 *
+		 * 0xffffffff: delta is negative
+		 *
+		 * 0x00000000: delta is positive or zero
+		 */
 		uint32_t mask = (uint32_t)( (int32_t)(delta >> 31) );
-		uint32_t cache_lines_per_row = mask ? 0 : (CACHE_LINE_ELEMS / ncols);
-		uint32_t items_in_full_cache_lines_per_row = extra_items_per_row * cache_lines_per_row;
 
-		printf("%u items out of %d belongs to this cache line\n", items_in_full_cache_lines_per_row, CACHE_LINE_ELEMS);
+		/*
+		 * This may be tricky.
+		 *
+		 * If `mask` is 0xffffffff this variable represents the number of FULL 
+		 * CACHE LINES to store a row (there may be extra items).
+		 *
+		 * If `mask` is 0x00000000 this variable represents the number of FULL 
+		 * rows that fits a SINGLE cache line (there may be extra slot in the 
+		 * cache line).
+		 */
+		uint32_t l_or_r = mask ? 1 : (CACHE_LINE_ELEMS / ncols);
 
-		uint32_t empty_spots = CACHE_LINE_ELEMS - items_in_full_cache_lines_per_row;
-		printf("%u items out of %d filled by the next row's items\n", empty_spots, CACHE_LINE_ELEMS);
+		/*
+		 * Max number of items per cache line.
+		 *
+		 * If `mask` is 0xffffffff it means that `ncols` is greater than 
+		 * `CACHE_LINE_ELEMS`, so the maximum number of items in a row per 
+		 * cache line is exactly CACHE_LINE_ELEMS.
+		 *
+		 * If `mask` is 0x00000000 it means that `ncols` is less than or equal 
+		 * to `CACHE_LINE_ELEMS`, so the maximum number of items in a cache 
+		 * line is equal to `ncols` times `l_or_r`.
+		 */
+		uint32_t mli = (ncols * l_or_r);
 
-		uint32_t spots_in_next_cl = items_in_full_cache_lines_per_row + ncols - CACHE_LINE_ELEMS;
-		printf("%u items out of %zu are stored in the next cache line\n", spots_in_next_cl, ncols);
+		/*
+		 * Number of items that falls outside from a full cache line.
+		 */
+		uint32_t eli = mask ? CACHE_LINE_RES(ncols) : (CACHE_LINE_ELEMS - mli);
+
+		/*
+		 * The percentage of non-filled 4-bytes slots compared to the size of 
+		 * a cache line.
+		 */
+		float waste = (eli / (float)ncols) * 100.0;
+		
+		printf("=================================\n");
+		printf("ncols			= %zu\n", ncols);
+		printf("elem x cache line	= %d\n", CACHE_LINE_ELEMS);
+		printf("Max rows x cache line	= %u\n", l_or_r);
+		printf("Max items x cache line	= %u\n", mli);
+		printf("Empty spots x row	= %u\n", eli);
+		printf("Percentage waste x row	= %.4f\n", waste);
+		printf("=================================\n");
 	}
 
 	if(ncols < CACHE_LINE_ELEMS){
@@ -332,7 +389,7 @@ item_t ia[NROWS][NCOLS];
 int main(int argc, char **argv) {
 	clock_t start, end;
 	start = clock();
-	_loop_rowise_optim(NULL, 10000, 3);
+	_loop_rowise_optim(NULL, 10000, 8);
 	//_loop_rowise_baseline();
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
