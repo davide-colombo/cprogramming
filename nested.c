@@ -141,6 +141,15 @@ void _loop_cache_line_analysis(size_t ncols){
 	uint32_t small_res1 = CACHE_LINE_ELEMS / ncols;
 
 	/*
+	 * Computing the remainder of the division between `CACHE_LINE_ELEMS` and 
+	 * `ncols` by using the formula provided by Daniel Lemire 
+	 * (https://lemire.me/blog/2019/02/08/faster-remainders-when-the-divisor-is-a-constant-beating-compilers-and-libdivide/)
+	 */
+//	uint64_t fastc = ((uint64_t)0xFFFFFFFFFFFFFFFF / ncols) + 1;
+//	uint64_t lowbits = fastc * CACHE_LINE_ELEMS;
+//	uint32_t small_res2 = ((__uint128_t)lowbits * ncols) >> 64;
+
+	/*
 	 * Res1: number of full cache lines needed to store a single row
 	 */
 	uint32_t big_res1 = CACHE_LINE_FULL(ncols);
