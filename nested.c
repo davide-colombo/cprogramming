@@ -76,8 +76,8 @@
 #include <stdint.h>
 #include <time.h>
 
-#define NROWS 47
-#define NCOLS 47
+#define NROWS 8192
+#define NCOLS 8192
 
 /*
  * Each cache line is 128 bytes on this machine
@@ -204,13 +204,13 @@ void _loop_cache_line_analysis(size_t ncols){
  *
  * No loop-unrolling is performed.
  */
-void _loop_test1(item_t *ia32[NCOLS], size_t nrows, size_t ncols){
+void _loop_test1(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
 	size_t i = 0;
 	for(; i < nrows; i++){
 		size_t j = 0;
 		item_t *row = &ia32[i][j];
 		for(; j < ncols; j++){
-			row[j] = i * j / 3.0;
+			row[j] = (i + j) / 3.0;
 		}
 	}
 }
