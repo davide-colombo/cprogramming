@@ -92,7 +92,7 @@
 /*
  * Divide by 32 to get the number of cache lines needed to store `n` values
  */
-#define CACHE_LINE_FULLS(n) ( (n) >> 5 )
+#define CACHE_LINE_FULL(n) ( (n) >> 5 )
 
 /*
  * Remainder of the division is the number of items (NOT THE NUMBER OF CACHE 
@@ -124,50 +124,50 @@ void _loop_cache_line_analysis(size_t ncols){
 	 *
 	 * 0x00000000: delta is positive or zero
 	 */
-	uint32_t mask = (uint32_t)( (int32_t)(delta >> 31) );
+	uint32_t mask = (uint32_t)(delta >> 31);
 
 	/*
-	 * This may be tricky.
-	 *
-	 * If `mask` is 0xffffffff this variable represents the number of FULL 
-	 * CACHE LINES to store a row (there may be extra items).
-	 *
-	 * If `mask` is 0x00000000 this variable represents the number of FULL 
-	 * rows that fits a SINGLE cache line (there may be extra slot in the 
-	 * cache line).
+	 * Res1: number of full cache lines needed to store a single row
 	 */
-	uint32_t l_or_r = mask ? 1 : (CACHE_LINE_ELEMS / ncols);
+	uint32_t big_res1 = CACHE_LINE_FULL(ncols);
 
 	/*
-	 * Max number of items per cache line.
-	 *
-	 * If `mask` is 0xffffffff it means that `ncols` is greater than 
-	 * `CACHE_LINE_ELEMS`, so the maximum number of items in a row per 
-	 * cache line is exactly CACHE_LINE_ELEMS.
-	 *
-	 * If `mask` is 0x00000000 it means that `ncols` is less than or equal 
-	 * to `CACHE_LINE_ELEMS`, so the maximum number of items in a cache 
-	 * line is equal to `ncols` times `l_or_r`.
+	 * Res2: number of items in the current row that do not fit in a cache 
+	 * line
 	 */
-	uint32_t mli = (ncols * l_or_r);
+	uint32_t big_res2 = CACHE_LINE_RES(ncols);
 
 	/*
-	 * Number of items that falls outside from a full cache line.
+	 * Res1: number of rows that fit in a single cache line
 	 */
-	uint32_t eli = mask ? CACHE_LINE_RES(ncols) : (CACHE_LINE_ELEMS - mli);
+	uint32_t small_res1 = CACHE_LINE_ELEMS / ncols;
+
+	uint32_t small_tmp = (ncols * small_res1);
+	/*
+	 * Res2: number of empty spots in a cache line
+	 */
+	uint32_t small_res2 = CACHE_LINE_ELEMS - small_tmp;
+
+	uint32_t big_res1_mask = (mask & big_res1);
+	uint32_t small_res1_mask = (~mask & small_res1);
+
+	uint32_t big_res2_mask = (mask & big_res2);
+	uint32_t small_res2_mask = (~mask & small_res2);
+
+	uint32_t res1 = big_res1_mask | small_res1_mask;
+	uint32_t res2 = big_res2_mask | small_res2_mask;
 
 	/*
 	 * The percentage of non-filled 4-bytes slots compared to the size of 
 	 * a cache line.
 	 */
-	float waste = (eli / (float)ncols) * 100.0;
+	float waste = (res2 / (float)ncols) * 100.0;
 	
 	printf("=================================\n");
 	printf("ncols			= %zu\n", ncols);
 	printf("elem x cache line	= %d\n", CACHE_LINE_ELEMS);
-	printf("Max rows x cache line	= %u\n", l_or_r);
-	printf("Max items x cache line	= %u\n", mli);
-	printf("Empty spots x row	= %u\n", eli);
+	printf("Max rows x cache line	= %u\n", res1);
+	printf("Empty spots x row	= %u\n", res2);
 	printf("Percentage waste x row	= %.4f\n", waste);
 	printf("=================================\n");
 }
@@ -321,7 +321,7 @@ item_t ia[NROWS][NCOLS];
 int main(int argc, char **argv) {
 	clock_t start, end;
 	start = clock();
-	_loop_cache_line_analysis(8);
+	_loop_cache_line_analysis(44);
 	//_loop_rowise_baseline();
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
