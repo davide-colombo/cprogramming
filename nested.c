@@ -215,6 +215,22 @@ void _loop_test1(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
 	}
 }
 
+/*
+ * Convert the inner loop by using an infinite loop + an UNLIKELY TO BE TAKEN 
+ * branch.
+ */
+void _loop_test2(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
+	size_t i = 0;
+	for(; i < nrows; i++){
+		size_t j = 0;
+		item_t *row = &ia32[i][j];
+		while(1){
+			row[j] = (i + j) / 3.0;
+			j = j + 1;
+			if(j >= ncols){ break; }
+		}
+	}
+}
 
 //	int unrolled_rowiter = (NROWS >> 3);
 //	int row = 0;
@@ -353,7 +369,7 @@ int main(int argc, char **argv) {
 	clock_t start, end;
 	_loop_cache_line_analysis(NCOLS);
 	start = clock();
-	_loop_test1(&ia[0], NROWS, NCOLS);
+	_loop_test2(&ia[0], NROWS, NCOLS);
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
 	printf("Elapsed = %.20lf\n", elapsed);
