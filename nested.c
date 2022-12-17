@@ -76,8 +76,8 @@
 #include <stdint.h>
 #include <time.h>
 
-#define NROWS 10000
-#define NCOLS 10000
+#define NROWS 47
+#define NCOLS 47
 
 /*
  * Each cache line is 128 bytes on this machine
@@ -191,16 +191,28 @@ void _loop_cache_line_analysis(size_t ncols){
 	printf("=================================\n");
 }
 
+
 /*
- * Function that loops on the items of an array and assigns each item by using 
- * the following expression:
+ * Test 1:
  *
- * 		i * 4 / 3.0
+ * Iterate over a 2D array (nrows * ncols) of `item_t` types.
  *
- * where `i` is the array index of that item.
+ * At each iteration assign i * j / 3.0 to the memory address identified by 
+ * ia32[i][j].
+ *
+ * Iterations are conducted using two induction variable, i and j.
+ *
+ * No loop-unrolling is performed.
  */
-void _loop_rowise_optim(item_t *ia32[], size_t nrows, size_t ncols) {
-	return;
+void _loop_test1(item_t *ia32[NCOLS], size_t nrows, size_t ncols){
+	size_t i = 0;
+	for(; i < nrows; i++){
+		size_t j = 0;
+		item_t *row = &ia32[i][j];
+		for(; j < ncols; j++){
+			row[j] = i * j / 3.0;
+		}
+	}
 }
 
 
@@ -339,9 +351,9 @@ item_t ia[NROWS][NCOLS];
  */
 int main(int argc, char **argv) {
 	clock_t start, end;
+	_loop_cache_line_analysis(NCOLS);
 	start = clock();
-	_loop_cache_line_analysis(10000);
-	//_loop_rowise_baseline();
+	_loop_test1(&ia[0], NROWS, NCOLS);
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
 	printf("Elapsed = %.20lf\n", elapsed);
