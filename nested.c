@@ -105,6 +105,11 @@
  */
 typedef int32_t item_t;
 
+/*
+ * Implementation follows the LOAD->COMPARE->COMBINE pattern suggest by Mike 
+ * Acton in his article "Using masks to accelerate integer code" at:
+ * https://web.archive.org/web/20070801195133/http://www.cellperformance.com/articles/2006/04/better_ppu_performance_through_1.html
+ */
 void _loop_cache_line_analysis(size_t ncols){
 	/*
 	 * The difference between the number of elements in a cache line and 
@@ -127,6 +132,15 @@ void _loop_cache_line_analysis(size_t ncols){
 	uint32_t mask = (uint32_t)(delta >> 31);
 
 	/*
+	 * Res1: number of rows that fit in a single cache line
+	 *
+	 * NOTE: move this to the top so the CPU can schedule it and continue to 
+	 * execute other instructions while finishing to compute the integer 
+	 * division.
+	 */
+	uint32_t small_res1 = CACHE_LINE_ELEMS / ncols;
+
+	/*
 	 * Res1: number of full cache lines needed to store a single row
 	 */
 	uint32_t big_res1 = CACHE_LINE_FULL(ncols);
@@ -137,12 +151,8 @@ void _loop_cache_line_analysis(size_t ncols){
 	 */
 	uint32_t big_res2 = CACHE_LINE_RES(ncols);
 
-	/*
-	 * Res1: number of rows that fit in a single cache line
-	 */
-	uint32_t small_res1 = CACHE_LINE_ELEMS / ncols;
-
 	uint32_t small_tmp = (ncols * small_res1);
+
 	/*
 	 * Res2: number of empty spots in a cache line
 	 */
@@ -162,7 +172,7 @@ void _loop_cache_line_analysis(size_t ncols){
 	 * a cache line.
 	 */
 	float waste = (res2 / (float)ncols) * 100.0;
-	
+
 	printf("=================================\n");
 	printf("ncols			= %zu\n", ncols);
 	printf("elem x cache line	= %d\n", CACHE_LINE_ELEMS);
@@ -321,7 +331,7 @@ item_t ia[NROWS][NCOLS];
 int main(int argc, char **argv) {
 	clock_t start, end;
 	start = clock();
-	_loop_cache_line_analysis(44);
+	_loop_cache_line_analysis(10000);
 	//_loop_rowise_baseline();
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;

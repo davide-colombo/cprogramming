@@ -24,15 +24,15 @@ __loop_cache_line_analysis:             ; @_loop_cache_line_analysis
 	.cfi_offset b8, -72
 	.cfi_offset b9, -80
 	mov	x19, x0
-	lsr	x8, x0, #5
-	and	w9, w19, #0x1f
 	mov	w21, #32
-	udiv	x10, x21, x0
-	msub	w11, w10, w19, w21
+	udiv	x8, x21, x0
+	lsr	x9, x0, #5
+	and	w10, w19, #0x1f
+	msub	w11, w8, w19, w21
 	sub	w12, w19, #33
 	cmp	w12, #0
-	csel	w22, w9, w11, ge
-	csel	x23, x8, x10, ge
+	csel	w22, w10, w11, ge
+	csel	x23, x9, x8, ge
 	ucvtf	s0, w22
 	ucvtf	s1, x0
 	fdiv	s0, s0, s1
@@ -122,7 +122,7 @@ Lloh13:
 	add	x20, x20, l_str.7@PAGEOFF
 	mov	x0, x20
 	bl	_puts
-	mov	w8, #44
+	mov	w8, #10000
 	str	x8, [sp]
 Lloh14:
 	adrp	x0, l_.str.1@PAGE
@@ -136,23 +136,23 @@ Lloh16:
 Lloh17:
 	add	x0, x0, l_.str.2@PAGEOFF
 	bl	_printf
-	mov	w8, #1
+	mov	w8, #312
 	str	x8, [sp]
 Lloh18:
 	adrp	x0, l_.str.3@PAGE
 Lloh19:
 	add	x0, x0, l_.str.3@PAGEOFF
 	bl	_printf
-	mov	w8, #12
+	mov	w8, #16
 	str	x8, [sp]
 Lloh20:
 	adrp	x0, l_.str.4@PAGE
 Lloh21:
 	add	x0, x0, l_.str.4@PAGEOFF
 	bl	_printf
-	mov	x8, #2147483648
-	movk	x8, #17873, lsl #32
-	movk	x8, #16443, lsl #48
+	mov	x8, #1073741824
+	movk	x8, #31457, lsl #32
+	movk	x8, #16324, lsl #48
 	str	x8, [sp]
 Lloh22:
 	adrp	x0, l_.str.5@PAGE
