@@ -250,6 +250,28 @@ void _loop_test3(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
 		}
 	}
 }
+
+void _loop_test4(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
+	size_t i = 0;
+	double c = 1.0f / 3.0f;
+	for(; i < nrows; i++){
+		size_t j = 0;
+		item_t *row = &ia32[i][j];
+		while(1){
+			double _ii = i * c;
+			double _jj = j * c;
+			uint64_t _ij= (uint64_t)_ii + (uint64_t)_jj;
+			row[j] = _ij;
+			j = j + 1;
+			if(j >= ncols){ break; }
+		}
+	}
+}
+
+
+
+
+
 //	int unrolled_rowiter = (NROWS >> 3);
 //	int row = 0;
 //	do{ // unrolled rowiter
@@ -387,7 +409,7 @@ int main(int argc, char **argv) {
 	clock_t start, end;
 	_loop_cache_line_analysis(NCOLS);
 	start = clock();
-	_loop_test3(&ia[0], NROWS, NCOLS);
+	_loop_test4(&ia[0], NROWS, NCOLS);
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
 	printf("Elapsed = %.20lf\n", elapsed);
