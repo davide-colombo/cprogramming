@@ -297,11 +297,30 @@ void _loop_test4_data_type_conv2(item_t (*ia32)[NCOLS], size_t nrows, size_t nco
 			item_t _ij=(item_t)_ii + (item_t)_jj;
 			row[j] = _ij;
 			j = j + 1;
-			if(j >= ncols){ break; }
+			if( j >= ncols ){ break; }
 		}
 	}
 }
 
+/*
+ *
+ */
+void _loop_test5(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
+	double c = 1.0f / 3.0f;
+	size_t i = 0;
+	for(; i < nrows; i++){
+		size_t j = ncols-1;
+		item_t *row = &ia32[i][j];
+		while(1){
+			uint64_t _ii	= i * c;
+			uint64_t _jj	= j * c;
+			item_t _ij		= (item_t)_ii + (item_t)_jj;
+			row[j]			= _ij;
+			j				= j - 1;
+			if(j == 0){ break; }
+		}
+	}
+}
 
 
 //	int unrolled_rowiter = (NROWS >> 3);

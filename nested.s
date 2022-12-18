@@ -907,11 +907,161 @@ LBB6_9:
 	.cfi_endproc
                                         ; -- End function
 	.section	__TEXT,__literal16,16byte_literals
-	.p2align	4                               ; -- Begin function main
+	.p2align	4                               ; -- Begin function _loop_test5
 lCPI7_0:
+	.quad	-2                              ; 0xfffffffffffffffe
+	.quad	-3                              ; 0xfffffffffffffffd
+lCPI7_1:
+	.quad	0                               ; 0x0
+	.quad	-1                              ; 0xffffffffffffffff
+	.section	__TEXT,__text,regular,pure_instructions
+	.globl	__loop_test5
+	.p2align	2
+__loop_test5:                           ; @_loop_test5
+	.cfi_startproc
+; %bb.0:
+	cbz	x1, LBB7_8
+; %bb.1:
+	mov	x8, #0
+	sub	x9, x2, #1
+	and	x10, x9, #0xfffffffffffffff0
+	and	x11, x9, #0xf
+	dup.2d	v1, x9
+Lloh36:
+	adrp	x12, lCPI7_0@PAGE
+Lloh37:
+	ldr	q0, [x12, lCPI7_0@PAGEOFF]
+	add.2d	v0, v1, v0
+Lloh38:
+	adrp	x12, lCPI7_1@PAGE
+Lloh39:
+	ldr	q2, [x12, lCPI7_1@PAGEOFF]
+	add.2d	v1, v1, v2
+	add	x12, x0, x2, lsl #3
+	sub	x12, x12, #20
+	add	x13, x0, x9, lsl #2
+	mov	x14, #-4
+	dup.2d	v2, x14
+	mov	x14, #-8
+	dup.2d	v3, x14
+	mov	x14, #-12
+	dup.2d	v4, x14
+	mov	x14, #-16
+	dup.2d	v5, x14
+	mov	x14, #1610612736
+	movk	x14, #21845, lsl #32
+	movk	x14, #16341, lsl #48
+	dup.2d	v6, x14
+	b	LBB7_3
+LBB7_2:                                 ;   in Loop: Header=BB7_3 Depth=1
+	add	x8, x8, #1
+	add	x12, x12, #8, lsl #12           ; =32768
+	add	x13, x13, #8, lsl #12           ; =32768
+	cmp	x8, x1
+	b.eq	LBB7_8
+LBB7_3:                                 ; =>This Loop Header: Depth=1
+                                        ;     Child Loop BB7_5 Depth 2
+                                        ;     Child Loop BB7_7 Depth 2
+	ucvtf	d7, x8
+	fmov	d16, x14
+	fmul	d7, d7, d16
+	fcvtzu	x15, d7
+	mov	x16, x9
+	cmp	x9, #16
+	b.lo	LBB7_7
+; %bb.4:                                ;   in Loop: Header=BB7_3 Depth=1
+	dup.4s	v7, w15
+	mov	x16, x12
+	mov	x17, x10
+	mov.16b	v16, v1
+	mov.16b	v17, v0
+LBB7_5:                                 ;   Parent Loop BB7_3 Depth=1
+                                        ; =>  This Inner Loop Header: Depth=2
+	add.2d	v18, v16, v2
+	add.2d	v19, v17, v2
+	add.2d	v20, v16, v3
+	add.2d	v21, v17, v3
+	add.2d	v22, v16, v4
+	add.2d	v23, v17, v4
+	ucvtf.2d	v24, v17
+	ucvtf.2d	v25, v16
+	ucvtf.2d	v19, v19
+	ucvtf.2d	v18, v18
+	ucvtf.2d	v21, v21
+	ucvtf.2d	v20, v20
+	ucvtf.2d	v23, v23
+	ucvtf.2d	v22, v22
+	fmul.2d	v25, v25, v6
+	fmul.2d	v24, v24, v6
+	fmul.2d	v18, v18, v6
+	fmul.2d	v19, v19, v6
+	fmul.2d	v20, v20, v6
+	fmul.2d	v21, v21, v6
+	fmul.2d	v22, v22, v6
+	fmul.2d	v23, v23, v6
+	fcvtzu.2d	v24, v24
+	fcvtzu.2d	v25, v25
+	fcvtzu.2d	v19, v19
+	fcvtzu.2d	v18, v18
+	fcvtzu.2d	v21, v21
+	fcvtzu.2d	v20, v20
+	fcvtzu.2d	v23, v23
+	fcvtzu.2d	v22, v22
+	xtn.2s	v25, v25
+	xtn2.4s	v25, v24
+	xtn.2s	v18, v18
+	xtn2.4s	v18, v19
+	xtn.2s	v19, v20
+	xtn2.4s	v19, v21
+	xtn.2s	v20, v22
+	xtn2.4s	v20, v23
+	add.4s	v21, v7, v25
+	add.4s	v18, v7, v18
+	add.4s	v19, v7, v19
+	add.4s	v20, v7, v20
+	rev64.4s	v21, v21
+	ext.16b	v21, v21, v21, #8
+	rev64.4s	v18, v18
+	ext.16b	v18, v18, v18, #8
+	stp	q18, q21, [x16, #-16]
+	rev64.4s	v18, v19
+	ext.16b	v18, v18, v18, #8
+	rev64.4s	v19, v20
+	ext.16b	v19, v19, v19, #8
+	stp	q19, q18, [x16, #-48]
+	add.2d	v17, v17, v5
+	add.2d	v16, v16, v5
+	sub	x16, x16, #64
+	sub	x17, x17, #16
+	cbnz	x17, LBB7_5
+; %bb.6:                                ;   in Loop: Header=BB7_3 Depth=1
+	mov	x16, x11
+	cmp	x9, x10
+	b.eq	LBB7_2
+LBB7_7:                                 ;   Parent Loop BB7_3 Depth=1
+                                        ; =>  This Inner Loop Header: Depth=2
+	ucvtf	d7, x16
+	fmov	d16, x14
+	fmul	d7, d7, d16
+	fcvtzu	x17, d7
+	add	w17, w17, w15
+	str	w17, [x13, x16, lsl #2]
+	subs	x16, x16, #1
+	b.ne	LBB7_7
+	b	LBB7_2
+LBB7_8:
+	ret
+	.loh AdrpLdr	Lloh38, Lloh39
+	.loh AdrpAdrp	Lloh36, Lloh38
+	.loh AdrpLdr	Lloh36, Lloh37
+	.cfi_endproc
+                                        ; -- End function
+	.section	__TEXT,__literal16,16byte_literals
+	.p2align	4                               ; -- Begin function main
+lCPI8_0:
 	.quad	2                               ; 0x2
 	.quad	3                               ; 0x3
-lCPI7_1:
+lCPI8_1:
 	.quad	0                               ; 0x0
 	.quad	1                               ; 0x1
 	.section	__TEXT,__text,regular,pure_instructions
@@ -929,63 +1079,63 @@ _main:                                  ; @main
 	.cfi_offset w29, -16
 	.cfi_offset w19, -24
 	.cfi_offset w20, -32
-Lloh36:
+Lloh40:
 	adrp	x19, l_str.7@PAGE
-Lloh37:
+Lloh41:
 	add	x19, x19, l_str.7@PAGEOFF
 	mov	x0, x19
 	bl	_puts
 	mov	w8, #8192
 	str	x8, [sp]
-Lloh38:
+Lloh42:
 	adrp	x0, l_.str.1@PAGE
-Lloh39:
+Lloh43:
 	add	x0, x0, l_.str.1@PAGEOFF
 	bl	_printf
 	mov	w8, #32
 	str	x8, [sp]
-Lloh40:
+Lloh44:
 	adrp	x0, l_.str.2@PAGE
-Lloh41:
+Lloh45:
 	add	x0, x0, l_.str.2@PAGEOFF
 	bl	_printf
 	mov	w8, #256
 	str	x8, [sp]
-Lloh42:
+Lloh46:
 	adrp	x0, l_.str.3@PAGE
-Lloh43:
+Lloh47:
 	add	x0, x0, l_.str.3@PAGEOFF
 	bl	_printf
 	str	xzr, [sp]
-Lloh44:
+Lloh48:
 	adrp	x0, l_.str.4@PAGE
-Lloh45:
+Lloh49:
 	add	x0, x0, l_.str.4@PAGEOFF
 	bl	_printf
 	str	xzr, [sp]
-Lloh46:
+Lloh50:
 	adrp	x0, l_.str.5@PAGE
-Lloh47:
+Lloh51:
 	add	x0, x0, l_.str.5@PAGEOFF
 	bl	_printf
 	mov	x0, x19
 	bl	_puts
-Lloh48:
+Lloh52:
 	adrp	x8, _ia@GOTPAGE
-Lloh49:
+Lloh53:
 	ldr	x8, [x8, _ia@GOTPAGEOFF]
 	add	x20, x8, #32
 	bl	_clock
 	mov	x19, x0
 	mov	x8, #0
-Lloh50:
-	adrp	x9, lCPI7_0@PAGE
-Lloh51:
-	ldr	q0, [x9, lCPI7_0@PAGEOFF]
-Lloh52:
-	adrp	x9, lCPI7_1@PAGE
-Lloh53:
-	ldr	q1, [x9, lCPI7_1@PAGEOFF]
+Lloh54:
+	adrp	x9, lCPI8_0@PAGE
+Lloh55:
+	ldr	q0, [x9, lCPI8_0@PAGEOFF]
+Lloh56:
+	adrp	x9, lCPI8_1@PAGE
+Lloh57:
+	ldr	q1, [x9, lCPI8_1@PAGEOFF]
 	mov	w9, #4
 	dup.2d	v2, x9
 	mov	w9, #8
@@ -998,8 +1148,8 @@ Lloh53:
 	movk	x9, #21845, lsl #32
 	movk	x9, #16341, lsl #48
 	dup.2d	v6, x9
-LBB7_1:                                 ; =>This Loop Header: Depth=1
-                                        ;     Child Loop BB7_2 Depth 2
+LBB8_1:                                 ; =>This Loop Header: Depth=1
+                                        ;     Child Loop BB8_2 Depth 2
 	mov	x10, #0
 	ucvtf	d7, x8
 	fmov	d16, x9
@@ -1008,7 +1158,7 @@ LBB7_1:                                 ; =>This Loop Header: Depth=1
 	dup.4s	v7, w11
 	mov.16b	v16, v1
 	mov.16b	v17, v0
-LBB7_2:                                 ;   Parent Loop BB7_1 Depth=1
+LBB8_2:                                 ;   Parent Loop BB8_1 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
 	add.2d	v18, v17, v2
 	add.2d	v19, v16, v2
@@ -1059,12 +1209,12 @@ LBB7_2:                                 ;   Parent Loop BB7_1 Depth=1
 	add.2d	v16, v16, v5
 	add	x10, x10, #64
 	cmp	x10, #8, lsl #12                ; =32768
-	b.ne	LBB7_2
-; %bb.3:                                ;   in Loop: Header=BB7_1 Depth=1
+	b.ne	LBB8_2
+; %bb.3:                                ;   in Loop: Header=BB8_1 Depth=1
 	add	x8, x8, #1
 	add	x20, x20, #8, lsl #12           ; =32768
 	cmp	x8, #2, lsl #12                 ; =8192
-	b.ne	LBB7_1
+	b.ne	LBB8_1
 ; %bb.4:
 	bl	_clock
 	sub	x8, x0, x19
@@ -1074,9 +1224,9 @@ LBB7_2:                                 ;   Parent Loop BB7_1 Depth=1
 	fmov	d1, x8
 	fdiv	d0, d0, d1
 	str	d0, [sp]
-Lloh54:
+Lloh58:
 	adrp	x0, l_.str.6@PAGE
-Lloh55:
+Lloh59:
 	add	x0, x0, l_.str.6@PAGEOFF
 	bl	_printf
 	mov	w0, #0
@@ -1084,17 +1234,17 @@ Lloh55:
 	ldp	x20, x19, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #48
 	ret
-	.loh AdrpLdr	Lloh52, Lloh53
-	.loh AdrpAdrp	Lloh50, Lloh52
-	.loh AdrpLdr	Lloh50, Lloh51
-	.loh AdrpLdrGot	Lloh48, Lloh49
+	.loh AdrpLdr	Lloh56, Lloh57
+	.loh AdrpAdrp	Lloh54, Lloh56
+	.loh AdrpLdr	Lloh54, Lloh55
+	.loh AdrpLdrGot	Lloh52, Lloh53
+	.loh AdrpAdd	Lloh50, Lloh51
+	.loh AdrpAdd	Lloh48, Lloh49
 	.loh AdrpAdd	Lloh46, Lloh47
 	.loh AdrpAdd	Lloh44, Lloh45
 	.loh AdrpAdd	Lloh42, Lloh43
 	.loh AdrpAdd	Lloh40, Lloh41
-	.loh AdrpAdd	Lloh38, Lloh39
-	.loh AdrpAdd	Lloh36, Lloh37
-	.loh AdrpAdd	Lloh54, Lloh55
+	.loh AdrpAdd	Lloh58, Lloh59
 	.cfi_endproc
                                         ; -- End function
 	.section	__TEXT,__cstring,cstring_literals
