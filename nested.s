@@ -1200,9 +1200,9 @@ LBB8_8:
 __loop_test7:                           ; @_loop_test7
 	.cfi_startproc
 ; %bb.0:
-	mov	x9, #0
+	mov	x10, #0
 	mov	x8, #0
-	mov	w10, #67108864
+	mul	x9, x2, x1
 	mov	x11, #1610612736
 	movk	x11, #21845, lsl #32
 	movk	x11, #16341, lsl #48
@@ -1211,19 +1211,19 @@ LBB9_1:                                 ; =>This Inner Loop Header: Depth=1
 	fmov	d1, x11
 	fmul	d0, d0, d1
 	fcvtzu	x12, d0
-	ucvtf	d0, x9
+	ucvtf	d0, x10
 	fmul	d0, d0, d1
 	fcvtzu	x13, d0
 	add	w12, w12, w13
 	str	w12, [x0], #4
-	sub	x12, x9, x2
+	sub	x12, x10, x2
 	asr	x12, x12, #63
 	mvn	w13, w12
-	add	x9, x9, #1
-	and	x9, x12, x9
+	add	x10, x10, #1
+	and	x10, x12, x10
 	and	x12, x13, #0x1
 	add	x8, x12, x8
-	subs	x10, x10, #1
+	subs	x9, x9, #1
 	b.ne	LBB9_1
 ; %bb.2:
 	ret

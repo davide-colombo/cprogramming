@@ -375,7 +375,7 @@ void _loop_test7(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
 	 * This ensures the underflow is avoided.
 	 */
 	double c = 1.0f / 3.0f;
-	size_t l = 67108864;		// limit
+	size_t l = nrows * ncols;		// limit
 	size_t i = 0;					// index
 	size_t x = 0;					// row
 	size_t y = 0;					// col
