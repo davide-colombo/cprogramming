@@ -176,8 +176,13 @@ struct buyer_orders {
  */
 double _order_sum_priced(struct order *init, long delta) {
 	double sum = 0;
-	while( --delta >= 0 ) {
-		sum += (init+delta)->price;
+	double price = 0;
+	while(1) {
+		price = init->price;
+		sum = sum + price;
+		init = init + 1;
+		delta = delta - 1;
+		if(delta == 0){ break; }
 	}
 	return sum;
 }
