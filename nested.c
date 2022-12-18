@@ -330,12 +330,11 @@ void _loop_test6(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
 	size_t i = 0;
 	while(1){
 		uint64_t _ii	= i * c;
-		item_t _tmp		= (item_t)_ii;
 		size_t j = 0;
 		item_t *row = &ia32[i][j];
 		while(1){
 			uint64_t _jj	= j * c;
-			item_t _res		= _tmp + (item_t)_jj;
+			item_t _res		= (item_t)_ii + (item_t)_jj;
 			row[j]			= _res;
 			j				= j + 1;
 			if(j >= ncols){ break; }
