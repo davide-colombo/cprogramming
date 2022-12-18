@@ -344,6 +344,72 @@ void _loop_test6(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
 	}
 }
 
+void _loop_test7(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
+	/*
+	 * There could be an overflow problem with the multiplication and also an 
+	 * underflow problem with the subtraction between `i` and `l`.
+	 *
+	 * Multiplication overflow:
+	 *
+	 * The multiplication between two unsigned integers can overflow and in 
+	 * that case the result is equal to the product mod (ULONG_MAX + 1) (i.e., 
+	 * wraps around).
+	 *
+	 * Need to test for the condition:
+	 *		nrows < (ULONG_MAX / ncols);
+	 *
+	 * Subtraction underflow:
+	 *
+	 * The subtraction between two unsigned integers can underflow and in that 
+	 * case the result is equal to ULONG_MAX - (i - l) (i.e., it wraps 
+	 * around).
+	 *
+	 * Need to test for the condition:
+	 * 		l > 0 & i < LONG_MIN + l
+	 *
+	 * In this case, since it's known fact that `i` is less than `l` it's 
+	 * possible to invert the operand of the subtraction and compute instead:
+	 *
+	 * 		l - i
+	 *
+	 * This ensures the underflow is avoided.
+	 */
+	double c = 1.0f / 3.0f;
+	size_t l = nrows * ncols;		// limit
+	size_t i = 0;					// index
+	size_t x = 0;					// row
+	size_t y = 0;					// col
+	item_t *el = &ia32[0][0];
+	while(1){
+		// COMPUTE
+		uint64_t _xx	= x * c;
+		uint64_t _yy	= y * c;
+		item_t _res		= (item_t)_xx + (item_t)_yy;
+		el[i]			= _res;
+
+		// MASK
+		uint64_t mask	= (uint64_t)((int64_t)(y - ncols) >> 63);
+
+		// Y
+		uint64_t _updy	= y + 1;				// next col
+		uint64_t _res1y	= (mask & _updy);
+		uint64_t _res2y	= (~mask & 0);
+
+		// X
+		uint64_t _updx	= x + 1;				// next row
+		uint64_t _res1x	= (~mask & _updx);
+		uint64_t _res2x	= (mask & x);
+
+		// COMBINE
+		y = _res1y | _res2y;
+		x = _res1x | _res2x;
+		i = i + 1;
+
+		// TEST
+		int64_t tst = (int64_t)(l - i);
+		if(tst == 0){ break; }
+	}
+}
 //	int unrolled_rowiter = (NROWS >> 3);
 //	int row = 0;
 //	do{ // unrolled rowiter
@@ -481,7 +547,7 @@ int main(int argc, char **argv) {
 	clock_t start, end;
 	_loop_cache_line_analysis(NCOLS);
 	start = clock();
-	_loop_test6(&ia[0], NROWS, NCOLS);
+	_loop_test7(&ia[0], NROWS, NCOLS);
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
 	printf("Elapsed = %.20lf\n", elapsed);
