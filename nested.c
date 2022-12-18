@@ -232,6 +232,24 @@ void _loop_test2(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
 	}
 }
 
+/*
+ * Extract the division by 3.0 to replace it with a multiplication by 1.0/3.0 
+ * (i.e., the inverse). The inverse can be computed outside the two loops and 
+ * the division can be turned into a multiplication.
+ */
+void _loop_test3(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
+	size_t i = 0;
+	double c = 1.0f / 3.0f;
+	for(; i < nrows; i++){
+		size_t j = 0;
+		item_t *row = &ia32[i][j];
+		while(1){
+			row[j] = (i + j) * c;
+			j = j + 1;
+			if(j >= ncols){ break; }
+		}
+	}
+}
 //	int unrolled_rowiter = (NROWS >> 3);
 //	int row = 0;
 //	do{ // unrolled rowiter
@@ -369,7 +387,7 @@ int main(int argc, char **argv) {
 	clock_t start, end;
 	_loop_cache_line_analysis(NCOLS);
 	start = clock();
-	_loop_test2(&ia[0], NROWS, NCOLS);
+	_loop_test3(&ia[0], NROWS, NCOLS);
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
 	printf("Elapsed = %.20lf\n", elapsed);
