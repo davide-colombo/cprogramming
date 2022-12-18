@@ -238,8 +238,8 @@ void _loop_test2(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
  * the division can be turned into a multiplication.
  */
 void _loop_test3(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
-	size_t i = 0;
 	double c = 1.0f / 3.0f;
+	size_t i = 0;
 	for(; i < nrows; i++){
 		size_t j = 0;
 		item_t *row = &ia32[i][j];
@@ -252,8 +252,8 @@ void _loop_test3(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
 }
 
 void _loop_test4(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
-	size_t i = 0;
 	double c = 1.0f / 3.0f;
+	size_t i = 0;
 	for(; i < nrows; i++){
 		size_t j = 0;
 		item_t *row = &ia32[i][j];
@@ -268,6 +268,22 @@ void _loop_test4(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
 	}
 }
 
+void _loop_test4_data_type_conv(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
+	double c = 1.0f / 3.0f;
+	size_t i = 0;
+	for(; i < nrows; i++){
+		size_t j = 0;
+		item_t *row = &ia32[i][j];
+		while(1){
+			double _ii = i * c;
+			double _jj = j * c;
+			item_t _ij=(item_t)_ii + (item_t)_jj;
+			row[j] = _ij;
+			j = j + 1;
+			if(j >= ncols){ break; }
+		}
+	}
+}
 
 
 
