@@ -268,7 +268,7 @@ void _loop_test4(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
 	}
 }
 
-void _loop_test4_data_type_conv(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
+void _loop_test4_data_type_conv1(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
 	double c = 1.0f / 3.0f;
 	size_t i = 0;
 	for(; i < nrows; i++){
@@ -285,6 +285,22 @@ void _loop_test4_data_type_conv(item_t (*ia32)[NCOLS], size_t nrows, size_t ncol
 	}
 }
 
+void _loop_test4_data_type_conv2(item_t (*ia32)[NCOLS], size_t nrows, size_t ncols){
+	double c = 1.0f / 3.0f;
+	size_t i = 0;
+	for(; i < nrows; i++){
+		size_t j = 0;
+		item_t *row = &ia32[i][j];
+		while(1){
+			uint64_t _ii = i * c;
+			uint64_t _jj = j * c;
+			item_t _ij=(item_t)_ii + (item_t)_jj;
+			row[j] = _ij;
+			j = j + 1;
+			if(j >= ncols){ break; }
+		}
+	}
+}
 
 
 
@@ -425,7 +441,7 @@ int main(int argc, char **argv) {
 	clock_t start, end;
 	_loop_cache_line_analysis(NCOLS);
 	start = clock();
-	_loop_test4(&ia[0], NROWS, NCOLS);
+	_loop_test4_data_type_conv1(&ia[0], NROWS, NCOLS);
 	end = clock();
 	double elapsed = (end - start) / (double) CLOCKS_PER_SEC;
 	printf("Elapsed = %.20lf\n", elapsed);
