@@ -8,6 +8,8 @@
 # Default compiler
 # ----------------------------------------------------------------------------
 CC := clang
+AS := as
+LD := ld
 
 # ----------------------------------------------------------------------------
 # Default compiler flags
@@ -15,6 +17,11 @@ CC := clang
 INCDIRS := -I.
 OPTIM := -O2
 CFLAGS := -std=c99 -fstrict-aliasing $(OPTIM) $(INCDIRS)
+ASFLAGS := -q $(INCDIRS)
+
+LDLIBS := -lc
+LDOPTIM := -dead_strip
+LDFLAGS := -execute -dynamic -pie $(LDOPTIM) $(LDLIBS)
 
 # ----------------------------------------------------------------------------
 # Files
@@ -28,20 +35,22 @@ OBJS := $(patsubst %.c, %.o, $(SRCS))
 # COMMANDS
 ##############################################################################
 
+all: order $(ASMS)
+
 # ----------------------------------------------------------------------------
 # Executable
 # ----------------------------------------------------------------------------
 order: $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(LD) $^ $(LDFLAGS) -o $@
 
 # ----------------------------------------------------------------------------
-# Object files
+# Assemble machine instructions files into object files using `as` assembler.
 # ----------------------------------------------------------------------------
 %.o: %.s
-	$(CC) -o $@ -c $< $(CFLAGS)
+	$(AS) $(ASFLAGS) -o $@ $<
 
 # ----------------------------------------------------------------------------
-# Assembly files
+# Generate assembly files using `clang` with optimization options
 # ----------------------------------------------------------------------------
 %.s: %.c
 	$(CC) -o $@ -S $< $(CFLAGS)
