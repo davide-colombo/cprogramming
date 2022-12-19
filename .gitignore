@@ -7,3 +7,7 @@
 
 # Do not ignore directories
 !*/
+
+# Ignore object files
+*.o
+
