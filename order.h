@@ -1,18 +1,3 @@
-
-#ifndef ORDER_H
-#define ORDER_H
-
-#define MAX_ORDERS 1024
-
-/*
- * 4-byte size
- * 4-byte alignment
- */
-typedef struct _order {
-	float price;
-} order;
-
-
 /*****************************************************************************
  * Worst case scenario of memory resources consumption:
  *
@@ -104,5 +89,20 @@ typedef struct _order {
  * 		2^7 / 2^2 = 2^5 items of the (paid/unpaid) order array.
  *
  ****************************************************************************/
+
+#ifndef ORDER_H
+#define ORDER_H
+
+#include <stddef.h>
+#include "err.h"
+
+#define MAX_ORDERS 1024
+
+typedef struct order4 {
+	float price;
+} order4_t;
+
+err_t order_alloc(order4_t **optr, size_t n);
+err_t order_free(order4_t **optr);
 
 #endif	/* ORDER_H */
