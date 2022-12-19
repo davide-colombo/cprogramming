@@ -34,7 +34,7 @@ err_t buyer_alloc(buyer8_t **bptr, size_t n);
  * Release previously dynamically allocated memory pointed to by "bptr" 
  * pointer.
  */
-err_t buyer_free(buyer8_t *bptr);
+err_t buyer_free(buyer8_t **bptr);
 
 
 #endif	/* BUYER_H */

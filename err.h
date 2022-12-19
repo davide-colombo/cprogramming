@@ -28,6 +28,9 @@ typedef uint8_t err_t;
 
 
 #define SUCC_ALLOC		(err_t) 0x00
+#define SUCC_FREE		(err_t) 0x01
+
 #define BAD_ALLOC		(err_t) 0x80
+#define BAD_FREE		(err_t) 0x81
 
 #endif	/* ERR_H */
