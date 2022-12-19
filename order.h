@@ -102,7 +102,18 @@ typedef struct order4 {
 	float price;
 } order4_t;
 
+
 err_t order_alloc(order4_t **optr, size_t n);
 err_t order_free(order4_t **optr);
+
+/*
+ * Interface to allocate and free memory for the array of pointers to orders.
+ * The array has the purpose of storing the pointer to the first item in the 
+ * array of orders that correspond to a given buyer.
+ * The buyer id defines the index in the array.
+ */
+err_t order_head_alloc(order4_t **otpr, size_t n);
+err_t order_head_free(order4_t **optr);
+
 
 #endif	/* ORDER_H */
