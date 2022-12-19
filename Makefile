@@ -19,7 +19,7 @@ CFLAGS := -std=c99 -fstrict-aliasing $(OPTIM) $(INCDIRS)
 # ----------------------------------------------------------------------------
 # Files
 # ----------------------------------------------------------------------------
-SRCS := order.c main.c
+SRCS := main.c buyer.c order.c
 ASMS := $(patsubst %.c, %.s, $(SRCS))
 OBJS := $(patsubst %.c, %.o, $(SRCS))
 

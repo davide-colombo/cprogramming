@@ -2,19 +2,7 @@
 #ifndef ORDER_H
 #define ORDER_H
 
-#include <stdint.h>
-
-#define MAX_BUYERS 1024
 #define MAX_ORDERS 1024
-
-/*
- * 8-byte size
- * 8-byte alignment
- */
-typedef struct _buyer {
-	uint64_t id;
-} buyer;
-
 
 /*
  * 4-byte size
