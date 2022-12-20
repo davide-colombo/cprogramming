@@ -50,14 +50,47 @@ void particle3_cache_friendly_grav_force(particle_acc3_t *acc, particle_pos3_t *
 	}
 }
 
-void particle3_cache_friendly_rand_init_pos3(particle_pos3_t *pos){
+void particle3_cache_friendly_rand_init_pos3(particle_pos3_t *pos, double scale, double shift){
+	srand(time(NULL));
+	double irm = 1.0f / (double) RAND_MAX;
+	scale *= irm;
+	shift *= irm;
+	for(int i = 0; i < PARTICLES; i++){
+		particle_pos3_t ipos = pos[i];
 
+		double rxsl = rand() * scale;
+		double rysl = rand() * scale;
+		double rzsl = rand() * scale;
+
+		double rxsh = rand() * shift;
+		double rysh = rand() * shift;
+		double rzsh = rand() * shift;
+
+		ipos.x = rxsl + rxsh;
+		ipos.y = rysl + rysh;
+		ipos.z = rzsl + rzsh;
+	}
 }
 
-void particle3_cache_friendly_rand_init_vel3(particle_vel3_t *vel){
+void particle3_cache_friendly_rand_init_acc3(particle_acc3_t *acc, double scale, double shift){
+	srand(time(NULL));
+	double irm = 1.0f / (double) RAND_MAX;
+	scale *= irm;
+	shift *= irm;
+	for(int i = 0; i < PARTICLES; i++){
+		particle_acc3_t ipos = acc[i];
 
-}
+		double rxsl = rand() * scale;
+		double rysl = rand() * scale;
+		double rzsl = rand() * scale;
 
-void particle3_cache_friendly_rand_init_acc3(particle_acc3_t *acc){
+		double rxsh = rand() * shift;
+		double rysh = rand() * shift;
+		double rzsh = rand() * shift;
+
+		iacc.x = rxsl + rxsh;
+		iacc.y = rysl + rysh;
+		iacc.z = rzsl + rzsh;
+	}
 
 }

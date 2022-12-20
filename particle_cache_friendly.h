@@ -27,8 +27,7 @@ typedef float3_t particle_acc3_t;
  */
 void particle3_cache_friendly_grav_force(particle_acc3_t *acc, particle_pos3_t *pos, float mass);
 
-void particle3_cache_friendly_rand_init_pos3(particle_pos3_t *pos);
-void particle3_cache_friendly_rand_init_vel3(particle_vel3_t *vel);
-void particle3_cache_friendly_rand_init_acc3(particle_acc3_t *acc);
+void particle3_cache_friendly_rand_init_pos3(particle_pos3_t *pos, double scale, double shift);
+void particle3_cache_friendly_rand_init_acc3(particle_acc3_t *acc, double scale, double shift);
 
 #endif
