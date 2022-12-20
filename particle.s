@@ -5,143 +5,61 @@
 _particle3_gravitational_force:         ; @particle3_gravitational_force
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #240
-	stp	d13, d12, [sp, #96]             ; 16-byte Folded Spill
-	stp	d11, d10, [sp, #112]            ; 16-byte Folded Spill
-	stp	d9, d8, [sp, #128]              ; 16-byte Folded Spill
-	stp	x28, x27, [sp, #144]            ; 16-byte Folded Spill
-	stp	x26, x25, [sp, #160]            ; 16-byte Folded Spill
-	stp	x24, x23, [sp, #176]            ; 16-byte Folded Spill
-	stp	x22, x21, [sp, #192]            ; 16-byte Folded Spill
-	stp	x20, x19, [sp, #208]            ; 16-byte Folded Spill
-	stp	x29, x30, [sp, #224]            ; 16-byte Folded Spill
-	add	x29, sp, #224
-	.cfi_def_cfa w29, 16
-	.cfi_offset w30, -8
-	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-	.cfi_offset w21, -40
-	.cfi_offset w22, -48
-	.cfi_offset w23, -56
-	.cfi_offset w24, -64
-	.cfi_offset w25, -72
-	.cfi_offset w26, -80
-	.cfi_offset w27, -88
-	.cfi_offset w28, -96
-	.cfi_offset b8, -104
-	.cfi_offset b9, -112
-	.cfi_offset b10, -120
-	.cfi_offset b11, -128
-	.cfi_offset b12, -136
-	.cfi_offset b13, -144
-	fmov	d8, d0
-	mov	x19, x0
-	mov	x23, #0
-	mov	w24, #36
-	fmov	d9, #1.00000000
-Lloh0:
-	adrp	x20, l_.str@PAGE
-Lloh1:
-	add	x20, x20, l_.str@PAGEOFF
-Lloh2:
-	adrp	x21, l_.str.1@PAGE
-Lloh3:
-	add	x21, x21, l_.str.1@PAGEOFF
-Lloh4:
-	adrp	x22, l_.str.2@PAGE
-Lloh5:
-	add	x22, x22, l_.str.2@PAGEOFF
+	mov	x8, #0
+	mov	w9, #36
+	fmov	d1, #1.00000000
 LBB0_1:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB0_2 Depth 2
-	mov	x25, #0
-	madd	x26, x23, x24, x19
-	add	x27, x26, #8
-	movi	d0, #0000000000000000
-	str	q0, [sp, #80]                   ; 16-byte Folded Spill
-	movi	d10, #0000000000000000
+	mov	x10, #0
+	madd	x11, x8, x9, x0
+	ldr	d4, [x11]
+	ldr	s5, [x11, #8]
+	movi	d3, #0000000000000000
+	movi	d2, #0000000000000000
 LBB0_2:                                 ;   Parent Loop BB0_1 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
-	add	x8, x19, x25
-	ldr	d0, [x8]
-	ldr	d1, [x26]
-	fsub.2s	v11, v0, v1
-	ldr	s0, [x8, #8]
-	ldr	s1, [x27]
-	fsub	s12, s0, s1
-	fmul.2s	v0, v11, v11
-	faddp.2s	s0, v0
-	fmul	s1, s12, s12
-	fadd	s0, s0, s1
-	fcvt	d0, s0
-	fsqrt	d0, d0
-	fdiv	d1, d9, d0
-	fmul	d2, d1, d1
-	fmul	d3, d1, d8
-	fmul	d4, d3, d2
-	str	q4, [sp, #64]                   ; 16-byte Folded Spill
-	stp	d0, d1, [sp]
-	stp	d2, d3, [sp, #16]
-	str	d4, [sp, #32]
-	mov	x0, x20
-	bl	_printf
-	fcvtl	v0.2d, v11.2s
-	ldr	q1, [sp, #64]                   ; 16-byte Folded Reload
-	fmul.2d	v2, v0, v1[0]
-	str	q2, [sp, #48]                   ; 16-byte Folded Spill
-	fcvt	d0, s12
-	fmul	d11, d1, d0
-	str	d11, [sp, #16]
-	str	q2, [sp]
-	mov	x0, x21
-	bl	_printf
-	ldr	q0, [sp, #80]                   ; 16-byte Folded Reload
-	fcvtl	v0.2d, v0.2s
-	ldr	q1, [sp, #48]                   ; 16-byte Folded Reload
-	fadd.2d	v0, v1, v0
-	fcvtn	v1.2s, v0.2d
-	fcvt	d0, s10
-	fadd	d0, d11, d0
-	fcvt	s10, d0
-	fcvt	d0, s1
-	str	q1, [sp, #80]                   ; 16-byte Folded Spill
-	mov	s1, v1[1]
-	fcvt	d1, s1
-	fcvt	d2, s10
-	stp	d1, d2, [sp, #8]
-	str	d0, [sp]
-	mov	x0, x22
-	bl	_printf
-	add	x25, x25, #36
-	cmp	x25, #36, lsl #12               ; =147456
+	add	x11, x0, x10
+	ldr	d6, [x11]
+	ldr	s7, [x11, #8]
+	fsub.2s	v6, v6, v4
+	fsub	s7, s7, s5
+	fmul.2s	v16, v6, v6
+	fcvtl	v16.2d, v16.2s
+	fmul	s17, s7, s7
+	faddp.2d	d16, v16
+	fcvt	d17, s17
+	fadd	d16, d16, d17
+	fsqrt	d16, d16
+	fdiv	d16, d1, d16
+	fmul	d17, d16, d16
+	fmul	d16, d16, d0
+	fmul	d16, d16, d17
+	fcvtl	v6.2d, v6.2s
+	fmul.2d	v6, v6, v16[0]
+	fcvt	d7, s7
+	fmul	d7, d16, d7
+	fcvtl	v3.2d, v3.2s
+	fadd.2d	v3, v6, v3
+	fcvtn	v3.2s, v3.2d
+	fcvt	d2, s2
+	fadd	d2, d7, d2
+	fcvt	s2, d2
+	add	x10, x10, #36
+	cmp	x10, #36, lsl #12               ; =147456
 	b.ne	LBB0_2
 ; %bb.3:                                ;   in Loop: Header=BB0_1 Depth=1
-	madd	x8, x23, x24, x19
-	ldr	d0, [x8, #24]
-	ldr	q1, [sp, #80]                   ; 16-byte Folded Reload
-	fadd.2s	v0, v0, v1
-	str	d0, [x8, #24]
-	ldr	s0, [x8, #32]
-	fadd	s0, s0, s10
-	str	s0, [x8, #32]
-	add	x23, x23, #1
-	cmp	x23, #1, lsl #12                ; =4096
+	madd	x10, x8, x9, x0
+	ldr	d4, [x10, #24]
+	fadd.2s	v3, v4, v3
+	str	d3, [x10, #24]
+	ldr	s3, [x10, #32]
+	fadd	s2, s3, s2
+	str	s2, [x10, #32]
+	add	x8, x8, #1
+	cmp	x8, #1, lsl #12                 ; =4096
 	b.ne	LBB0_1
 ; %bb.4:
-	ldp	x29, x30, [sp, #224]            ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #208]            ; 16-byte Folded Reload
-	ldp	x22, x21, [sp, #192]            ; 16-byte Folded Reload
-	ldp	x24, x23, [sp, #176]            ; 16-byte Folded Reload
-	ldp	x26, x25, [sp, #160]            ; 16-byte Folded Reload
-	ldp	x28, x27, [sp, #144]            ; 16-byte Folded Reload
-	ldp	d9, d8, [sp, #128]              ; 16-byte Folded Reload
-	ldp	d11, d10, [sp, #112]            ; 16-byte Folded Reload
-	ldp	d13, d12, [sp, #96]             ; 16-byte Folded Reload
-	add	sp, sp, #240
 	ret
-	.loh AdrpAdd	Lloh4, Lloh5
-	.loh AdrpAdd	Lloh2, Lloh3
-	.loh AdrpAdd	Lloh0, Lloh1
 	.cfi_endproc
                                         ; -- End function
 	.globl	_particle3_rand_init            ; -- Begin function particle3_rand_init
@@ -281,38 +199,38 @@ _particle3_print:                       ; @particle3_print
 	.cfi_offset b15, -160
 	mov	x19, #0
 	add	x20, x0, #16
+Lloh0:
+	adrp	x21, l_.str.2@PAGE
+Lloh1:
+	add	x21, x21, l_.str.2@PAGEOFF
+Lloh2:
+	adrp	x22, l_.str.3@PAGE
+Lloh3:
+	add	x22, x22, l_.str.3@PAGEOFF
+Lloh4:
+	adrp	x23, l_.str.4@PAGE
+Lloh5:
+	add	x23, x23, l_.str.4@PAGEOFF
 Lloh6:
-	adrp	x21, l_.str.5@PAGE
+	adrp	x24, l_.str.5@PAGE
 Lloh7:
-	add	x21, x21, l_.str.5@PAGEOFF
+	add	x24, x24, l_.str.5@PAGEOFF
 Lloh8:
-	adrp	x22, l_.str.6@PAGE
+	adrp	x25, l_.str.6@PAGE
 Lloh9:
-	add	x22, x22, l_.str.6@PAGEOFF
+	add	x25, x25, l_.str.6@PAGEOFF
 Lloh10:
-	adrp	x23, l_.str.7@PAGE
+	adrp	x26, l_.str.7@PAGE
 Lloh11:
-	add	x23, x23, l_.str.7@PAGEOFF
+	add	x26, x26, l_.str.7@PAGEOFF
 Lloh12:
-	adrp	x24, l_.str.8@PAGE
+	adrp	x27, l_.str.8@PAGE
 Lloh13:
-	add	x24, x24, l_.str.8@PAGEOFF
+	add	x27, x27, l_.str.8@PAGEOFF
 Lloh14:
-	adrp	x25, l_.str.9@PAGE
+	adrp	x28, l_.str.9@PAGE
 Lloh15:
-	add	x25, x25, l_.str.9@PAGEOFF
-Lloh16:
-	adrp	x26, l_.str.10@PAGE
-Lloh17:
-	add	x26, x26, l_.str.10@PAGEOFF
-Lloh18:
-	adrp	x27, l_.str.11@PAGE
-Lloh19:
-	add	x27, x27, l_.str.11@PAGEOFF
-Lloh20:
-	adrp	x28, l_.str.12@PAGE
-Lloh21:
-	add	x28, x28, l_.str.12@PAGEOFF
+	add	x28, x28, l_.str.9@PAGEOFF
 LBB2_1:                                 ; =>This Inner Loop Header: Depth=1
 	ldp	s8, s9, [x20, #-16]
 	ldp	s10, s11, [x20, #-8]
@@ -321,17 +239,17 @@ LBB2_1:                                 ; =>This Inner Loop Header: Depth=1
 	ldr	s0, [x20, #16]
 	str	s0, [sp, #12]                   ; 4-byte Folded Spill
 	str	x19, [sp]
-Lloh22:
-	adrp	x0, l_.str.3@PAGE
-Lloh23:
-	add	x0, x0, l_.str.3@PAGEOFF
+Lloh16:
+	adrp	x0, l_.str@PAGE
+Lloh17:
+	add	x0, x0, l_.str@PAGEOFF
 	bl	_printf
 	fcvt	d0, s8
 	str	d0, [sp]
-Lloh24:
-	adrp	x0, l_.str.4@PAGE
-Lloh25:
-	add	x0, x0, l_.str.4@PAGEOFF
+Lloh18:
+	adrp	x0, l_.str.1@PAGE
+Lloh19:
+	add	x0, x0, l_.str.1@PAGEOFF
 	bl	_printf
 	fcvt	d0, s9
 	str	d0, [sp]
@@ -383,56 +301,47 @@ Lloh25:
 	ldp	d15, d14, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #176
 	ret
-	.loh AdrpAdd	Lloh20, Lloh21
-	.loh AdrpAdd	Lloh18, Lloh19
-	.loh AdrpAdd	Lloh16, Lloh17
 	.loh AdrpAdd	Lloh14, Lloh15
 	.loh AdrpAdd	Lloh12, Lloh13
 	.loh AdrpAdd	Lloh10, Lloh11
 	.loh AdrpAdd	Lloh8, Lloh9
 	.loh AdrpAdd	Lloh6, Lloh7
-	.loh AdrpAdd	Lloh24, Lloh25
-	.loh AdrpAdd	Lloh22, Lloh23
+	.loh AdrpAdd	Lloh4, Lloh5
+	.loh AdrpAdd	Lloh2, Lloh3
+	.loh AdrpAdd	Lloh0, Lloh1
+	.loh AdrpAdd	Lloh18, Lloh19
+	.loh AdrpAdd	Lloh16, Lloh17
 	.cfi_endproc
                                         ; -- End function
 	.section	__TEXT,__cstring,cstring_literals
 l_.str:                                 ; @.str
-	.asciz	"d = %.4f\tid = %.4f\tid2 = %.4f\tidmass = %.4f\tdelta = %.4f\n"
-
-l_.str.1:                               ; @.str.1
-	.asciz	"inc_x = %.4f\tinc_y = %.4f\tinc_z = %.4f\n"
-
-l_.str.2:                               ; @.str.2
-	.asciz	"net_acc.x = %.8f\tnet_acc.y = %.8f\tnet_acc.z = %.8f\n"
-
-l_.str.3:                               ; @.str.3
 	.asciz	"particle %d: "
 
-l_.str.4:                               ; @.str.4
+l_.str.1:                               ; @.str.1
 	.asciz	"pos.x = %.4f, "
 
-l_.str.5:                               ; @.str.5
+l_.str.2:                               ; @.str.2
 	.asciz	"pos.y = %.4f, "
 
-l_.str.6:                               ; @.str.6
+l_.str.3:                               ; @.str.3
 	.asciz	"pos.z = %.4f, "
 
-l_.str.7:                               ; @.str.7
+l_.str.4:                               ; @.str.4
 	.asciz	"vel.x = %.4f, "
 
-l_.str.8:                               ; @.str.8
+l_.str.5:                               ; @.str.5
 	.asciz	"vel.y = %.4f, "
 
-l_.str.9:                               ; @.str.9
+l_.str.6:                               ; @.str.6
 	.asciz	"vel.z = %.4f, "
 
-l_.str.10:                              ; @.str.10
+l_.str.7:                               ; @.str.7
 	.asciz	"acc.x = %.4f, "
 
-l_.str.11:                              ; @.str.11
+l_.str.8:                               ; @.str.8
 	.asciz	"acc.y = %.4f, "
 
-l_.str.12:                              ; @.str.12
+l_.str.9:                               ; @.str.9
 	.asciz	"acc.z = %.4f\n"
 
 .subsections_via_symbols
