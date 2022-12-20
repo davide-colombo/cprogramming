@@ -2,8 +2,8 @@
 #ifndef MATRIX_H_INCLUDED
 #define MATRIX_H_INCLUDED
 
-#define NROWS 10
-#define NCOLS 10
+#define NROWS 1000
+#define NCOLS 1000
 
 /*
  * Numeric data type

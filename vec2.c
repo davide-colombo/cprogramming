@@ -80,7 +80,8 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 		int jres = NCOLS & 3;
 		if(jres){
 			while(1){
-				outcol0[j] = v1col0[j] + v2col0[j];
+				number_t sum = v1col0[j] + v2col0[j];
+				outcol0[j] = sum;
 				j += 1;
 				jres -= 1;
 				if(jres == 0){ break; }
