@@ -1,17 +1,18 @@
 # _*_ MakeFile _*_
 
 CC := clang
-DEPS := -I.
 OOPTIM := -O2
-CFLAGS := -std=c99 -fstrict-aliasing $(OOPTIM) $(DEPS)
+INCDIRS := -I.
+CFLAGS := -std=c99 -fstrict-aliasing $(OOPTIM) $(INCDIRS)
 
-SRCS := main.c particles.c
+SRCS := main.c particle.c
 ASMS := $(patsubst %.c,%.s,$(SRCS))
 OBJS := $(patsubst %.c,%.o,$(SRCS))
+TRG := particle
 
-all: particles $(ASMS)
+all: $(TRG) $(ASMS)
 
-particles: $(OBJS)
+$(TRG): $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS)
 
 %.o: %.c
@@ -22,4 +23,4 @@ particles: $(OBJS)
 
 .PHONY: clean
 clean:
-	rm -f $(OBJS) $(ASMS) particles
+	rm -f $(OBJS) $(ASMS) $(TRG)
