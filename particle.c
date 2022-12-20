@@ -20,7 +20,7 @@ void particle3_print_particle3_info(){
 /*
  * Gravitational force between two particles.
  */
-void particle3_gravitational_force(particle3_t *particles, double mass){
+void particle3_gravitational_force(particle3_t *particles, float mass){
 	for(int i = 0; i < PARTICLES; i++){
 		float3_t net_acc;
 		net_acc.x = net_acc.y = net_acc.z = 0;
@@ -30,20 +30,20 @@ void particle3_gravitational_force(particle3_t *particles, double mass){
 			r.y = particles[j].pos.y - particles[i].pos.y;
 			r.z = particles[j].pos.z - particles[i].pos.z;
 
-			double rx2 = r.x * r.x;
-			double ry2 = r.y * r.y;
-			double rz2 = r.z * r.z;
-			double rxyz = rx2 + ry2 + rz2;
+			float rx2 = r.x * r.x;
+			float ry2 = r.y * r.y;
+			float rz2 = r.z * r.z;
+			float rxyz = rx2 + ry2 + rz2;
 
-			double d = sqrt(rxyz);
-			double id = 1.0f / d;
-			double id2 = id * id;
-			double idmass = mass * id;
-			double delta_acc = idmass * id2;
+			float d = sqrt(rxyz);
+			float id = 1.0f / d;
+			float id2 = id * id;
+			float idmass = mass * id;
+			float delta_acc = idmass * id2;
 
-			double inc_x = r.x * delta_acc;
-			double inc_y = r.y * delta_acc;
-			double inc_z = r.z * delta_acc;
+			float inc_x = r.x * delta_acc;
+			float inc_y = r.y * delta_acc;
+			float inc_z = r.z * delta_acc;
 
 			net_acc.x += inc_x;
 			net_acc.y += inc_y;

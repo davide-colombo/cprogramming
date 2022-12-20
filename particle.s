@@ -69,56 +69,152 @@ Lloh7:
 _particle3_gravitational_force:         ; @particle3_gravitational_force
 	.cfi_startproc
 ; %bb.0:
+                                        ; kill: def $s0 killed $s0 def $q0
 	mov	x8, #0
-	mov	w9, #36
-	fmov	d1, #1.00000000
+	dup.4s	v1, v0[0]
+	add	x9, x0, #144
+	mov	w10, #36
+	fmov.4s	v2, #1.00000000
 LBB2_1:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB2_2 Depth 2
-	mov	x10, #0
-	madd	x11, x8, x9, x0
-	ldr	d4, [x11]
-	ldr	s5, [x11, #8]
+	mov	x11, #0
+	madd	x12, x8, x10, x0
+	add	x13, x12, #8
+	ld1r.4s	{ v4 }, [x12], #4
+	ld1r.4s	{ v5 }, [x12]
+	ld1r.4s	{ v6 }, [x13]
 	movi	d3, #0000000000000000
-	movi	d2, #0000000000000000
+	movi	d7, #0000000000000000
+	movi	d16, #0000000000000000
 LBB2_2:                                 ;   Parent Loop BB2_1 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
-	add	x11, x0, x10
-	ldr	d6, [x11]
-	ldr	s7, [x11, #8]
-	fsub.2s	v6, v6, v4
-	fsub	s7, s7, s5
-	fmul.2s	v16, v6, v6
-	fcvtl	v16.2d, v16.2s
-	fmul	s17, s7, s7
-	faddp.2d	d16, v16
-	fcvt	d17, s17
-	fadd	d16, d16, d17
-	fsqrt	d16, d16
-	fdiv	d16, d1, d16
-	fmul	d17, d16, d16
-	fmul	d16, d16, d0
-	fmul	d16, d16, d17
-	fcvtl	v6.2d, v6.2s
-	fmul.2d	v6, v6, v16[0]
-	fcvt	d7, s7
-	fmul	d7, d16, d7
-	fcvtl	v3.2d, v3.2s
-	fadd.2d	v3, v6, v3
-	fcvtn	v3.2s, v3.2d
-	fcvt	d2, s2
-	fadd	d2, d7, d2
-	fcvt	s2, d2
-	add	x10, x10, #36
-	cmp	x10, #36, lsl #12               ; =147456
+	add	x12, x9, x11
+	sub	x13, x12, #108
+	sub	x14, x12, #72
+	sub	x15, x12, #36
+	add	x16, x12, #36
+	add	x17, x12, #72
+	add	x1, x12, #108
+	ldp	s17, s18, [x12, #-144]
+	ld1.s	{ v17 }[1], [x13]
+	ldp	s19, s20, [x12]
+	ld1.s	{ v19 }[1], [x16]
+	ld1.s	{ v17 }[2], [x14]
+	ld1.s	{ v19 }[2], [x17]
+	sub	x13, x12, #104
+	sub	x14, x12, #68
+	ld1.s	{ v17 }[3], [x15]
+	sub	x15, x12, #32
+	add	x16, x12, #40
+	add	x17, x12, #76
+	add	x2, x12, #112
+	ld1.s	{ v19 }[3], [x1]
+	ld1.s	{ v18 }[1], [x13]
+	ld1.s	{ v18 }[2], [x14]
+	ld1.s	{ v18 }[3], [x15]
+	ld1.s	{ v20 }[1], [x16]
+	ld1.s	{ v20 }[2], [x17]
+	ld1.s	{ v20 }[3], [x2]
+	sub	x13, x12, #100
+	sub	x14, x12, #64
+	sub	x15, x12, #28
+	add	x16, x12, #44
+	add	x17, x12, #80
+	fsub.4s	v17, v17, v4
+	ldur	s21, [x12, #-136]
+	ld1.s	{ v21 }[1], [x13]
+	ld1.s	{ v21 }[2], [x14]
+	fsub.4s	v18, v18, v5
+	ld1.s	{ v21 }[3], [x15]
+	ldr	s22, [x12, #8]
+	ld1.s	{ v22 }[1], [x16]
+	fsub.4s	v19, v19, v4
+	add	x12, x12, #116
+	ld1.s	{ v22 }[2], [x17]
+	ld1.s	{ v22 }[3], [x12]
+	fsub.4s	v20, v20, v5
+	fsub.4s	v21, v21, v6
+	fsub.4s	v22, v22, v6
+	fmul.4s	v23, v17, v17
+	fmul.4s	v24, v18, v18
+	fadd.4s	v23, v23, v24
+	fmul.4s	v24, v19, v19
+	fmul.4s	v25, v20, v20
+	fadd.4s	v24, v24, v25
+	fmul.4s	v25, v21, v21
+	fadd.4s	v23, v23, v25
+	fmul.4s	v25, v22, v22
+	fadd.4s	v24, v24, v25
+	fsqrt.4s	v23, v23
+	fsqrt.4s	v24, v24
+	fdiv.4s	v23, v2, v23
+	fmul.4s	v25, v23, v23
+	fmul.4s	v23, v23, v1
+	fdiv.4s	v24, v2, v24
+	fmul.4s	v23, v23, v25
+	fmul.4s	v25, v24, v24
+	fmul.4s	v24, v24, v0[0]
+	fmul.4s	v24, v24, v25
+	fmul.4s	v17, v17, v23
+	fmul.4s	v18, v18, v23
+	fmul.4s	v21, v21, v23
+	fmul.4s	v19, v19, v24
+	fmul.4s	v20, v20, v24
+	fmul.4s	v22, v22, v24
+	mov	s23, v17[1]
+	fadd	s16, s16, s17
+	fadd	s16, s16, s23
+	mov	s23, v17[2]
+	fadd	s16, s16, s23
+	mov	s17, v17[3]
+	fadd	s16, s16, s17
+	mov	s17, v19[1]
+	fadd	s16, s16, s19
+	fadd	s16, s16, s17
+	mov	s17, v19[2]
+	fadd	s16, s16, s17
+	mov	s17, v18[1]
+	fadd	s7, s7, s18
+	fadd	s7, s7, s17
+	mov	s17, v18[2]
+	fadd	s7, s7, s17
+	mov	s17, v18[3]
+	fadd	s7, s7, s17
+	mov	s17, v20[1]
+	fadd	s7, s7, s20
+	fadd	s7, s7, s17
+	mov	s17, v20[2]
+	fadd	s7, s7, s17
+	mov	s17, v19[3]
+	fadd	s16, s16, s17
+	mov	s17, v21[1]
+	fadd	s3, s3, s21
+	fadd	s3, s3, s17
+	mov	s17, v21[2]
+	fadd	s3, s3, s17
+	mov	s17, v21[3]
+	fadd	s3, s3, s17
+	mov	s17, v22[1]
+	fadd	s3, s3, s22
+	fadd	s3, s3, s17
+	mov	s17, v20[3]
+	fadd	s7, s7, s17
+	mov	s17, v22[2]
+	fadd	s3, s3, s17
+	mov	s17, v22[3]
+	fadd	s3, s3, s17
+	add	x11, x11, #288
+	cmp	x11, #36, lsl #12               ; =147456
 	b.ne	LBB2_2
 ; %bb.3:                                ;   in Loop: Header=BB2_1 Depth=1
-	madd	x10, x8, x9, x0
-	ldr	d4, [x10, #24]
-	fadd.2s	v3, v4, v3
-	str	d3, [x10, #24]
-	ldr	s3, [x10, #32]
-	fadd	s2, s3, s2
-	str	s2, [x10, #32]
+	madd	x11, x8, x10, x0
+	ldr	d4, [x11, #24]
+	mov.s	v16[1], v7[0]
+	fadd.2s	v4, v16, v4
+	str	d4, [x11, #24]
+	ldr	s4, [x11, #32]
+	fadd	s3, s3, s4
+	str	s3, [x11, #32]
 	add	x8, x8, #1
 	cmp	x8, #1, lsl #12                 ; =4096
 	b.ne	LBB2_1

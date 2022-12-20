@@ -41,7 +41,7 @@ void particle3_print_particle3_info();
 /*
  * Return the gravitational force between two particles
  */
-void particle3_gravitational_force(particle3_t *particles, double mass);
+void particle3_gravitational_force(particle3_t *particles, float mass);
 
 /*
  * Initialize an array of particles with a position, velocity and acceleration 
