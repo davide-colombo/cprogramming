@@ -78,7 +78,7 @@ void particle3_cache_friendly_rand_init_acc3(particle_acc3_t *acc, double scale,
 	scale *= irm;
 	shift *= irm;
 	for(int i = 0; i < PARTICLES; i++){
-		particle_acc3_t ipos = acc[i];
+		particle_acc3_t iacc = acc[i];
 
 		double rxsl = rand() * scale;
 		double rysl = rand() * scale;

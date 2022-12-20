@@ -24,10 +24,9 @@ Lloh1:
 	bl	_particle3_rand_init
 	bl	_clock
 	mov	x20, x0
-	mov	x8, #1610612736
-	movk	x8, #16783, lsl #32
-	movk	x8, #16559, lsl #48
-	fmov	d0, x8
+	mov	w8, #3195
+	movk	w8, #17786, lsl #16
+	fmov	s0, w8
 	mov	x0, x19
 	bl	_particle3_gravitational_force
 	bl	_clock
