@@ -1,5 +1,159 @@
 	.section	__TEXT,__text,regular,pure_instructions
 	.build_version macos, 13, 0	sdk_version 13, 1
+	.globl	_vector2_add                    ; -- Begin function vector2_add
+	.p2align	2
+_vector2_add:                           ; @vector2_add
+	.cfi_startproc
+; %bb.0:
+	mov	x8, #0
+	add	x9, x2, #40
+	add	x10, x1, #40
+LBB0_1:                                 ; =>This Inner Loop Header: Depth=1
+	add	x11, x10, x8
+	add	x12, x9, x8
+	ldur	d0, [x11, #-40]
+	ldur	d1, [x12, #-40]
+	fadd	d0, d0, d1
+	add	x13, x0, x8
+	str	d0, [x13]
+	ldur	d0, [x11, #-32]
+	ldur	d1, [x12, #-32]
+	fadd	d0, d0, d1
+	str	d0, [x13, #8]
+	ldur	d0, [x11, #-24]
+	ldur	d1, [x12, #-24]
+	fadd	d0, d0, d1
+	str	d0, [x13, #16]
+	ldur	d0, [x11, #-16]
+	ldur	d1, [x12, #-16]
+	fadd	d0, d0, d1
+	str	d0, [x13, #24]
+	ldur	d0, [x11, #-8]
+	ldur	d1, [x12, #-8]
+	fadd	d0, d0, d1
+	str	d0, [x13, #32]
+	ldr	d0, [x11]
+	ldr	d1, [x12]
+	fadd	d0, d0, d1
+	str	d0, [x13, #40]
+	ldr	d0, [x11, #8]
+	ldr	d1, [x12, #8]
+	fadd	d0, d0, d1
+	str	d0, [x13, #48]
+	ldr	d0, [x11, #16]
+	ldr	d1, [x12, #16]
+	fadd	d0, d0, d1
+	str	d0, [x13, #56]
+	ldr	d0, [x11, #24]
+	ldr	d1, [x12, #24]
+	fadd	d0, d0, d1
+	str	d0, [x13, #64]
+	ldr	d0, [x11, #32]
+	ldr	d1, [x12, #32]
+	fadd	d0, d0, d1
+	str	d0, [x13, #72]
+	add	x8, x8, #80
+	cmp	x8, #800
+	b.ne	LBB0_1
+; %bb.2:
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_vector2_sum_rows               ; -- Begin function vector2_sum_rows
+	.p2align	2
+_vector2_sum_rows:                      ; @vector2_sum_rows
+	.cfi_startproc
+; %bb.0:
+	mov	x8, #0
+	add	x9, x1, #40
+	movi	d0, #0000000000000000
+LBB1_1:                                 ; =>This Inner Loop Header: Depth=1
+	str	xzr, [x0, x8]
+	ldur	d1, [x9, #-40]
+	fadd	d1, d1, d0
+	str	d1, [x0, x8]
+	ldur	d2, [x9, #-32]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldur	d2, [x9, #-24]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldur	d2, [x9, #-16]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldur	d2, [x9, #-8]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #8]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #16]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #24]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #32]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	add	x8, x8, #8
+	add	x9, x9, #80
+	cmp	x8, #80
+	b.ne	LBB1_1
+; %bb.2:
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_vector2_sum_cols               ; -- Begin function vector2_sum_cols
+	.p2align	2
+_vector2_sum_cols:                      ; @vector2_sum_cols
+	.cfi_startproc
+; %bb.0:
+	mov	x8, #0
+	movi	d0, #0000000000000000
+LBB2_1:                                 ; =>This Inner Loop Header: Depth=1
+	str	xzr, [x0, x8]
+	add	x9, x1, x8
+	ldr	d1, [x9]
+	fadd	d1, d1, d0
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #80]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #160]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #240]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #320]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #400]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #480]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #560]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #640]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	ldr	d2, [x9, #720]
+	fadd	d1, d2, d1
+	str	d1, [x0, x8]
+	add	x8, x8, #8
+	cmp	x8, #80
+	b.ne	LBB2_1
+; %bb.2:
+	ret
+	.cfi_endproc
+                                        ; -- End function
 	.globl	_vector2_print                  ; -- Begin function vector2_print
 	.p2align	2
 _vector2_print:                         ; @vector2_print
@@ -39,7 +193,7 @@ Lloh0:
 	adrp	x20, l_.str.1@PAGE
 Lloh1:
 	add	x20, x20, l_.str.1@PAGEOFF
-LBB0_1:                                 ; =>This Inner Loop Header: Depth=1
+LBB3_1:                                 ; =>This Inner Loop Header: Depth=1
 	str	x21, [sp]
 Lloh2:
 	adrp	x0, l_.str@PAGE
@@ -103,7 +257,7 @@ Lloh3:
 	add	x21, x21, #1
 	add	x22, x22, #80
 	cmp	x21, #10
-	b.ne	LBB0_1
+	b.ne	LBB3_1
 ; %bb.2:
 	ldp	x29, x30, [sp, #96]             ; 16-byte Folded Reload
 	ldp	x20, x19, [sp, #80]             ; 16-byte Folded Reload
@@ -153,7 +307,7 @@ _vector2_rand_init:                     ; @vector2_rand_init
 	fmul	d9, d9, d0
 	fmul	d8, d8, d0
 	add	x19, x19, #40
-LBB1_1:                                 ; =>This Inner Loop Header: Depth=1
+LBB4_1:                                 ; =>This Inner Loop Header: Depth=1
 	bl	_rand
 	scvtf	d0, w0
 	fmul	d10, d9, d0
@@ -237,7 +391,7 @@ LBB1_1:                                 ; =>This Inner Loop Header: Depth=1
 	str	d0, [x21, #32]
 	add	x20, x20, #80
 	cmp	x20, #800
-	b.ne	LBB1_1
+	b.ne	LBB4_1
 ; %bb.2:
 	ldp	x29, x30, [sp, #64]             ; 16-byte Folded Reload
 	ldp	x20, x19, [sp, #48]             ; 16-byte Folded Reload

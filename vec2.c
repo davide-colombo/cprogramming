@@ -4,6 +4,36 @@
 #include <time.h>
 #include "vec2.h"
 
+
+void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
+	for(int i = 0; i < NROWS; i++){
+		for(int j = 0; j < NCOLS; j++){
+			out[i][j] = v1[i][j] + v2[i][j];
+		}
+	}
+}
+
+void vector2_sum_rows(rowsum1_t out, vector2_t v){
+	for(int i = 0; i < NROWS; i++){
+		out[i] = 0;
+		for(int j = 0; j < NCOLS; j++){
+			out[i] += v[i][j];
+		}
+	}
+}
+
+void vector2_sum_cols(colsum1_t out, vector2_t v){
+	for(int i = 0; i < NCOLS; i++){
+		out[i] = 0;
+		for(int j = 0; j < NROWS; j++){
+			out[i] += v[j][i];
+		}
+	}
+}
+
+/*
+ * Print the two dimensional vector object
+ */
 void vector2_print(vector2_t vec2){
 	for(int i = 0; i < NROWS; i++){
 		printf("[%d] => ", i);
