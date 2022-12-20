@@ -31,7 +31,7 @@ typedef struct particle3{
 /*
  * Return the gravitational force between two particles
  */
-void particle3_gravitational_force(particle3_t *particles, float mass);
+void particle3_gravitational_force(particle3_t *particles, double mass);
 
 /*
  * Initialize an array of particles with a position, velocity and acceleration 

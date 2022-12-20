@@ -12,7 +12,7 @@ int main(int argc, char *argv[]){
 	particle3_rand_init(&particles[0]);
 	particle3_print(&particles[0]);
 
-	float mass = 0.987;
+	float mass = 4000.78;
 	clock_t start, end;
 	start = clock();
 	particle3_gravitational_force(&particles[0], mass);

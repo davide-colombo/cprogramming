@@ -5,12 +5,17 @@
 _particle3_gravitational_force:         ; @particle3_gravitational_force
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #144
-	stp	d9, d8, [sp, #80]               ; 16-byte Folded Spill
-	stp	x22, x21, [sp, #96]             ; 16-byte Folded Spill
-	stp	x20, x19, [sp, #112]            ; 16-byte Folded Spill
-	stp	x29, x30, [sp, #128]            ; 16-byte Folded Spill
-	add	x29, sp, #128
+	sub	sp, sp, #240
+	stp	d13, d12, [sp, #96]             ; 16-byte Folded Spill
+	stp	d11, d10, [sp, #112]            ; 16-byte Folded Spill
+	stp	d9, d8, [sp, #128]              ; 16-byte Folded Spill
+	stp	x28, x27, [sp, #144]            ; 16-byte Folded Spill
+	stp	x26, x25, [sp, #160]            ; 16-byte Folded Spill
+	stp	x24, x23, [sp, #176]            ; 16-byte Folded Spill
+	stp	x22, x21, [sp, #192]            ; 16-byte Folded Spill
+	stp	x20, x19, [sp, #208]            ; 16-byte Folded Spill
+	stp	x29, x30, [sp, #224]            ; 16-byte Folded Spill
+	add	x29, sp, #224
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
@@ -18,296 +23,124 @@ _particle3_gravitational_force:         ; @particle3_gravitational_force
 	.cfi_offset w20, -32
 	.cfi_offset w21, -40
 	.cfi_offset w22, -48
-	.cfi_offset b8, -56
-	.cfi_offset b9, -64
-                                        ; kill: def $s0 killed $s0 def $q0
+	.cfi_offset w23, -56
+	.cfi_offset w24, -64
+	.cfi_offset w25, -72
+	.cfi_offset w26, -80
+	.cfi_offset w27, -88
+	.cfi_offset w28, -96
+	.cfi_offset b8, -104
+	.cfi_offset b9, -112
+	.cfi_offset b10, -120
+	.cfi_offset b11, -128
+	.cfi_offset b12, -136
+	.cfi_offset b13, -144
+	fmov	d8, d0
 	mov	x19, x0
-	mov	x21, #0
-	dup.4s	v8, v0[0]
-	mov	w22, #36
-	fmov.4s	v9, #1.00000000
+	mov	x23, #0
+	mov	w24, #36
+	fmov	d9, #1.00000000
 Lloh0:
 	adrp	x20, l_.str@PAGE
 Lloh1:
 	add	x20, x20, l_.str@PAGEOFF
-	stp	q8, q0, [sp, #48]               ; 32-byte Folded Spill
-	str	q9, [sp, #32]                   ; 16-byte Folded Spill
+Lloh2:
+	adrp	x21, l_.str.1@PAGE
+Lloh3:
+	add	x21, x21, l_.str.1@PAGEOFF
+Lloh4:
+	adrp	x22, l_.str.2@PAGE
+Lloh5:
+	add	x22, x22, l_.str.2@PAGEOFF
 LBB0_1:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB0_2 Depth 2
-	mov	x8, #0
-	madd	x9, x21, x22, x19
-	add	x10, x9, #8
-	ld1r.4s	{ v31 }, [x9], #4
-	ld1r.4s	{ v1 }, [x9]
-	ld1r.4s	{ v2 }, [x10]
-	movi	d3, #0000000000000000
-	movi	d4, #0000000000000000
-	movi	d5, #0000000000000000
+	mov	x25, #0
+	madd	x26, x23, x24, x19
+	add	x27, x26, #8
+	movi	d0, #0000000000000000
+	str	q0, [sp, #80]                   ; 16-byte Folded Spill
+	movi	d10, #0000000000000000
 LBB0_2:                                 ;   Parent Loop BB0_1 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
-	add	x9, x19, x8
-	add	x2, x9, #36
-	add	x3, x9, #72
-	add	x10, x9, #108
-	add	x14, x9, #180
-	add	x15, x9, #216
-	add	x11, x9, #252
-	add	x16, x9, #324
-	add	x17, x9, #360
-	add	x12, x9, #396
-	add	x1, x9, #468
-	add	x0, x9, #504
-	add	x13, x9, #540
-	ldp	s6, s7, [x9]
-	ld1.s	{ v6 }[1], [x2]
-	ld1.s	{ v6 }[2], [x3]
-	ldp	s16, s17, [x9, #144]
-	ld1.s	{ v16 }[1], [x14]
-	ld1.s	{ v16 }[2], [x15]
-	ldr	s18, [x9, #288]
-	ld1.s	{ v18 }[1], [x16]
-	ldr	s19, [x9, #432]
-	ld1.s	{ v18 }[2], [x17]
-	ld1.s	{ v19 }[1], [x1]
-	add	x14, x9, #40
-	add	x15, x9, #76
-	ld1.s	{ v19 }[2], [x0]
-	add	x16, x9, #112
-	add	x17, x9, #184
-	add	x0, x9, #220
-	add	x1, x9, #256
-	ld1.s	{ v6 }[3], [x10]
-	add	x10, x9, #328
-	add	x2, x9, #364
-	add	x3, x9, #400
-	add	x4, x9, #472
-	ld1.s	{ v16 }[3], [x11]
-	ld1.s	{ v7 }[1], [x14]
-	ld1.s	{ v7 }[2], [x15]
-	ld1.s	{ v18 }[3], [x12]
-	ld1.s	{ v17 }[1], [x17]
-	ld1.s	{ v17 }[2], [x0]
-	ld1.s	{ v19 }[3], [x13]
-	add	x11, x9, #508
-	ldr	s20, [x9, #292]
-	ld1.s	{ v20 }[1], [x10]
-	ld1.s	{ v7 }[3], [x16]
-	add	x10, x9, #544
-	ld1.s	{ v20 }[2], [x2]
-	ldr	s26, [x9, #436]
-	ld1.s	{ v17 }[3], [x1]
-	ld1.s	{ v26 }[1], [x4]
-	ld1.s	{ v26 }[2], [x11]
-	ld1.s	{ v20 }[3], [x3]
-	ld1.s	{ v26 }[3], [x10]
-	add	x10, x9, #44
-	add	x11, x9, #80
-	add	x12, x9, #116
-	fsub.4s	v25, v6, v31
-	add	x13, x9, #188
-	add	x14, x9, #224
-	add	x15, x9, #260
-	add	x16, x9, #332
-	add	x17, x9, #368
-	fsub.4s	v23, v16, v31
-	add	x0, x9, #404
-	add	x1, x9, #476
-	ldr	s6, [x9, #8]
-	ld1.s	{ v6 }[1], [x10]
-	fsub.4s	v22, v7, v1
-	add	x10, x9, #512
-	ld1.s	{ v6 }[2], [x11]
-	ld1.s	{ v6 }[3], [x12]
-	fsub.4s	v24, v18, v31
-	ldr	s16, [x9, #152]
-	ld1.s	{ v16 }[1], [x13]
-	ld1.s	{ v16 }[2], [x14]
-	fsub.4s	v7, v19, v31
-	ld1.s	{ v16 }[3], [x15]
-	ldr	s27, [x9, #296]
-	ld1.s	{ v27 }[1], [x16]
-	fsub.4s	v21, v17, v1
-	add	x11, x9, #548
-	ld1.s	{ v27 }[2], [x17]
-	ld1.s	{ v27 }[3], [x0]
-	fsub.4s	v19, v20, v1
-	ldr	s28, [x9, #440]
-	ld1.s	{ v28 }[1], [x1]
-	ld1.s	{ v28 }[2], [x10]
-	fsub.4s	v20, v26, v1
-	ld1.s	{ v28 }[3], [x11]
-	fsub.4s	v18, v6, v2
-	fsub.4s	v17, v16, v2
-	fsub.4s	v16, v27, v2
-	fsub.4s	v6, v28, v2
-	fmul.4s	v26, v25, v25
-	fmul.4s	v27, v23, v23
-	fmul.4s	v28, v24, v24
-	fmul.4s	v29, v22, v22
-	fadd.4s	v26, v26, v29
-	fmul.4s	v29, v7, v7
-	fmul.4s	v30, v21, v21
-	fadd.4s	v27, v27, v30
-	fmul.4s	v30, v19, v19
-	fadd.4s	v28, v28, v30
-	fmul.4s	v30, v20, v20
-	fadd.4s	v29, v29, v30
-	fmul.4s	v30, v18, v18
-	fadd.4s	v26, v26, v30
-	fmul.4s	v30, v17, v17
-	fadd.4s	v27, v27, v30
-	fmul.4s	v30, v16, v16
-	fadd.4s	v28, v28, v30
-	fmul.4s	v30, v6, v6
-	fadd.4s	v29, v29, v30
-	fsqrt.4s	v26, v26
-	fsqrt.4s	v27, v27
-	fsqrt.4s	v28, v28
-	fsqrt.4s	v29, v29
-	fdiv.4s	v26, v9, v26
-	fdiv.4s	v27, v9, v27
-	fdiv.4s	v28, v9, v28
-	fmul.4s	v30, v26, v26
-	fmul.4s	v26, v26, v30
-	fdiv.4s	v29, v9, v29
-	fmul.4s	v30, v27, v27
-	fmul.4s	v30, v27, v30
-	fmul.4s	v27, v28, v28
-	fmul.4s	v28, v28, v27
-	fmul.4s	v27, v29, v29
-	fmul.4s	v27, v29, v27
-	fmul.4s	v26, v26, v8
-	fmul.4s	v25, v25, v26
-	mov	s29, v25[1]
-	fadd	s5, s5, s25
-	fadd	s5, s5, s29
-	mov	s29, v25[2]
-	fadd	s5, s5, s29
-	fmul.4s	v29, v30, v8
-	mov	s25, v25[3]
-	fmul.4s	v23, v23, v29
-	fadd	s5, s5, s25
-	mov	s25, v23[1]
-	fadd	s5, s5, s23
-	fadd	s5, s5, s25
-	mov	s25, v23[2]
-	fadd	s5, s5, s25
-	fmul.4s	v25, v28, v8
-	mov	s23, v23[3]
-	fmul.4s	v24, v24, v25
-	fadd	s5, s5, s23
-	mov	s23, v24[1]
-	fadd	s5, s5, s24
-	fadd	s5, s5, s23
-	mov	s23, v24[2]
-	fadd	s5, s5, s23
-	fmul.4s	v22, v22, v26
-	mov	s23, v22[1]
-	fadd	s4, s4, s22
-	fadd	s4, s4, s23
-	mov	s23, v22[2]
-	fadd	s4, s4, s23
-	mov	s22, v22[3]
-	fadd	s4, s4, s22
-	mov	s22, v24[3]
-	fmul.4s	v21, v21, v29
-	fadd	s5, s5, s22
-	mov	s22, v21[1]
-	fadd	s4, s4, s21
-	fadd	s4, s4, s22
-	mov	s22, v21[2]
-	fadd	s4, s4, s22
-	fmul.4s	v22, v27, v0[0]
-	fmul.4s	v7, v7, v22
-	mov	s21, v21[3]
-	fmul.4s	v19, v19, v25
-	fadd	s4, s4, s21
-	mov	s21, v19[1]
-	fadd	s4, s4, s19
-	fadd	s4, s4, s21
-	mov	s21, v19[2]
-	fadd	s4, s4, s21
-	mov	s21, v7[1]
-	fadd	s5, s5, s7
-	fadd	s5, s5, s21
-	mov	s19, v19[3]
-	fmul.4s	v20, v20, v22
-	fadd	s4, s4, s19
-	mov	s19, v20[1]
-	fadd	s4, s4, s20
-	fadd	s4, s4, s19
-	fmul.4s	v18, v18, v26
-	fmul.4s	v17, v17, v29
-	fmul.4s	v16, v16, v25
-	fmul.4s	v6, v6, v22
-	mov	s19, v7[2]
-	fadd	s5, s5, s19
-	mov	s19, v18[1]
-	fadd	s3, s3, s18
-	fadd	s3, s3, s19
-	mov	s19, v18[2]
-	fadd	s3, s3, s19
-	mov	s18, v18[3]
-	fadd	s3, s3, s18
-	mov	s18, v17[1]
-	fadd	s3, s3, s17
-	fadd	s3, s3, s18
-	mov	s18, v20[2]
-	fadd	s4, s4, s18
-	mov	s18, v17[2]
-	fadd	s3, s3, s18
-	mov	s17, v17[3]
-	fadd	s3, s3, s17
-	mov	s7, v7[3]
-	fadd	s5, s5, s7
-	mov	s7, v16[1]
-	fadd	s3, s3, s16
-	fadd	s3, s3, s7
-	mov	s7, v16[2]
-	fadd	s3, s3, s7
-	mov	s7, v16[3]
-	fadd	s3, s3, s7
-	mov	s7, v6[1]
-	fadd	s3, s3, s6
-	fadd	s3, s3, s7
-	mov	s7, v20[3]
-	fadd	s4, s4, s7
-	mov	s7, v6[2]
-	fadd	s3, s3, s7
-	mov	s6, v6[3]
-	fadd	s3, s3, s6
-	add	x8, x8, #576
-	cmp	x8, #36, lsl #12                ; =147456
-	b.ne	LBB0_2
-; %bb.3:                                ;   in Loop: Header=BB0_1 Depth=1
-	madd	x8, x21, x22, x19
-	ldr	d2, [x8, #24]
-	mov.16b	v1, v5
-	mov.s	v1[1], v4[0]
-	fadd.2s	v1, v1, v2
-	str	d1, [x8, #24]
-	ldr	s1, [x8, #32]
-	fadd	s1, s3, s1
-	str	s1, [x8, #32]
-	fcvt	d5, s5
-	fcvt	d1, s4
-	fcvt	d2, s3
-	stp	d1, d2, [sp, #8]
-	str	d5, [sp]
+	add	x8, x19, x25
+	ldr	d0, [x8]
+	ldr	d1, [x26]
+	fsub.2s	v11, v0, v1
+	ldr	s0, [x8, #8]
+	ldr	s1, [x27]
+	fsub	s12, s0, s1
+	fmul.2s	v0, v11, v11
+	faddp.2s	s0, v0
+	fmul	s1, s12, s12
+	fadd	s0, s0, s1
+	fcvt	d0, s0
+	fsqrt	d0, d0
+	fdiv	d1, d9, d0
+	fmul	d2, d1, d1
+	fmul	d3, d1, d8
+	fmul	d4, d3, d2
+	str	q4, [sp, #64]                   ; 16-byte Folded Spill
+	stp	d0, d1, [sp]
+	stp	d2, d3, [sp, #16]
+	str	d4, [sp, #32]
 	mov	x0, x20
 	bl	_printf
-	ldp	q9, q8, [sp, #32]               ; 32-byte Folded Reload
-	ldr	q0, [sp, #64]                   ; 16-byte Folded Reload
-	add	x21, x21, #1
-	cmp	x21, #1, lsl #12                ; =4096
+	fcvtl	v0.2d, v11.2s
+	ldr	q1, [sp, #64]                   ; 16-byte Folded Reload
+	fmul.2d	v2, v0, v1[0]
+	str	q2, [sp, #48]                   ; 16-byte Folded Spill
+	fcvt	d0, s12
+	fmul	d11, d1, d0
+	str	d11, [sp, #16]
+	str	q2, [sp]
+	mov	x0, x21
+	bl	_printf
+	ldr	q0, [sp, #80]                   ; 16-byte Folded Reload
+	fcvtl	v0.2d, v0.2s
+	ldr	q1, [sp, #48]                   ; 16-byte Folded Reload
+	fadd.2d	v0, v1, v0
+	fcvtn	v1.2s, v0.2d
+	fcvt	d0, s10
+	fadd	d0, d11, d0
+	fcvt	s10, d0
+	fcvt	d0, s1
+	str	q1, [sp, #80]                   ; 16-byte Folded Spill
+	mov	s1, v1[1]
+	fcvt	d1, s1
+	fcvt	d2, s10
+	stp	d1, d2, [sp, #8]
+	str	d0, [sp]
+	mov	x0, x22
+	bl	_printf
+	add	x25, x25, #36
+	cmp	x25, #36, lsl #12               ; =147456
+	b.ne	LBB0_2
+; %bb.3:                                ;   in Loop: Header=BB0_1 Depth=1
+	madd	x8, x23, x24, x19
+	ldr	d0, [x8, #24]
+	ldr	q1, [sp, #80]                   ; 16-byte Folded Reload
+	fadd.2s	v0, v0, v1
+	str	d0, [x8, #24]
+	ldr	s0, [x8, #32]
+	fadd	s0, s0, s10
+	str	s0, [x8, #32]
+	add	x23, x23, #1
+	cmp	x23, #1, lsl #12                ; =4096
 	b.ne	LBB0_1
 ; %bb.4:
-	ldp	x29, x30, [sp, #128]            ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #112]            ; 16-byte Folded Reload
-	ldp	x22, x21, [sp, #96]             ; 16-byte Folded Reload
-	ldp	d9, d8, [sp, #80]               ; 16-byte Folded Reload
-	add	sp, sp, #144
+	ldp	x29, x30, [sp, #224]            ; 16-byte Folded Reload
+	ldp	x20, x19, [sp, #208]            ; 16-byte Folded Reload
+	ldp	x22, x21, [sp, #192]            ; 16-byte Folded Reload
+	ldp	x24, x23, [sp, #176]            ; 16-byte Folded Reload
+	ldp	x26, x25, [sp, #160]            ; 16-byte Folded Reload
+	ldp	x28, x27, [sp, #144]            ; 16-byte Folded Reload
+	ldp	d9, d8, [sp, #128]              ; 16-byte Folded Reload
+	ldp	d11, d10, [sp, #112]            ; 16-byte Folded Reload
+	ldp	d13, d12, [sp, #96]             ; 16-byte Folded Reload
+	add	sp, sp, #240
 	ret
+	.loh AdrpAdd	Lloh4, Lloh5
+	.loh AdrpAdd	Lloh2, Lloh3
 	.loh AdrpAdd	Lloh0, Lloh1
 	.cfi_endproc
                                         ; -- End function
@@ -316,97 +149,10 @@ LBB0_2:                                 ;   Parent Loop BB0_1 Depth=1
 _particle3_rand_init:                   ; @particle3_rand_init
 	.cfi_startproc
 ; %bb.0:
-	stp	d9, d8, [sp, #-64]!             ; 16-byte Folded Spill
-	stp	x22, x21, [sp, #16]             ; 16-byte Folded Spill
-	stp	x20, x19, [sp, #32]             ; 16-byte Folded Spill
-	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
-	add	x29, sp, #48
-	.cfi_def_cfa w29, 16
-	.cfi_offset w30, -8
-	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-	.cfi_offset w21, -40
-	.cfi_offset w22, -48
-	.cfi_offset b8, -56
-	.cfi_offset b9, -64
-	mov	x19, x0
-	mov	x0, #0
-	bl	_time
-                                        ; kill: def $w0 killed $w0 killed $x0
-	bl	_srand
-	mov	x20, #0
-	add	x19, x19, #16
-	mov	x21, #2097152
-	movk	x21, #15872, lsl #48
-LBB1_1:                                 ; =>This Inner Loop Header: Depth=1
-	bl	_rand
-	scvtf	d0, w0
-	fmov	d8, x21
-	fmul	d0, d0, d8
-	fcvt	s0, d0
-	add	x22, x19, x20
-	stur	s0, [x22, #-16]
-	bl	_rand
-	scvtf	d0, w0
-	fmul	d0, d0, d8
-	fcvt	s0, d0
-	stur	s0, [x22, #-12]
-	bl	_rand
-	scvtf	d0, w0
-	fmul	d0, d0, d8
-	fcvt	s0, d0
-	stur	s0, [x22, #-8]
-	bl	_rand
-	scvtf	d0, w0
-	fmul	d0, d0, d8
-	fcvt	s0, d0
-	stur	s0, [x22, #-4]
-	bl	_rand
-	scvtf	d0, w0
-	fmul	d0, d0, d8
-	fcvt	s0, d0
-	str	s0, [x22]
-	bl	_rand
-	scvtf	d0, w0
-	fmul	d0, d0, d8
-	fcvt	s0, d0
-	str	s0, [x22, #4]
-	bl	_rand
-	scvtf	d0, w0
-	fmul	d0, d0, d8
-	fcvt	s0, d0
-	str	s0, [x22, #8]
-	bl	_rand
-	scvtf	d0, w0
-	fmul	d0, d0, d8
-	fcvt	s0, d0
-	str	s0, [x22, #12]
-	bl	_rand
-	scvtf	d0, w0
-	fmul	d0, d0, d8
-	fcvt	s0, d0
-	str	s0, [x22, #16]
-	add	x20, x20, #36
-	cmp	x20, #36, lsl #12               ; =147456
-	b.ne	LBB1_1
-; %bb.2:
-	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #32]             ; 16-byte Folded Reload
-	ldp	x22, x21, [sp, #16]             ; 16-byte Folded Reload
-	ldp	d9, d8, [sp], #64               ; 16-byte Folded Reload
-	ret
-	.cfi_endproc
-                                        ; -- End function
-	.globl	_particle3_print                ; -- Begin function particle3_print
-	.p2align	2
-_particle3_print:                       ; @particle3_print
-	.cfi_startproc
-; %bb.0:
-	sub	sp, sp, #112
-	stp	d11, d10, [sp, #16]             ; 16-byte Folded Spill
-	stp	d9, d8, [sp, #32]               ; 16-byte Folded Spill
-	stp	x24, x23, [sp, #48]             ; 16-byte Folded Spill
+	stp	d15, d14, [sp, #-112]!          ; 16-byte Folded Spill
+	stp	d13, d12, [sp, #16]             ; 16-byte Folded Spill
+	stp	d11, d10, [sp, #32]             ; 16-byte Folded Spill
+	stp	d9, d8, [sp, #48]               ; 16-byte Folded Spill
 	stp	x22, x21, [sp, #64]             ; 16-byte Folded Spill
 	stp	x20, x19, [sp, #80]             ; 16-byte Folded Spill
 	stp	x29, x30, [sp, #96]             ; 16-byte Folded Spill
@@ -418,39 +164,174 @@ _particle3_print:                       ; @particle3_print
 	.cfi_offset w20, -32
 	.cfi_offset w21, -40
 	.cfi_offset w22, -48
+	.cfi_offset b8, -56
+	.cfi_offset b9, -64
+	.cfi_offset b10, -72
+	.cfi_offset b11, -80
+	.cfi_offset b12, -88
+	.cfi_offset b13, -96
+	.cfi_offset b14, -104
+	.cfi_offset b15, -112
+	mov	x19, x0
+	mov	x0, #0
+	bl	_time
+                                        ; kill: def $w0 killed $w0 killed $x0
+	bl	_srand
+	mov	x20, #0
+	add	x19, x19, #16
+	mov	x21, #13107
+	movk	x21, #40995, lsl #16
+	movk	x21, #39321, lsl #32
+	movk	x21, #15873, lsl #48
+LBB1_1:                                 ; =>This Inner Loop Header: Depth=1
+	bl	_rand
+	scvtf	d8, w0
+	bl	_rand
+	scvtf	d9, w0
+	bl	_rand
+	scvtf	d10, w0
+	bl	_rand
+	scvtf	d11, w0
+	bl	_rand
+	scvtf	d12, w0
+	bl	_rand
+	scvtf	d13, w0
+	bl	_rand
+	scvtf	d14, w0
+	bl	_rand
+	scvtf	d15, w0
+	bl	_rand
+	scvtf	d0, w0
+	fmov	d1, x21
+	fmul	d2, d8, d1
+	fcvt	s2, d2
+	add	x8, x19, x20
+	fmul	d3, d9, d1
+	fcvt	s3, d3
+	stp	s2, s3, [x8, #-16]
+	fmul	d2, d10, d1
+	fcvt	s2, d2
+	fmul	d3, d11, d1
+	fcvt	s3, d3
+	stp	s2, s3, [x8, #-8]
+	fmul	d2, d12, d1
+	fcvt	s2, d2
+	fmul	d3, d13, d1
+	fcvt	s3, d3
+	stp	s2, s3, [x8]
+	fmul	d2, d14, d1
+	fcvt	s2, d2
+	fmul	d3, d15, d1
+	fcvt	s3, d3
+	stp	s2, s3, [x8, #8]
+	fmul	d0, d0, d1
+	fcvt	s0, d0
+	str	s0, [x8, #16]
+	add	x20, x20, #36
+	cmp	x20, #36, lsl #12               ; =147456
+	b.ne	LBB1_1
+; %bb.2:
+	ldp	x29, x30, [sp, #96]             ; 16-byte Folded Reload
+	ldp	x20, x19, [sp, #80]             ; 16-byte Folded Reload
+	ldp	x22, x21, [sp, #64]             ; 16-byte Folded Reload
+	ldp	d9, d8, [sp, #48]               ; 16-byte Folded Reload
+	ldp	d11, d10, [sp, #32]             ; 16-byte Folded Reload
+	ldp	d13, d12, [sp, #16]             ; 16-byte Folded Reload
+	ldp	d15, d14, [sp], #112            ; 16-byte Folded Reload
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_particle3_print                ; -- Begin function particle3_print
+	.p2align	2
+_particle3_print:                       ; @particle3_print
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #176
+	stp	d15, d14, [sp, #16]             ; 16-byte Folded Spill
+	stp	d13, d12, [sp, #32]             ; 16-byte Folded Spill
+	stp	d11, d10, [sp, #48]             ; 16-byte Folded Spill
+	stp	d9, d8, [sp, #64]               ; 16-byte Folded Spill
+	stp	x28, x27, [sp, #80]             ; 16-byte Folded Spill
+	stp	x26, x25, [sp, #96]             ; 16-byte Folded Spill
+	stp	x24, x23, [sp, #112]            ; 16-byte Folded Spill
+	stp	x22, x21, [sp, #128]            ; 16-byte Folded Spill
+	stp	x20, x19, [sp, #144]            ; 16-byte Folded Spill
+	stp	x29, x30, [sp, #160]            ; 16-byte Folded Spill
+	add	x29, sp, #160
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	.cfi_offset w19, -24
+	.cfi_offset w20, -32
+	.cfi_offset w21, -40
+	.cfi_offset w22, -48
 	.cfi_offset w23, -56
 	.cfi_offset w24, -64
-	.cfi_offset b8, -72
-	.cfi_offset b9, -80
-	.cfi_offset b10, -88
-	.cfi_offset b11, -96
-	mov	x23, #0
-	add	x24, x0, #4
-Lloh2:
-	adrp	x19, l_.str.1@PAGE
-Lloh3:
-	add	x19, x19, l_.str.1@PAGEOFF
-Lloh4:
-	adrp	x20, l_.str.2@PAGE
-Lloh5:
-	add	x20, x20, l_.str.2@PAGEOFF
+	.cfi_offset w25, -72
+	.cfi_offset w26, -80
+	.cfi_offset w27, -88
+	.cfi_offset w28, -96
+	.cfi_offset b8, -104
+	.cfi_offset b9, -112
+	.cfi_offset b10, -120
+	.cfi_offset b11, -128
+	.cfi_offset b12, -136
+	.cfi_offset b13, -144
+	.cfi_offset b14, -152
+	.cfi_offset b15, -160
+	mov	x19, #0
+	add	x20, x0, #16
 Lloh6:
-	adrp	x21, l_.str.3@PAGE
+	adrp	x21, l_.str.5@PAGE
 Lloh7:
-	add	x21, x21, l_.str.3@PAGEOFF
+	add	x21, x21, l_.str.5@PAGEOFF
 Lloh8:
-	adrp	x22, l_.str.4@PAGE
+	adrp	x22, l_.str.6@PAGE
 Lloh9:
-	add	x22, x22, l_.str.4@PAGEOFF
+	add	x22, x22, l_.str.6@PAGEOFF
+Lloh10:
+	adrp	x23, l_.str.7@PAGE
+Lloh11:
+	add	x23, x23, l_.str.7@PAGEOFF
+Lloh12:
+	adrp	x24, l_.str.8@PAGE
+Lloh13:
+	add	x24, x24, l_.str.8@PAGEOFF
+Lloh14:
+	adrp	x25, l_.str.9@PAGE
+Lloh15:
+	add	x25, x25, l_.str.9@PAGEOFF
+Lloh16:
+	adrp	x26, l_.str.10@PAGE
+Lloh17:
+	add	x26, x26, l_.str.10@PAGEOFF
+Lloh18:
+	adrp	x27, l_.str.11@PAGE
+Lloh19:
+	add	x27, x27, l_.str.11@PAGEOFF
+Lloh20:
+	adrp	x28, l_.str.12@PAGE
+Lloh21:
+	add	x28, x28, l_.str.12@PAGEOFF
 LBB2_1:                                 ; =>This Inner Loop Header: Depth=1
-	ldp	s8, s9, [x24, #-4]
-	ldr	s10, [x24, #4]
-	str	x23, [sp]
-	mov	x0, x19
+	ldp	s8, s9, [x20, #-16]
+	ldp	s10, s11, [x20, #-8]
+	ldp	s12, s13, [x20]
+	ldp	s14, s15, [x20, #8]
+	ldr	s0, [x20, #16]
+	str	s0, [sp, #12]                   ; 4-byte Folded Spill
+	str	x19, [sp]
+Lloh22:
+	adrp	x0, l_.str.3@PAGE
+Lloh23:
+	add	x0, x0, l_.str.3@PAGEOFF
 	bl	_printf
 	fcvt	d0, s8
 	str	d0, [sp]
-	mov	x0, x20
+Lloh24:
+	adrp	x0, l_.str.4@PAGE
+Lloh25:
+	add	x0, x0, l_.str.4@PAGEOFF
 	bl	_printf
 	fcvt	d0, s9
 	str	d0, [sp]
@@ -460,39 +341,98 @@ LBB2_1:                                 ; =>This Inner Loop Header: Depth=1
 	str	d0, [sp]
 	mov	x0, x22
 	bl	_printf
-	add	x23, x23, #1
-	add	x24, x24, #36
-	cmp	x23, #1, lsl #12                ; =4096
+	fcvt	d0, s11
+	str	d0, [sp]
+	mov	x0, x23
+	bl	_printf
+	fcvt	d0, s12
+	str	d0, [sp]
+	mov	x0, x24
+	bl	_printf
+	fcvt	d0, s13
+	str	d0, [sp]
+	mov	x0, x25
+	bl	_printf
+	fcvt	d0, s14
+	str	d0, [sp]
+	mov	x0, x26
+	bl	_printf
+	fcvt	d0, s15
+	str	d0, [sp]
+	mov	x0, x27
+	bl	_printf
+	ldr	s0, [sp, #12]                   ; 4-byte Folded Reload
+	fcvt	d0, s0
+	str	d0, [sp]
+	mov	x0, x28
+	bl	_printf
+	add	x19, x19, #1
+	add	x20, x20, #36
+	cmp	x19, #1, lsl #12                ; =4096
 	b.ne	LBB2_1
 ; %bb.2:
-	ldp	x29, x30, [sp, #96]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #80]             ; 16-byte Folded Reload
-	ldp	x22, x21, [sp, #64]             ; 16-byte Folded Reload
-	ldp	x24, x23, [sp, #48]             ; 16-byte Folded Reload
-	ldp	d9, d8, [sp, #32]               ; 16-byte Folded Reload
-	ldp	d11, d10, [sp, #16]             ; 16-byte Folded Reload
-	add	sp, sp, #112
+	ldp	x29, x30, [sp, #160]            ; 16-byte Folded Reload
+	ldp	x20, x19, [sp, #144]            ; 16-byte Folded Reload
+	ldp	x22, x21, [sp, #128]            ; 16-byte Folded Reload
+	ldp	x24, x23, [sp, #112]            ; 16-byte Folded Reload
+	ldp	x26, x25, [sp, #96]             ; 16-byte Folded Reload
+	ldp	x28, x27, [sp, #80]             ; 16-byte Folded Reload
+	ldp	d9, d8, [sp, #64]               ; 16-byte Folded Reload
+	ldp	d11, d10, [sp, #48]             ; 16-byte Folded Reload
+	ldp	d13, d12, [sp, #32]             ; 16-byte Folded Reload
+	ldp	d15, d14, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #176
 	ret
+	.loh AdrpAdd	Lloh20, Lloh21
+	.loh AdrpAdd	Lloh18, Lloh19
+	.loh AdrpAdd	Lloh16, Lloh17
+	.loh AdrpAdd	Lloh14, Lloh15
+	.loh AdrpAdd	Lloh12, Lloh13
+	.loh AdrpAdd	Lloh10, Lloh11
 	.loh AdrpAdd	Lloh8, Lloh9
 	.loh AdrpAdd	Lloh6, Lloh7
-	.loh AdrpAdd	Lloh4, Lloh5
-	.loh AdrpAdd	Lloh2, Lloh3
+	.loh AdrpAdd	Lloh24, Lloh25
+	.loh AdrpAdd	Lloh22, Lloh23
 	.cfi_endproc
                                         ; -- End function
 	.section	__TEXT,__cstring,cstring_literals
 l_.str:                                 ; @.str
-	.asciz	"net_acc.x = %.8f\tnet_acc.y = %.8f\tnet_acc.z = %.8f\n"
+	.asciz	"d = %.4f\tid = %.4f\tid2 = %.4f\tidmass = %.4f\tdelta = %.4f\n"
 
 l_.str.1:                               ; @.str.1
-	.asciz	"particle %d: "
+	.asciz	"inc_x = %.4f\tinc_y = %.4f\tinc_z = %.4f\n"
 
 l_.str.2:                               ; @.str.2
-	.asciz	"pos.x = %.4f, "
+	.asciz	"net_acc.x = %.8f\tnet_acc.y = %.8f\tnet_acc.z = %.8f\n"
 
 l_.str.3:                               ; @.str.3
-	.asciz	"pos.y = %.4f, "
+	.asciz	"particle %d: "
 
 l_.str.4:                               ; @.str.4
-	.asciz	"pos.z = %.4f\n"
+	.asciz	"pos.x = %.4f, "
+
+l_.str.5:                               ; @.str.5
+	.asciz	"pos.y = %.4f, "
+
+l_.str.6:                               ; @.str.6
+	.asciz	"pos.z = %.4f, "
+
+l_.str.7:                               ; @.str.7
+	.asciz	"vel.x = %.4f, "
+
+l_.str.8:                               ; @.str.8
+	.asciz	"vel.y = %.4f, "
+
+l_.str.9:                               ; @.str.9
+	.asciz	"vel.z = %.4f, "
+
+l_.str.10:                              ; @.str.10
+	.asciz	"acc.x = %.4f, "
+
+l_.str.11:                              ; @.str.11
+	.asciz	"acc.y = %.4f, "
+
+l_.str.12:                              ; @.str.12
+	.asciz	"acc.z = %.4f\n"
 
 .subsections_via_symbols
