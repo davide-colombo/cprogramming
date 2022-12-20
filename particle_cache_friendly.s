@@ -5,6 +5,117 @@
 _particle3_cache_friendly_grav_force:   ; @particle3_cache_friendly_grav_force
 	.cfi_startproc
 ; %bb.0:
+                                        ; kill: def $s0 killed $s0 def $q0
+	mov	x8, #0
+	dup.4s	v1, v0[0]
+	mov	w9, #12
+	fmov.4s	v2, #1.00000000
+LBB0_1:                                 ; =>This Loop Header: Depth=1
+                                        ;     Child Loop BB0_2 Depth 2
+	mov	x10, #0
+	madd	x11, x8, x9, x1
+	add	x12, x11, #8
+	ld1r.4s	{ v4 }, [x11], #4
+	ld1r.4s	{ v5 }, [x11]
+	ld1r.4s	{ v6 }, [x12]
+	movi	d3, #0000000000000000
+	movi	d16, #0000000000000000
+	movi	d7, #0000000000000000
+LBB0_2:                                 ;   Parent Loop BB0_1 Depth=1
+                                        ; =>  This Inner Loop Header: Depth=2
+	add	x11, x1, x10
+	add	x10, x10, #96
+	ld3.4s	{ v17, v18, v19 }, [x11], #48
+	fsub.4s	v20, v17, v4
+	ld3.4s	{ v21, v22, v23 }, [x11]
+	fsub.4s	v24, v21, v4
+	fsub.4s	v25, v18, v5
+	fsub.4s	v17, v19, v6
+	fsub.4s	v18, v22, v5
+	fsub.4s	v19, v23, v6
+	fmul.4s	v21, v20, v20
+	fmul.4s	v22, v24, v24
+	fmul.4s	v23, v25, v25
+	fadd.4s	v21, v21, v23
+	fmul.4s	v23, v18, v18
+	fadd.4s	v22, v22, v23
+	fmul.4s	v23, v17, v17
+	fadd.4s	v21, v21, v23
+	fmul.4s	v23, v19, v19
+	fadd.4s	v22, v22, v23
+	fsqrt.4s	v21, v21
+	fsqrt.4s	v22, v22
+	fdiv.4s	v21, v2, v21
+	fdiv.4s	v22, v2, v22
+	fmul.4s	v23, v21, v21
+	fmul.4s	v21, v21, v1
+	fmul.4s	v21, v21, v23
+	fmul.4s	v23, v22, v22
+	fmul.4s	v22, v22, v0[0]
+	fmul.4s	v22, v22, v23
+	fmul.4s	v20, v20, v21
+	fmul.4s	v23, v25, v21
+	fmul.4s	v17, v17, v21
+	fmul.4s	v21, v24, v22
+	fmul.4s	v18, v18, v22
+	fmul.4s	v19, v19, v22
+	mov	s22, v20[1]
+	fadd	s7, s7, s20
+	fadd	s7, s7, s22
+	mov	s22, v20[2]
+	fadd	s7, s7, s22
+	mov	s20, v20[3]
+	fadd	s7, s7, s20
+	mov	s20, v21[1]
+	fadd	s7, s7, s21
+	fadd	s7, s7, s20
+	mov	s20, v21[2]
+	fadd	s7, s7, s20
+	mov	s20, v21[3]
+	fadd	s7, s7, s20
+	mov	s20, v23[1]
+	fadd	s16, s16, s23
+	fadd	s16, s16, s20
+	mov	s20, v23[2]
+	fadd	s16, s16, s20
+	mov	s20, v23[3]
+	fadd	s16, s16, s20
+	mov	s20, v18[1]
+	fadd	s16, s16, s18
+	fadd	s16, s16, s20
+	mov	s20, v18[2]
+	fadd	s16, s16, s20
+	mov	s18, v18[3]
+	fadd	s16, s16, s18
+	mov	s18, v17[1]
+	fadd	s3, s3, s17
+	fadd	s3, s3, s18
+	mov	s18, v17[3]
+	mov	s17, v17[2]
+	fadd	s3, s3, s17
+	mov	s17, v19[3]
+	fadd	s3, s3, s18
+	mov	s18, v19[2]
+	fadd	s3, s3, s19
+	mov	s19, v19[1]
+	fadd	s3, s3, s19
+	fadd	s3, s3, s18
+	fadd	s3, s3, s17
+	cmp	x10, #12, lsl #12               ; =49152
+	b.ne	LBB0_2
+; %bb.3:                                ;   in Loop: Header=BB0_1 Depth=1
+	madd	x10, x8, x9, x0
+	ldr	d4, [x10]
+	mov.s	v7[1], v16[0]
+	fadd.2s	v4, v7, v4
+	str	d4, [x10]
+	ldr	s4, [x10, #8]
+	fadd	s3, s3, s4
+	str	s3, [x10, #8]
+	add	x8, x8, #1
+	cmp	x8, #1, lsl #12                 ; =4096
+	b.ne	LBB0_1
+; %bb.4:
 	ret
 	.cfi_endproc
                                         ; -- End function

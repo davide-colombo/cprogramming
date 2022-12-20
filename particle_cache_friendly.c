@@ -44,10 +44,10 @@ void particle3_cache_friendly_grav_force(particle_acc3_t *acc, particle_pos3_t *
 			net_acc.y += inc_y;
 			net_acc.z += inc_z;
 		}
-		particle_acc3_t iacc = acc[i];
-		iacc.x += net_acc.x;
-		iacc.y += net_acc.y;
-		iacc.z += net_acc.z;
+		particle_acc3_t *iacc = &acc[i];
+		iacc->x += net_acc.x;
+		iacc->y += net_acc.y;
+		iacc->z += net_acc.z;
 	}
 }
 

@@ -39,8 +39,6 @@ Lloh3:
 	mov	x0, x20
 	fmov	d0, d8
 	bl	_particle3_cache_friendly_rand_init_acc3
-	mov	x0, x19
-	bl	_particle3_cache_friendly_print_pos3
 	bl	_clock
 	mov	x21, x0
 	mov	w8, #18043

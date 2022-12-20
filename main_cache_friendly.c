@@ -11,7 +11,7 @@ int main(int argc, char *argv[]){
 	particle3_cache_friendly_rand_init_pos3(&pos[0], 1000.0f, 10.0f);
 	particle3_cache_friendly_rand_init_acc3(&acc[0], 1000.0f, 10.0f);
 
-	particle3_cache_friendly_print_pos3(&pos[0]);
+	//particle3_cache_friendly_print_pos3(&pos[0]);
 
 	float mass = 5000.81;
 	clock_t start, end;
