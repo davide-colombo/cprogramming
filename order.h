@@ -113,7 +113,21 @@ err_t order_free(order4_t **optr);
  * The buyer id defines the index in the array.
  */
 err_t order_head_alloc(order4_t ***otpr, size_t n);
-err_t order_head_free(order4_t ***optr);
 
+/*
+ * Release memory dynamically allocated for each array of order pointed to by 
+ * the item in this array.
+ *
+ * The argument "n" is the number of pointers to array of orders (equal to the 
+ * number of buyers).
+ */
+err_t order_head_free(order4_t ***optr, size_t n);
+
+/*
+ * Iterate over the orders and return the sum of the price of all the orders.
+ * The computed value is stored in "out".
+ * Return "BAD_SUM_PRICE" if fails, otherwise "SUCC_SUM_PRICE".
+ */
+err_t order_sum_price(double *out, order4_t *optr, size_t n);
 
 #endif	/* ORDER_H */

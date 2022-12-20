@@ -8,6 +8,7 @@
  *
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "order.h"
 
@@ -22,6 +23,7 @@ err_t order_free(order4_t **optr){
 	if(*optr == NULL){
 		return BAD_FREE;
 	}
+	printf("optr = %p\t*optr = %p\n", optr, *optr);
 	free(*optr);
 	return SUCC_FREE;
 }
@@ -41,17 +43,35 @@ err_t order_head_alloc(order4_t ***optr, size_t n){
  * Need to free the array of `order4_t` items before freeing the pointer to 
  * the array.
  */
-err_t order_head_free(order4_t ***optr){
+err_t order_head_free(order4_t ***optr, size_t n){
 	if(*optr == NULL){
 		return BAD_FREE;
 	}
 
 	err_t ret;
-	for(order4_t **tmp = *optr; tmp != NULL; tmp++){
-		ret &= order_free(tmp);
+	order4_t **hend = (*optr) + n;
+	printf("*optr = %p\thend = %p\n", *optr, hend);
+	for(order4_t **h = *optr; h < hend; h++){
+		ret &= order_free(h);
 	}
 
 	free(*optr);
 	return ret;			// here it does not make a difference to return 
 						// `ret` or `ret & SUCC_FREE`
+}
+
+/*
+ * Compute the sum of the price of all the orders
+ */
+err_t order_sum_price(double *out, order4_t *optr, size_t n){
+	if(!optr){ return BAD_SUM_PRICE; }
+	if(!n){ return BAD_SUM_PRICE; }
+
+	order4_t *oend = optr + n;
+	*out = 0;
+	for(order4_t *o = optr; o < oend; o++){
+		*out += o->price;
+	}
+
+	return SUCC_SUM_PRICE;
 }

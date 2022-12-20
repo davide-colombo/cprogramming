@@ -5,13 +5,11 @@
 _main:                                  ; @main
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #128
-	stp	d9, d8, [sp, #48]               ; 16-byte Folded Spill
-	stp	x24, x23, [sp, #64]             ; 16-byte Folded Spill
-	stp	x22, x21, [sp, #80]             ; 16-byte Folded Spill
-	stp	x20, x19, [sp, #96]             ; 16-byte Folded Spill
-	stp	x29, x30, [sp, #112]            ; 16-byte Folded Spill
-	add	x29, sp, #112
+	sub	sp, sp, #112
+	stp	x22, x21, [sp, #64]             ; 16-byte Folded Spill
+	stp	x20, x19, [sp, #80]             ; 16-byte Folded Spill
+	stp	x29, x30, [sp, #96]             ; 16-byte Folded Spill
+	add	x29, sp, #96
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
@@ -19,17 +17,13 @@ _main:                                  ; @main
 	.cfi_offset w20, -32
 	.cfi_offset w21, -40
 	.cfi_offset w22, -48
-	.cfi_offset w23, -56
-	.cfi_offset w24, -64
-	.cfi_offset b8, -72
-	.cfi_offset b9, -80
 	mov	x0, #0
 	bl	_time
                                         ; kill: def $w0 killed $w0 killed $x0
 	bl	_srand
-	str	xzr, [sp, #40]
-	add	x19, sp, #40
-	add	x0, sp, #40
+	stur	xzr, [x29, #-40]
+	sub	x19, x29, #40
+	sub	x0, x29, #40
 	mov	w1, #100
 	bl	_buyer_alloc
 	cmp	w0, #128
@@ -49,9 +43,9 @@ Lloh4:
 	mov	w1, #21
 	mov	w2, #1
 	bl	_fwrite
-	b	LBB0_11
+	b	LBB0_16
 LBB0_2:
-	ldr	x8, [sp, #40]
+	ldur	x8, [x29, #-40]
 	ldr	x9, [x8]
 	stp	x8, x9, [sp, #8]
 	str	x19, [sp]
@@ -60,8 +54,8 @@ Lloh5:
 Lloh6:
 	add	x0, x0, l_.str.1@PAGEOFF
 	bl	_printf
-	str	xzr, [sp, #32]
-	add	x0, sp, #32
+	str	xzr, [sp, #48]
+	add	x0, sp, #48
 	mov	w1, #100
 	bl	_order_head_alloc
 	cmp	w0, #128
@@ -81,95 +75,143 @@ Lloh11:
 	mov	w1, #31
 	mov	w2, #1
 	bl	_fwrite
-	add	x0, sp, #40
+	sub	x0, x29, #40
 	bl	_buyer_free
                                         ; kill: def $w19 killed $w19 killed $x19 def $x19
-	b	LBB0_11
+	b	LBB0_16
 LBB0_4:
-	mov	x20, #0
-	str	xzr, [sp, #24]
-	mov	x21, #2097152
-	movk	x21, #15872, lsl #48
-	mov	x22, #70368744177664
-	movk	x22, #16527, lsl #48
-Lloh12:
-	adrp	x19, l_.str.4@PAGE
-Lloh13:
-	add	x19, x19, l_.str.4@PAGEOFF
+	mov	x19, #0
+	str	xzr, [sp, #40]
+	mov	x20, #2097152
+	movk	x20, #15872, lsl #48
+	mov	x21, #70368744177664
+	movk	x21, #16527, lsl #48
 LBB0_5:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB0_7 Depth 2
-	ldr	x8, [sp, #40]
-	str	x20, [x8]
-	add	x0, sp, #24
+	ldur	x8, [x29, #-40]
+	str	x19, [x8, x19, lsl #3]
+	add	x0, sp, #40
 	mov	w1, #50
 	bl	_order_alloc
 	cmp	w0, #128
-	b.eq	LBB0_10
+	b.eq	LBB0_13
 ; %bb.6:                                ;   in Loop: Header=BB0_5 Depth=1
-	mov	x23, #0
+	mov	x22, #0
 LBB0_7:                                 ;   Parent Loop BB0_5 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
 	bl	_rand
 	scvtf	d0, w0
+	fmov	d1, x20
+	fmul	d0, d0, d1
 	fmov	d1, x21
-	fmul	d8, d0, d1
-	fmov	d0, x22
-	fmul	d0, d8, d0
-	str	d0, [sp]
-	mov	x0, x19
-	bl	_printf
-	fcvt	s0, d8
-	ldr	x8, [sp, #24]
-	str	s0, [x8, x23]
-	add	x23, x23, #4
-	cmp	x23, #200
+	fmul	d0, d0, d1
+	fcvt	s0, d0
+	ldr	x8, [sp, #40]
+	str	s0, [x8, x22]
+	add	x22, x22, #4
+	cmp	x22, #200
 	b.ne	LBB0_7
 ; %bb.8:                                ;   in Loop: Header=BB0_5 Depth=1
-	ldr	x9, [sp, #32]
-	str	x8, [x9, x20, lsl #3]
-	add	x20, x20, #1
-	cmp	x20, #100
+	ldr	x9, [sp, #48]
+	str	x8, [x9, x19, lsl #3]
+	add	x19, x19, #1
+	cmp	x19, #100
 	b.ne	LBB0_5
 ; %bb.9:
-	add	x0, sp, #40
-	bl	_buyer_free
-	mov	w19, #0
-	b	LBB0_11
-LBB0_10:
+	ldr	x8, [sp, #48]
+	add	x9, x8, #792
+	stp	x8, x9, [sp]
+Lloh12:
+	adrp	x0, l_.str.4@PAGE
+Lloh13:
+	add	x0, x0, l_.str.4@PAGEOFF
+	bl	_printf
+	mov	x21, #0
 Lloh14:
-	adrp	x8, ___stderrp@GOTPAGE
+	adrp	x19, l_.str.6@PAGE
 Lloh15:
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
+	add	x19, x19, l_.str.6@PAGEOFF
+LBB0_10:                                ; =>This Inner Loop Header: Depth=1
+	ldur	x8, [x29, #-40]
+	ldr	x22, [x8, x21]
+	ldr	x8, [sp, #48]
+	ldr	x20, [x8, x22, lsl #3]
+	add	x0, sp, #32
+	mov	x1, x20
+	mov	w2, #50
+	bl	_order_sum_price
+	cmp	w0, #130
+	b.eq	LBB0_14
+; %bb.11:                               ;   in Loop: Header=BB0_10 Depth=1
+	ldr	d0, [sp, #32]
+	str	d0, [sp, #16]
+	stp	x22, x20, [sp]
+	mov	x0, x19
+	bl	_printf
+	add	x21, x21, #8
+	cmp	x21, #800
+	b.ne	LBB0_10
+; %bb.12:
+	mov	w19, #0
+	b	LBB0_15
+LBB0_13:
 Lloh16:
-	ldr	x0, [x8]
-	str	x20, [sp]
+	adrp	x8, ___stderrp@GOTPAGE
 Lloh17:
-	adrp	x1, l_.str.3@PAGE
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh18:
+	ldr	x0, [x8]
+	str	x19, [sp]
+Lloh19:
+	adrp	x1, l_.str.3@PAGE
+Lloh20:
 	add	x1, x1, l_.str.3@PAGEOFF
 	bl	_fprintf
-	add	x0, sp, #40
+	sub	x0, x29, #40
 	bl	_buyer_free
-	add	x0, sp, #32
+	add	x0, sp, #48
+	mov	w1, #100
 	bl	_order_head_free
 	mov	w19, #1
-LBB0_11:
+	b	LBB0_16
+LBB0_14:
+Lloh21:
+	adrp	x8, ___stderrp@GOTPAGE
+Lloh22:
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
+Lloh23:
+	ldr	x0, [x8]
+	stp	x20, x22, [sp]
+Lloh24:
+	adrp	x1, l_.str.5@PAGE
+Lloh25:
+	add	x1, x1, l_.str.5@PAGEOFF
+	bl	_fprintf
+	mov	w19, #1
+LBB0_15:
+	sub	x0, x29, #40
+	bl	_buyer_free
+	add	x0, sp, #48
+	mov	w1, #100
+	bl	_order_head_free
+LBB0_16:
 	mov	x0, x19
-	ldp	x29, x30, [sp, #112]            ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #96]             ; 16-byte Folded Reload
-	ldp	x22, x21, [sp, #80]             ; 16-byte Folded Reload
-	ldp	x24, x23, [sp, #64]             ; 16-byte Folded Reload
-	ldp	d9, d8, [sp, #48]               ; 16-byte Folded Reload
-	add	sp, sp, #128
+	ldp	x29, x30, [sp, #96]             ; 16-byte Folded Reload
+	ldp	x20, x19, [sp, #80]             ; 16-byte Folded Reload
+	ldp	x22, x21, [sp, #64]             ; 16-byte Folded Reload
+	add	sp, sp, #112
 	ret
 	.loh AdrpAdd	Lloh3, Lloh4
 	.loh AdrpLdrGotLdr	Lloh0, Lloh1, Lloh2
 	.loh AdrpAdd	Lloh5, Lloh6
 	.loh AdrpAdd	Lloh10, Lloh11
 	.loh AdrpLdrGotLdr	Lloh7, Lloh8, Lloh9
+	.loh AdrpAdd	Lloh14, Lloh15
 	.loh AdrpAdd	Lloh12, Lloh13
-	.loh AdrpAdd	Lloh17, Lloh18
-	.loh AdrpLdrGotLdr	Lloh14, Lloh15, Lloh16
+	.loh AdrpAdd	Lloh19, Lloh20
+	.loh AdrpLdrGotLdr	Lloh16, Lloh17, Lloh18
+	.loh AdrpAdd	Lloh24, Lloh25
+	.loh AdrpLdrGotLdr	Lloh21, Lloh22, Lloh23
 	.cfi_endproc
                                         ; -- End function
 	.section	__TEXT,__cstring,cstring_literals
@@ -186,6 +228,12 @@ l_.str.3:                               ; @.str.3
 	.asciz	"Bad alloc for paid orders array %llu\n"
 
 l_.str.4:                               ; @.str.4
-	.asciz	"p1 = %.4f\n"
+	.asciz	"paid_orders_head = %p\t(paid_orders_head+99) = %p\n"
+
+l_.str.5:                               ; @.str.5
+	.asciz	"Error while summing price: oinit = %p\tis= %llu\n"
+
+l_.str.6:                               ; @.str.6
+	.asciz	"id = %llu\toinit = %p\tprice = %.4f\n"
 
 .subsections_via_symbols
