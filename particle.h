@@ -31,6 +31,6 @@ typedef struct particle3{
 /*
  * Return the gravitational force between two particles
  */
-double particle3_gravitational_force(particle3_t *p1, particle3_t *p2):
+void particle3_gravitational_force(particle3_t *p1, float mass):
 
 #endif	/* PARTICLE_H */
