@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <time.h>
-#include "particles.h"
+#include "particle.h"
 
 /*
  * Allocate a static array of particles
