@@ -32,5 +32,5 @@ Lloh1:
 	.loh AdrpLdrGot	Lloh0, Lloh1
 	.cfi_endproc
                                         ; -- End function
-	.comm	_v,8000000,3                    ; @v
+	.comm	_v,800,3                        ; @v
 .subsections_via_symbols
