@@ -22,13 +22,18 @@ void particle3_print_particle3_info(){
  */
 void particle3_gravitational_force(particle3_t *particles, float mass){
 	for(int i = 0; i < PARTICLES; i++){
+		particle3_t p = particles[i];
+		float iposx = p.pos.x;
+		float iposy = p.pos.y;
+		float iposz = p.pos.z;
+
 		float3_t net_acc;
 		net_acc.x = net_acc.y = net_acc.z = 0;
 		for(int j = 0; j < PARTICLES; j++){
 			float3_t r;
-			r.x = particles[j].pos.x - particles[i].pos.x;
-			r.y = particles[j].pos.y - particles[i].pos.y;
-			r.z = particles[j].pos.z - particles[i].pos.z;
+			r.x = particles[j].pos.x - iposx;
+			r.y = particles[j].pos.y - iposy;
+			r.z = particles[j].pos.z - iposz;
 
 			float rx2 = r.x * r.x;
 			float ry2 = r.y * r.y;
