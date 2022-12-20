@@ -30,4 +30,6 @@ void particle3_cache_friendly_grav_force(particle_acc3_t *acc, particle_pos3_t *
 void particle3_cache_friendly_rand_init_pos3(particle_pos3_t *pos, double scale, double shift);
 void particle3_cache_friendly_rand_init_acc3(particle_acc3_t *acc, double scale, double shift);
 
+void particle3_cache_friendly_print_pos3(particle_pos3_t *pos);
+
 #endif

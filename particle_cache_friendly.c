@@ -1,4 +1,5 @@
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
@@ -56,7 +57,7 @@ void particle3_cache_friendly_rand_init_pos3(particle_pos3_t *pos, double scale,
 	scale *= irm;
 	shift *= irm;
 	for(int i = 0; i < PARTICLES; i++){
-		particle_pos3_t ipos = pos[i];
+		particle_pos3_t *ipos = &pos[i];
 
 		double rxsl = rand() * scale;
 		double rysl = rand() * scale;
@@ -66,9 +67,9 @@ void particle3_cache_friendly_rand_init_pos3(particle_pos3_t *pos, double scale,
 		double rysh = rand() * shift;
 		double rzsh = rand() * shift;
 
-		ipos.x = rxsl + rxsh;
-		ipos.y = rysl + rysh;
-		ipos.z = rzsl + rzsh;
+		ipos->x = rxsl + rxsh;
+		ipos->y = rysl + rysh;
+		ipos->z = rzsl + rzsh;
 	}
 }
 
@@ -78,7 +79,7 @@ void particle3_cache_friendly_rand_init_acc3(particle_acc3_t *acc, double scale,
 	scale *= irm;
 	shift *= irm;
 	for(int i = 0; i < PARTICLES; i++){
-		particle_acc3_t iacc = acc[i];
+		particle_acc3_t *iacc = &acc[i];
 
 		double rxsl = rand() * scale;
 		double rysl = rand() * scale;
@@ -88,9 +89,23 @@ void particle3_cache_friendly_rand_init_acc3(particle_acc3_t *acc, double scale,
 		double rysh = rand() * shift;
 		double rzsh = rand() * shift;
 
-		iacc.x = rxsl + rxsh;
-		iacc.y = rysl + rysh;
-		iacc.z = rzsl + rzsh;
+		iacc->x = rxsl + rxsh;
+		iacc->y = rysl + rysh;
+		iacc->z = rzsl + rzsh;
 	}
 
 }
+
+void particle3_cache_friendly_print_pos3(particle_pos3_t *pos){
+	for(int i = 0; i < PARTICLES; i++){
+		particle_pos3_t ipos = pos[i];
+		float iposx = ipos.x;
+		float iposy = ipos.y;
+		float iposz = ipos.z;
+		printf("particle %d, ", i);
+		printf("x = %.4f, ", iposx);
+		printf("y = %.4f, ", iposy);
+		printf("z = %.4f, ", iposz);
+	}
+}
+
