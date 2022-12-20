@@ -25,16 +25,24 @@ typedef number_t colsum1_t[NCOLS];
  */
 typedef number_t vector2_t[NROWS][NCOLS];
 
+// ===========================================================================
+// COMPUTATIONAL PROCEDURES
+// ===========================================================================
 
 /*
  * Print the content of the 2d vector item
  */
-void vector2_print(vector2_t vec2);
+void vector2_print_vector2_data(vector2_t vec2);
+
+/*
+ * Print vector2_t data type size and alignment
+ */
+void vector2_print_vector2_type_info();
 
 /*
  * Randomly initialize the 2d vector
  */
-void vector2_rand_init(vector2_t vec2, double scale, double shift);
+void vector2_rand_init_vector2(vector2_t vec2, double scale, double shift);
 
 /*
  * Add 2 two-dimensional vectors together
@@ -50,5 +58,19 @@ void vector2_sum_rows(rowsum1_t out, vector2_t v);
  * Return the sum of the elements on the columns
  */
 void vector2_sum_cols(colsum1_t out, vector2_t v);
+
+// ===========================================================================
+// ALLOCATORS
+// ===========================================================================
+
+/*
+ * Alloc memory for a vec2 object
+ */
+vector2_t *vector2_alloc_vector2();
+
+/*
+ * Free memory for a vec2 object
+ */
+void vector2_free_vector2(vector2_t *v);
 
 #endif

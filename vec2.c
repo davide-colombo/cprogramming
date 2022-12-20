@@ -4,7 +4,39 @@
 #include <time.h>
 #include "vec2.h"
 
+#define alignof(t) __alignof__(t)
 
+/*
+ * Print size and alignment for vector2_t data type
+ */
+void vector2_print_vector2_type_info(){
+	printf("sizeof(vector2_t) = %zu\n", sizeof(vector2_t));
+	printf("alignof(vector2_t) = %zu\n", alignof(vector2_t));
+}
+
+/*
+ * Custom allocator for vector2_t object
+ */
+vector2_t *vector2_alloc_vector2(){
+	vector2_t *out = NULL;
+	out = malloc(sizeof *out);
+	return out;
+}
+
+/*
+ * Custom procedure to release previously allocated memory for an object of 
+ * type vector2_t
+ */
+void vector2_free_vector2(vector2_t *v){
+	if(v == NULL){
+		fprintf(stderr, "Cannot free vector 2 object!!\n");
+	}
+	free(v);
+}
+
+/*
+ * Compute the elementwise sum between v1 and v2 and return it in out
+ */
 void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 	for(int i = 0; i < NROWS; i++){
 		for(int j = 0; j < NCOLS; j++){
@@ -13,6 +45,9 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 	}
 }
 
+/*
+ * Compute the sum over "v" rows and return the result in "out"
+ */
 void vector2_sum_rows(rowsum1_t out, vector2_t v){
 	for(int i = 0; i < NROWS; i++){
 		out[i] = 0;
@@ -22,6 +57,9 @@ void vector2_sum_rows(rowsum1_t out, vector2_t v){
 	}
 }
 
+/*
+ * Compute the sum over "v" column and return the result in "out"
+ */
 void vector2_sum_cols(colsum1_t out, vector2_t v){
 	for(int i = 0; i < NCOLS; i++){
 		out[i] = 0;
@@ -34,7 +72,7 @@ void vector2_sum_cols(colsum1_t out, vector2_t v){
 /*
  * Print the two dimensional vector object
  */
-void vector2_print(vector2_t vec2){
+void vector2_print_vector2_data(vector2_t vec2){
 	for(int i = 0; i < NROWS; i++){
 		printf("[%d] => ", i);
 		number_t *irow = &vec2[i][0];
@@ -53,7 +91,7 @@ void vector2_print(vector2_t vec2){
  * Numbers are cast to `number_t` data type to maintain the consistency with 
  * the `vec2` object.
  */
-void vector2_rand_init(vector2_t vec2, double scale, double shift){
+void vector2_rand_init_vector2(vector2_t vec2, double scale, double shift){
 	srand(time(NULL));
 	double irm = 1.0f / (double) RAND_MAX;
 	scale *= irm;
