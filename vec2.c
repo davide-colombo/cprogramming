@@ -4,7 +4,7 @@
 #include <time.h>
 #include "vec2.h"
 
-void vector2_print(vector2_t *vec2){
+void vector2_print(vector2_t vec2){
 	for(int i = 0; i < NROWS; i++){
 		printf("[%d] => ", i);
 		for(int j = 0; j < NCOLS; j++){
@@ -14,7 +14,7 @@ void vector2_print(vector2_t *vec2){
 	}
 }
 
-void vector2_rand_init(vector2_t *vec2, double scale, double shift){
+void vector2_rand_init(vector2_t vec2, double scale, double shift){
 	srand(time(NULL));
 	double irm = 1.0f / (double) RAND_MAX;
 	scale *= irm;
