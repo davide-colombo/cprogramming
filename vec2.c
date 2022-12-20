@@ -36,6 +36,11 @@ void vector2_free_vector2(vector2_t *v){
 
 /*
  * Compute the elementwise sum between v1 and v2 and return it in out
+ *
+ * Unroll loop using an unroll factor K = 4.
+ *
+ * Computing every time in the loop "jlimit" and "jres" is better for 
+ * multithreading execution.
  */
 void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 	for(int i = 0; i < NROWS; i++){
@@ -57,25 +62,30 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 		int jlimit = NCOLS >> 2;
 		int j = 0;
 		while(1){
-			outcol0[j] = v1col0[j] + v2col0[j];
-			outcol1[j] = v1col1[j] + v2col1[j];
-			outcol2[j] = v1col2[j] + v2col2[j];
-			outcol3[j] = v1col3[j] + v2col3[j];
+			number_t sum1 = v1col0[j] + v2col0[j];
+			number_t sum2 = v1col1[j] + v2col1[j];
+			number_t sum3 = v1col2[j] + v2col2[j];
+			number_t sum4 = v1col3[j] + v2col3[j];
+
+			outcol0[j] = sum1;
+			outcol1[j] = sum2;
+			outcol2[j] = sum3;
+			outcol3[j] = sum4;
+
 			j += 4;
 			jlimit -= 1;
 			if(jlimit == 0){ break; }
 		}
 
 		int jres = NCOLS & 3;
-		if(jres == 0){ continue; }
-
-		while(1){
-			outcol0[j] = v1col0[j] + v2col0[j];
-			j += 1;
-			jres -= 1;
-			if(jres == 0){ break; }
-		}
-		printf("[%d][%d]\n", i, j);
+		if(jres){
+			while(1){
+				outcol0[j] = v1col0[j] + v2col0[j];
+				j += 1;
+				jres -= 1;
+				if(jres == 0){ break; }
+			}
+		} // jres
 	}
 }
 
