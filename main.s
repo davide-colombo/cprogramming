@@ -14,18 +14,23 @@ _main:                                  ; @main
 	.cfi_offset w29, -16
 	.cfi_offset w19, -24
 	.cfi_offset w20, -32
-	bl	_clock
-	mov	x19, x0
 Lloh0:
-	adrp	x0, _particles@GOTPAGE
+	adrp	x19, _particles@GOTPAGE
 Lloh1:
-	ldr	x0, [x0, _particles@GOTPAGEOFF]
-	mov	w8, #65110
-	movk	w8, #17380, lsl #16
+	ldr	x19, [x19, _particles@GOTPAGEOFF]
+	mov	x0, x19
+	bl	_particle3_rand_init
+	mov	x0, x19
+	bl	_particle3_print
+	bl	_clock
+	mov	x20, x0
+	mov	w8, #44040
+	movk	w8, #16252, lsl #16
 	fmov	s0, w8
+	mov	x0, x19
 	bl	_particle3_gravitational_force
 	bl	_clock
-	sub	x8, x0, x19
+	sub	x8, x0, x20
 	ucvtf	d0, x8
 	mov	x8, #60813
 	movk	x8, #41141, lsl #16
