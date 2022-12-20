@@ -52,8 +52,17 @@ int main(int argc, char *argv[]){
 
 	//vector2_print_vector2_data(&sum[0][0]);
 
+	rowsum1_t *rsum = vector2_alloc_rowsum1();
+	if(rsum == NULL){
+		fprintf(stderr, "Cannot allocate memory for rsum object\n");
+		return 3;
+	}
+
+	vector2_sum_rows(&rsum[0][0], &sum[0][0]);
+
 	vector2_free_vector2(v2);
 	vector2_free_vector2(sum);
+	vector2_free_rowsum1(rsum);
 
 
 	return 0;

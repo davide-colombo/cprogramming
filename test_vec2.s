@@ -47,7 +47,7 @@ Lloh2:
 Lloh3:
 	add	x0, x0, l_.str@PAGEOFF
 	bl	_printf
-	cbz	x19, LBB0_3
+	cbz	x19, LBB0_4
 ; %bb.1:
 	bl	_clock
 	mov	x21, x0
@@ -64,7 +64,7 @@ Lloh4:
 Lloh5:
 	add	x0, x0, l_.str.2@PAGEOFF
 	bl	_printf
-	cbz	x20, LBB0_4
+	cbz	x20, LBB0_5
 ; %bb.2:
 	mov	x8, #4650248090236747776
 	fmov	d0, x8
@@ -91,13 +91,21 @@ Lloh8:
 Lloh9:
 	add	x0, x0, l_.str.4@PAGEOFF
 	bl	_printf
+	bl	_vector2_alloc_rowsum1
+	cbz	x0, LBB0_6
+; %bb.3:
+	mov	x21, x0
+	mov	x1, x20
+	bl	_vector2_sum_rows
 	mov	x0, x19
 	bl	_vector2_free_vector2
 	mov	x0, x20
 	bl	_vector2_free_vector2
+	mov	x0, x21
+	bl	_vector2_free_rowsum1
 	mov	w19, #0
-	b	LBB0_5
-LBB0_3:
+	b	LBB0_7
+LBB0_4:
 Lloh10:
 	adrp	x8, ___stderrp@GOTPAGE
 Lloh11:
@@ -112,8 +120,8 @@ Lloh14:
 	mov	w1, #37
 	mov	w2, #1
 	bl	_fwrite
-	b	LBB0_5
-LBB0_4:
+	b	LBB0_7
+LBB0_5:
 Lloh15:
 	adrp	x8, ___stderrp@GOTPAGE
 Lloh16:
@@ -128,7 +136,23 @@ Lloh19:
 	mov	w2, #1
 	bl	_fwrite
 	mov	w19, #2
-LBB0_5:
+	b	LBB0_7
+LBB0_6:
+Lloh20:
+	adrp	x8, ___stderrp@GOTPAGE
+Lloh21:
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
+Lloh22:
+	ldr	x3, [x8]
+Lloh23:
+	adrp	x0, l_.str.5@PAGE
+Lloh24:
+	add	x0, x0, l_.str.5@PAGEOFF
+	mov	w1, #39
+	mov	w2, #1
+	bl	_fwrite
+	mov	w19, #3
+LBB0_7:
 	mov	x0, x19
 	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
 	ldp	x20, x19, [sp, #32]             ; 16-byte Folded Reload
@@ -144,6 +168,8 @@ LBB0_5:
 	.loh AdrpLdrGotLdr	Lloh10, Lloh11, Lloh12
 	.loh AdrpAdd	Lloh18, Lloh19
 	.loh AdrpLdrGotLdr	Lloh15, Lloh16, Lloh17
+	.loh AdrpAdd	Lloh23, Lloh24
+	.loh AdrpLdrGotLdr	Lloh20, Lloh21, Lloh22
 	.cfi_endproc
                                         ; -- End function
 	.section	__DATA,__data
@@ -168,5 +194,8 @@ l_.str.3:                               ; @.str.3
 
 l_.str.4:                               ; @.str.4
 	.asciz	"add: %.20f\n"
+
+l_.str.5:                               ; @.str.5
+	.asciz	"Cannot allocate memory for rsum object\n"
 
 .subsections_via_symbols

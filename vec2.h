@@ -73,4 +73,14 @@ vector2_t *vector2_alloc_vector2();
  */
 void vector2_free_vector2(vector2_t *v);
 
+/*
+ * Alloc memory for a rowsum1_t object
+ */
+rowsum1_t *vector2_alloc_rowsum1();
+
+/*
+ * Free memory for a rowsum1_t object
+ */
+void vector2_free_rowsum1(rowsum1_t *r);
+
 #endif

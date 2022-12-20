@@ -28,10 +28,27 @@ vector2_t *vector2_alloc_vector2(){
  * type vector2_t
  */
 void vector2_free_vector2(vector2_t *v){
-	if(v == NULL){
-		fprintf(stderr, "Cannot free vector 2 object!!\n");
+	if(v != NULL){
+		free(v);
 	}
-	free(v);
+}
+
+/*
+ * Custom allocator for an object of type rowsum1_t
+ */
+rowsum1_t *vector2_alloc_rowsum1(){
+	rowsum1_t *r = NULL;
+	r = malloc(sizeof *r);
+	return r;
+}
+
+/*
+ * Release memory allocated for an object of type rowsum1_t
+ */
+void vector2_free_rowsum1(rowsum1_t *r){
+	if(r != NULL){
+		free(r);
+	}
 }
 
 /*
