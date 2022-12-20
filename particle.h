@@ -29,6 +29,16 @@ typedef struct particle3{
 } particle3_t;
 
 /*
+ * Print float3 data structure size and alignment info
+ */
+void particle3_print_float3_info();
+
+/*
+ * Print particle3 data structure size and alignment info
+ */
+void particle3_print_particle3_info();
+
+/*
  * Return the gravitational force between two particles
  */
 void particle3_gravitational_force(particle3_t *particles, double mass);
@@ -44,4 +54,5 @@ void particle3_rand_init(particle3_t *particles);
  * in the array of particles.
  */
 void particle3_print(particle3_t *particles);
+
 #endif	/* PARTICLE_H */

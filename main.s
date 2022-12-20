@@ -14,14 +14,14 @@ _main:                                  ; @main
 	.cfi_offset w29, -16
 	.cfi_offset w19, -24
 	.cfi_offset w20, -32
+	bl	_particle3_print_float3_info
+	bl	_particle3_print_particle3_info
 Lloh0:
 	adrp	x19, _particles@GOTPAGE
 Lloh1:
 	ldr	x19, [x19, _particles@GOTPAGEOFF]
 	mov	x0, x19
 	bl	_particle3_rand_init
-	mov	x0, x19
-	bl	_particle3_print
 	bl	_clock
 	mov	x20, x0
 	mov	x8, #1610612736

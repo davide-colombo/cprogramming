@@ -9,8 +9,11 @@
 particle3_t particles[PARTICLES];
 
 int main(int argc, char *argv[]){
+	particle3_print_float3_info();
+	particle3_print_particle3_info();
+
 	particle3_rand_init(&particles[0]);
-	particle3_print(&particles[0]);
+//	particle3_print(&particles[0]);
 
 	float mass = 4000.78;
 	clock_t start, end;

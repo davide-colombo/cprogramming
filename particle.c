@@ -5,6 +5,18 @@
 #include <math.h>
 #include "particle.h"
 
+#define alignof(n) __alignof__( n )
+
+void particle3_print_float3_info(){
+	printf("sizeof(float3_t) = %zu\n", sizeof(float3_t));
+	printf("alignof(float3_t) = %zu\n", alignof(float3_t));
+}
+
+void particle3_print_particle3_info(){
+	printf("sizeof(particle3_t) = %zu\n", sizeof(particle3_t));
+	printf("alignof(particle3_t) = %zu\n", alignof(particle3_t));
+}
+
 /*
  * Gravitational force between two particles.
  */
