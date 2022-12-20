@@ -24,6 +24,9 @@ int main(int argc, char *argv[]){
 	vector2_rand_init_vector2(&v2[0][0], 800.0f, 20.0f);
 	vector2_print_vector2_data(&v2[0][0]);
 
+	vector2_add(&sum[0][0], v, &v2[0][0]);
+	vector2_print_vector2_data(&sum[0][0]);
+
 	vector2_free_vector2(v2);
 	vector2_free_vector2(sum);
 

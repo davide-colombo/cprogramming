@@ -39,9 +39,43 @@ void vector2_free_vector2(vector2_t *v){
  */
 void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 	for(int i = 0; i < NROWS; i++){
-		for(int j = 0; j < NCOLS; j++){
-			out[i][j] = v1[i][j] + v2[i][j];
+		number_t *v1col0 = &v1[i][0];
+		number_t *v1col1 = &v1[i][1];
+		number_t *v1col2 = &v1[i][2];
+		number_t *v1col3 = &v1[i][3];
+
+		number_t *v2col0 = &v2[i][0];
+		number_t *v2col1 = &v2[i][1];
+		number_t *v2col2 = &v2[i][2];
+		number_t *v2col3 = &v2[i][3];
+
+		number_t *outcol0 = &out[i][0];
+		number_t *outcol1 = &out[i][1];
+		number_t *outcol2 = &out[i][2];
+		number_t *outcol3 = &out[i][3];
+
+		int jlimit = NCOLS >> 2;
+		int j = 0;
+		while(1){
+			outcol0[j] = v1col0[j] + v2col0[j];
+			outcol1[j] = v1col1[j] + v2col1[j];
+			outcol2[j] = v1col2[j] + v2col2[j];
+			outcol3[j] = v1col3[j] + v2col3[j];
+			j += 4;
+			jlimit -= 1;
+			if(jlimit == 0){ break; }
 		}
+
+		int jres = NCOLS & 3;
+		if(jres == 0){ continue; }
+
+		while(1){
+			outcol0[j] = v1col0[j] + v2col0[j];
+			j += 1;
+			jres -= 1;
+			if(jres == 0){ break; }
+		}
+		printf("[%d][%d]\n", i, j);
 	}
 }
 

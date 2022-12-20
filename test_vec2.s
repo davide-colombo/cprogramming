@@ -41,6 +41,15 @@ Lloh1:
 	bl	_vector2_rand_init_vector2
 	mov	x0, x19
 	bl	_vector2_print_vector2_data
+Lloh2:
+	adrp	x1, _v@GOTPAGE
+Lloh3:
+	ldr	x1, [x1, _v@GOTPAGEOFF]
+	mov	x0, x20
+	mov	x2, x19
+	bl	_vector2_add
+	mov	x0, x20
+	bl	_vector2_print_vector2_data
 	mov	x0, x19
 	bl	_vector2_free_vector2
 	mov	x0, x20
@@ -48,15 +57,15 @@ Lloh1:
 	mov	w19, #0
 	b	LBB0_5
 LBB0_3:
-Lloh2:
-	adrp	x8, ___stderrp@GOTPAGE
-Lloh3:
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh4:
-	ldr	x3, [x8]
+	adrp	x8, ___stderrp@GOTPAGE
 Lloh5:
-	adrp	x0, l_.str@PAGE
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh6:
+	ldr	x3, [x8]
+Lloh7:
+	adrp	x0, l_.str@PAGE
+Lloh8:
 	add	x0, x0, l_.str@PAGEOFF
 	mov	w19, #1
 	mov	w1, #37
@@ -64,15 +73,15 @@ Lloh6:
 	bl	_fwrite
 	b	LBB0_5
 LBB0_4:
-Lloh7:
-	adrp	x8, ___stderrp@GOTPAGE
-Lloh8:
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh9:
-	ldr	x3, [x8]
+	adrp	x8, ___stderrp@GOTPAGE
 Lloh10:
-	adrp	x0, l_.str.1@PAGE
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh11:
+	ldr	x3, [x8]
+Lloh12:
+	adrp	x0, l_.str.1@PAGE
+Lloh13:
 	add	x0, x0, l_.str.1@PAGEOFF
 	mov	w1, #38
 	mov	w2, #1
@@ -84,10 +93,11 @@ LBB0_5:
 	ldp	x20, x19, [sp], #32             ; 16-byte Folded Reload
 	ret
 	.loh AdrpLdrGot	Lloh0, Lloh1
-	.loh AdrpAdd	Lloh5, Lloh6
-	.loh AdrpLdrGotLdr	Lloh2, Lloh3, Lloh4
-	.loh AdrpAdd	Lloh10, Lloh11
-	.loh AdrpLdrGotLdr	Lloh7, Lloh8, Lloh9
+	.loh AdrpLdrGot	Lloh2, Lloh3
+	.loh AdrpAdd	Lloh7, Lloh8
+	.loh AdrpLdrGotLdr	Lloh4, Lloh5, Lloh6
+	.loh AdrpAdd	Lloh12, Lloh13
+	.loh AdrpLdrGotLdr	Lloh9, Lloh10, Lloh11
 	.cfi_endproc
                                         ; -- End function
 	.comm	_v,800,3                        ; @v
