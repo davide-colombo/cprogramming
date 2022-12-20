@@ -97,41 +97,41 @@ LBB2_2:                                 ;   Parent Loop BB2_1 Depth=1
 	add	x1, x12, #108
 	ldp	s17, s18, [x12, #-144]
 	ld1.s	{ v17 }[1], [x13]
+	sub	x13, x12, #104
+	sub	x2, x12, #68
 	ldp	s19, s20, [x12]
 	ld1.s	{ v19 }[1], [x16]
-	ld1.s	{ v17 }[2], [x14]
-	ld1.s	{ v19 }[2], [x17]
-	sub	x13, x12, #104
-	sub	x14, x12, #68
-	ld1.s	{ v17 }[3], [x15]
-	sub	x15, x12, #32
-	add	x16, x12, #40
-	add	x17, x12, #76
-	add	x2, x12, #112
-	ld1.s	{ v19 }[3], [x1]
+	sub	x16, x12, #32
 	ld1.s	{ v18 }[1], [x13]
-	ld1.s	{ v18 }[2], [x14]
-	ld1.s	{ v18 }[3], [x15]
-	ld1.s	{ v20 }[1], [x16]
-	ld1.s	{ v20 }[2], [x17]
-	ld1.s	{ v20 }[3], [x2]
+	add	x13, x12, #40
+	ld1.s	{ v17 }[2], [x14]
+	add	x14, x12, #76
+	ld1.s	{ v18 }[2], [x2]
+	add	x2, x12, #112
+	ld1.s	{ v17 }[3], [x15]
+	ld1.s	{ v20 }[1], [x13]
 	sub	x13, x12, #100
-	sub	x14, x12, #64
-	sub	x15, x12, #28
-	add	x16, x12, #44
-	add	x17, x12, #80
-	fsub.4s	v17, v17, v4
+	sub	x15, x12, #64
+	ld1.s	{ v18 }[3], [x16]
 	ldur	s21, [x12, #-136]
 	ld1.s	{ v21 }[1], [x13]
-	ld1.s	{ v21 }[2], [x14]
-	fsub.4s	v18, v18, v5
-	ld1.s	{ v21 }[3], [x15]
+	sub	x13, x12, #28
+	ld1.s	{ v19 }[2], [x17]
+	add	x16, x12, #44
+	ld1.s	{ v21 }[2], [x15]
+	add	x15, x12, #80
+	ld1.s	{ v20 }[2], [x14]
+	add	x14, x12, #116
+	ld1.s	{ v21 }[3], [x13]
 	ldr	s22, [x12, #8]
+	ld1.s	{ v19 }[3], [x1]
 	ld1.s	{ v22 }[1], [x16]
+	ld1.s	{ v22 }[2], [x15]
+	ld1.s	{ v20 }[3], [x2]
+	ld1.s	{ v22 }[3], [x14]
+	fsub.4s	v17, v17, v4
 	fsub.4s	v19, v19, v4
-	add	x12, x12, #116
-	ld1.s	{ v22 }[2], [x17]
-	ld1.s	{ v22 }[3], [x12]
+	fsub.4s	v18, v18, v5
 	fsub.4s	v20, v20, v5
 	fsub.4s	v21, v21, v6
 	fsub.4s	v22, v22, v6
