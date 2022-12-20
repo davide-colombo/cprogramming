@@ -112,8 +112,8 @@ err_t order_free(order4_t **optr);
  * array of orders that correspond to a given buyer.
  * The buyer id defines the index in the array.
  */
-err_t order_head_alloc(order4_t **otpr, size_t n);
-err_t order_head_free(order4_t **optr);
+err_t order_head_alloc(order4_t ***otpr, size_t n);
+err_t order_head_free(order4_t ***optr);
 
 
 #endif	/* ORDER_H */
