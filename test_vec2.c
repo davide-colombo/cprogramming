@@ -58,7 +58,13 @@ int main(int argc, char *argv[]){
 		return 3;
 	}
 
+	start = clock();
 	vector2_sum_rows(&rsum[0][0], &sum[0][0]);
+	//vector2_print_rowsum1_data(&rsum[0][0]);
+	end = clock();
+	e = end - start;
+	t = e * icps;
+	printf("rowsum: %.20f\n", t);
 
 	vector2_free_vector2(v2);
 	vector2_free_vector2(sum);

@@ -349,6 +349,47 @@ LBB9_2:                                 ;   Parent Loop BB9_1 Depth=1
 	ret
 	.cfi_endproc
                                         ; -- End function
+	.globl	_vector2_print_rowsum1_data     ; -- Begin function vector2_print_rowsum1_data
+	.p2align	2
+_vector2_print_rowsum1_data:            ; @vector2_print_rowsum1_data
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #64
+	stp	x22, x21, [sp, #16]             ; 16-byte Folded Spill
+	stp	x20, x19, [sp, #32]             ; 16-byte Folded Spill
+	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
+	add	x29, sp, #48
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	.cfi_offset w19, -24
+	.cfi_offset w20, -32
+	.cfi_offset w21, -40
+	.cfi_offset w22, -48
+	mov	x19, x0
+	mov	x21, #0
+Lloh8:
+	adrp	x20, l_.str.5@PAGE
+Lloh9:
+	add	x20, x20, l_.str.5@PAGEOFF
+LBB10_1:                                ; =>This Inner Loop Header: Depth=1
+	ldr	d0, [x19, x21, lsl #3]
+	str	d0, [sp, #8]
+	str	x21, [sp]
+	mov	x0, x20
+	bl	_printf
+	add	x21, x21, #1
+	cmp	x21, #1000
+	b.ne	LBB10_1
+; %bb.2:
+	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
+	ldp	x20, x19, [sp, #32]             ; 16-byte Folded Reload
+	ldp	x22, x21, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #64
+	ret
+	.loh AdrpAdd	Lloh8, Lloh9
+	.cfi_endproc
+                                        ; -- End function
 	.section	__TEXT,__cstring,cstring_literals
 l_.str:                                 ; @.str
 	.asciz	"sizeof(vector2_t) = %zu\n"
@@ -361,5 +402,8 @@ l_.str.2:                               ; @.str.2
 
 l_.str.3:                               ; @.str.3
 	.asciz	"[%d] = %.4f, "
+
+l_.str.5:                               ; @.str.5
+	.asciz	"sum of the %d-th row = %.4f\n"
 
 .subsections_via_symbols

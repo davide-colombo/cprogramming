@@ -35,6 +35,11 @@ typedef number_t vector2_t[NROWS][NCOLS];
 void vector2_print_vector2_data(vector2_t vec2);
 
 /*
+ * Print the content of an object of type rowsum1_t
+ */
+void vector2_print_rowsum1_data(rowsum1_t v);
+
+/*
  * Print vector2_t data type size and alignment
  */
 void vector2_print_vector2_type_info();

@@ -167,3 +167,13 @@ void vector2_rand_init_vector2(vector2_t vec2, double scale, double shift){
 		}
 	}
 }
+
+/*
+ * Print the content of an object of type rowsum1_t
+ */
+void vector2_print_rowsum1_data(rowsum1_t v){
+	for(int i = 0; i < NROWS; i++){
+		printf("sum of the %d-th row = %.4f\n", i, v[i]);
+	}
+}
+

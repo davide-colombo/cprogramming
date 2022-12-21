@@ -5,11 +5,12 @@
 _main:                                  ; @main
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #64
-	stp	x22, x21, [sp, #16]             ; 16-byte Folded Spill
-	stp	x20, x19, [sp, #32]             ; 16-byte Folded Spill
-	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
-	add	x29, sp, #48
+	sub	sp, sp, #80
+	stp	x24, x23, [sp, #16]             ; 16-byte Folded Spill
+	stp	x22, x21, [sp, #32]             ; 16-byte Folded Spill
+	stp	x20, x19, [sp, #48]             ; 16-byte Folded Spill
+	stp	x29, x30, [sp, #64]             ; 16-byte Folded Spill
+	add	x29, sp, #64
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
@@ -17,6 +18,8 @@ _main:                                  ; @main
 	.cfi_offset w20, -32
 	.cfi_offset w21, -40
 	.cfi_offset w22, -48
+	.cfi_offset w23, -56
+	.cfi_offset w24, -64
 	mov	x0, #0
 	bl	_time
                                         ; kill: def $w0 killed $w0 killed $x0
@@ -38,8 +41,8 @@ Lloh1:
 	bl	_clock
 	sub	x8, x0, x20
 	ucvtf	d0, x8
-	adrp	x22, _icps@PAGE
-	ldr	d1, [x22, _icps@PAGEOFF]
+	adrp	x23, _icps@PAGE
+	ldr	d1, [x23, _icps@PAGEOFF]
 	fmul	d0, d1, d0
 	str	d0, [sp]
 Lloh2:
@@ -56,7 +59,7 @@ Lloh3:
 	bl	_clock
 	sub	x8, x0, x21
 	ucvtf	d0, x8
-	ldr	d1, [x22, _icps@PAGEOFF]
+	ldr	d1, [x23, _icps@PAGEOFF]
 	fmul	d0, d1, d0
 	str	d0, [sp]
 Lloh4:
@@ -83,7 +86,7 @@ Lloh7:
 	bl	_clock
 	sub	x8, x0, x21
 	ucvtf	d0, x8
-	ldr	d1, [x22, _icps@PAGEOFF]
+	ldr	d1, [x23, _icps@PAGEOFF]
 	fmul	d0, d1, d0
 	str	d0, [sp]
 Lloh8:
@@ -95,8 +98,22 @@ Lloh9:
 	cbz	x0, LBB0_6
 ; %bb.3:
 	mov	x21, x0
+	bl	_clock
+	mov	x22, x0
+	mov	x0, x21
 	mov	x1, x20
 	bl	_vector2_sum_rows
+	bl	_clock
+	sub	x8, x0, x22
+	ucvtf	d0, x8
+	ldr	d1, [x23, _icps@PAGEOFF]
+	fmul	d0, d1, d0
+	str	d0, [sp]
+Lloh10:
+	adrp	x0, l_.str.6@PAGE
+Lloh11:
+	add	x0, x0, l_.str.6@PAGEOFF
+	bl	_printf
 	mov	x0, x19
 	bl	_vector2_free_vector2
 	mov	x0, x20
@@ -106,15 +123,15 @@ Lloh9:
 	mov	w19, #0
 	b	LBB0_7
 LBB0_4:
-Lloh10:
-	adrp	x8, ___stderrp@GOTPAGE
-Lloh11:
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh12:
-	ldr	x3, [x8]
+	adrp	x8, ___stderrp@GOTPAGE
 Lloh13:
-	adrp	x0, l_.str.1@PAGE
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh14:
+	ldr	x3, [x8]
+Lloh15:
+	adrp	x0, l_.str.1@PAGE
+Lloh16:
 	add	x0, x0, l_.str.1@PAGEOFF
 	mov	w19, #1
 	mov	w1, #37
@@ -122,15 +139,15 @@ Lloh14:
 	bl	_fwrite
 	b	LBB0_7
 LBB0_5:
-Lloh15:
-	adrp	x8, ___stderrp@GOTPAGE
-Lloh16:
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh17:
-	ldr	x3, [x8]
+	adrp	x8, ___stderrp@GOTPAGE
 Lloh18:
-	adrp	x0, l_.str.3@PAGE
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh19:
+	ldr	x3, [x8]
+Lloh20:
+	adrp	x0, l_.str.3@PAGE
+Lloh21:
 	add	x0, x0, l_.str.3@PAGEOFF
 	mov	w1, #38
 	mov	w2, #1
@@ -138,15 +155,15 @@ Lloh19:
 	mov	w19, #2
 	b	LBB0_7
 LBB0_6:
-Lloh20:
-	adrp	x8, ___stderrp@GOTPAGE
-Lloh21:
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh22:
-	ldr	x3, [x8]
+	adrp	x8, ___stderrp@GOTPAGE
 Lloh23:
-	adrp	x0, l_.str.5@PAGE
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh24:
+	ldr	x3, [x8]
+Lloh25:
+	adrp	x0, l_.str.5@PAGE
+Lloh26:
 	add	x0, x0, l_.str.5@PAGEOFF
 	mov	w1, #39
 	mov	w2, #1
@@ -154,22 +171,24 @@ Lloh24:
 	mov	w19, #3
 LBB0_7:
 	mov	x0, x19
-	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #32]             ; 16-byte Folded Reload
-	ldp	x22, x21, [sp, #16]             ; 16-byte Folded Reload
-	add	sp, sp, #64
+	ldp	x29, x30, [sp, #64]             ; 16-byte Folded Reload
+	ldp	x20, x19, [sp, #48]             ; 16-byte Folded Reload
+	ldp	x22, x21, [sp, #32]             ; 16-byte Folded Reload
+	ldp	x24, x23, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #80
 	ret
 	.loh AdrpAdd	Lloh2, Lloh3
 	.loh AdrpLdrGot	Lloh0, Lloh1
 	.loh AdrpAdd	Lloh4, Lloh5
 	.loh AdrpAdd	Lloh8, Lloh9
 	.loh AdrpLdrGot	Lloh6, Lloh7
-	.loh AdrpAdd	Lloh13, Lloh14
-	.loh AdrpLdrGotLdr	Lloh10, Lloh11, Lloh12
-	.loh AdrpAdd	Lloh18, Lloh19
-	.loh AdrpLdrGotLdr	Lloh15, Lloh16, Lloh17
-	.loh AdrpAdd	Lloh23, Lloh24
-	.loh AdrpLdrGotLdr	Lloh20, Lloh21, Lloh22
+	.loh AdrpAdd	Lloh10, Lloh11
+	.loh AdrpAdd	Lloh15, Lloh16
+	.loh AdrpLdrGotLdr	Lloh12, Lloh13, Lloh14
+	.loh AdrpAdd	Lloh20, Lloh21
+	.loh AdrpLdrGotLdr	Lloh17, Lloh18, Lloh19
+	.loh AdrpAdd	Lloh25, Lloh26
+	.loh AdrpLdrGotLdr	Lloh22, Lloh23, Lloh24
 	.cfi_endproc
                                         ; -- End function
 	.section	__DATA,__data
@@ -197,5 +216,8 @@ l_.str.4:                               ; @.str.4
 
 l_.str.5:                               ; @.str.5
 	.asciz	"Cannot allocate memory for rsum object\n"
+
+l_.str.6:                               ; @.str.6
+	.asciz	"rowsum: %.20f\n"
 
 .subsections_via_symbols
