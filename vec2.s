@@ -236,41 +236,89 @@ _vector2_mul:                           ; @vector2_mul
 	.cfi_startproc
 ; %bb.0:
 	mov	x8, #0
-	mov	w9, #17864
+	add	x9, x2, #32
+	mov	w10, #17864
+	mov	x11, x0
 LBB9_1:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB9_2 Depth 2
-                                        ;       Child Loop BB9_3 Depth 3
-	mov	x10, #0
-	mov	x11, x2
+                                        ;       Child Loop BB9_5 Depth 3
+                                        ;       Child Loop BB9_7 Depth 3
+	mov	x12, #0
+	madd	x13, x8, x10, x0
+	add	x14, x13, x10
+	mov	x15, x2
+	mov	x16, x9
 LBB9_2:                                 ;   Parent Loop BB9_1 Depth=1
                                         ; =>  This Loop Header: Depth=2
-                                        ;       Child Loop BB9_3 Depth 3
-	mov	x12, #0
-	madd	x13, x8, x9, x0
-	add	x13, x13, x10, lsl #3
-	mov	x14, x11
-LBB9_3:                                 ;   Parent Loop BB9_1 Depth=1
+                                        ;       Child Loop BB9_5 Depth 3
+                                        ;       Child Loop BB9_7 Depth 3
+	mov	x3, #0
+	madd	x17, x8, x10, x1
+	add	x17, x17, x12, lsl #3
+	madd	x5, x12, x10, x2
+	add	x4, x17, #8
+	cmp	x13, x4
+	cset	w4, lo
+	cmp	x17, x14
+	cset	w6, lo
+	and	w6, w4, w6
+	add	x4, x5, x10
+	cmp	x13, x4
+	cset	w4, lo
+	cmp	x5, x14
+	cset	w5, lo
+	tbnz	w6, #0, LBB9_7
+; %bb.3:                                ;   in Loop: Header=BB9_2 Depth=2
+	and	w4, w4, w5
+	cbnz	w4, LBB9_7
+; %bb.4:                                ;   in Loop: Header=BB9_2 Depth=2
+	ld1r.2d	{ v0 }, [x17]
+	mov	x3, #-17856
+LBB9_5:                                 ;   Parent Loop BB9_1 Depth=1
                                         ;     Parent Loop BB9_2 Depth=2
                                         ; =>    This Inner Loop Header: Depth=3
-	ldr	d0, [x1, x12, lsl #3]
-	ldr	d1, [x14]
-	fmul	d0, d0, d1
-	str	d0, [x13]
+	ldr	d1, [x17]
+	add	x4, x16, x3
+	ldr	q2, [x4, #17824]
+	ldr	q3, [x4, #17840]
+	ldr	q4, [x4, #17856]
+	ldr	q5, [x4, #17872]
+	fmul.2d	v2, v0, v2
+	fmul.2d	v3, v0, v3
+	fmul.2d	v4, v0, v4
+	fmul.2d	v1, v5, v1[0]
+	add	x4, x11, x3
+	str	q2, [x4, #17856]
+	str	q3, [x4, #17872]
+	str	q4, [x4, #17888]
+	str	q1, [x4, #17904]
+	adds	x3, x3, #64
+	b.ne	LBB9_5
+; %bb.6:                                ;   in Loop: Header=BB9_2 Depth=2
+	mov	w3, #2232
+LBB9_7:                                 ;   Parent Loop BB9_1 Depth=1
+                                        ;     Parent Loop BB9_2 Depth=2
+                                        ; =>    This Inner Loop Header: Depth=3
+	lsl	x4, x3, #3
+	ldr	d0, [x15, x4]
+	ldr	d1, [x17]
+	fmul	d0, d1, d0
+	str	d0, [x11, x4]
+	add	x3, x3, #1
+	cmp	x3, #2233
+	b.ne	LBB9_7
+; %bb.8:                                ;   in Loop: Header=BB9_2 Depth=2
 	add	x12, x12, #1
-	add	x14, x14, x9
+	add	x16, x16, x10
+	add	x15, x15, x10
 	cmp	x12, #2233
-	b.ne	LBB9_3
-; %bb.4:                                ;   in Loop: Header=BB9_2 Depth=2
-	add	x10, x10, #1
-	add	x11, x11, #8
-	cmp	x10, #2233
 	b.ne	LBB9_2
-; %bb.5:                                ;   in Loop: Header=BB9_1 Depth=1
+; %bb.9:                                ;   in Loop: Header=BB9_1 Depth=1
 	add	x8, x8, #1
-	add	x1, x1, x9
+	add	x11, x11, x10
 	cmp	x8, #2233
 	b.ne	LBB9_1
-; %bb.6:
+; %bb.10:
 	ret
 	.cfi_endproc
                                         ; -- End function
