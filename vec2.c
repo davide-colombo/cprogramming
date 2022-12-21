@@ -76,22 +76,24 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 		number_t *outcol2 = &out[i][2];
 		number_t *outcol3 = &out[i][3];
 
-		int jlimit = NCOLS >> 2;
 		int j = 0;
-		while(1){
-			number_t sum1 = v1col0[j] + v2col0[j];
-			number_t sum2 = v1col1[j] + v2col1[j];
-			number_t sum3 = v1col2[j] + v2col2[j];
-			number_t sum4 = v1col3[j] + v2col3[j];
-
-			outcol0[j] = sum1;
-			outcol1[j] = sum2;
-			outcol2[j] = sum3;
-			outcol3[j] = sum4;
-
-			j += 4;
-			jlimit -= 1;
-			if(jlimit == 0){ break; }
+		int jlimit = NCOLS >> 2;
+		if(jlimit){
+			while(1){
+				number_t sum1 = v1col0[j] + v2col0[j];
+				number_t sum2 = v1col1[j] + v2col1[j];
+				number_t sum3 = v1col2[j] + v2col2[j];
+				number_t sum4 = v1col3[j] + v2col3[j];
+	
+				outcol0[j] = sum1;
+				outcol1[j] = sum2;
+				outcol2[j] = sum3;
+				outcol3[j] = sum4;
+	
+				j += 4;
+				jlimit -= 1;
+				if(jlimit == 0){ break; }
+			}
 		}
 
 		int jres = NCOLS & 3;
