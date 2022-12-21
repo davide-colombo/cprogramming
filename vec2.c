@@ -78,21 +78,23 @@ void vector2_free_colsum1(colsum1_t *c){
  * multithreading execution.
  */
 void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
-	for(uint32_t i = 0; i < NROWS; i++){
-		number_t *v1col0 = &v1[i][0];
-		number_t *v1col1 = &v1[i][1];
-		number_t *v1col2 = &v1[i][2];
-		number_t *v1col3 = &v1[i][3];
+	uint32_t ilimit = NROWS;
+	uint32_t i = 0;
+	while(1){
+		number_t * restrict v1col0 = &v1[i][0];
+		number_t * restrict v1col1 = &v1[i][1];
+		number_t * restrict v1col2 = &v1[i][2];
+		number_t * restrict v1col3 = &v1[i][3];
 
-		number_t *v2col0 = &v2[i][0];
-		number_t *v2col1 = &v2[i][1];
-		number_t *v2col2 = &v2[i][2];
-		number_t *v2col3 = &v2[i][3];
+		number_t * restrict v2col0 = &v2[i][0];
+		number_t * restrict v2col1 = &v2[i][1];
+		number_t * restrict v2col2 = &v2[i][2];
+		number_t * restrict v2col3 = &v2[i][3];
 
-		number_t *outcol0 = &out[i][0];
-		number_t *outcol1 = &out[i][1];
-		number_t *outcol2 = &out[i][2];
-		number_t *outcol3 = &out[i][3];
+		number_t * restrict outcol0 = &out[i][0];
+		number_t * restrict outcol1 = &out[i][1];
+		number_t * restrict outcol2 = &out[i][2];
+		number_t * restrict outcol3 = &out[i][3];
 
 		uint32_t j = 0;
 		uint32_t jlimit = NCOLS >> 2;
@@ -127,8 +129,8 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 				if(jlnext == 0){ break; }
 				jlimit		= jlnext;
 				j			= jnext;
-			}
-		}
+			} /* while */
+		} /* jlimit */
 
 		uint32_t jres = NCOLS & 3;
 		if(jres){
@@ -149,9 +151,13 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 				if(jrnext == 0){ break; }
 				j		= jnext;
 				jres	= jrnext;
-			}
-		} // jres
-	}
+			} /* while */
+		} /* jres */
+		
+		i += 1;
+		ilimit -= 1;
+		if(ilimit == 0){ break; }
+	} /* while */
 }
 
 /*

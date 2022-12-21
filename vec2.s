@@ -103,77 +103,78 @@ _vector2_add:                           ; @vector2_add
 	.cfi_startproc
 ; %bb.0:
 	mov	x8, #0
-	mov	w9, #8000
-	mov	x10, x2
-	mov	x11, x1
-	mov	x12, x0
+	mov	w9, #1000
+	mov	w10, #8000
+	mov	x11, x2
+	mov	x12, x1
+	mov	x13, x0
 	b	LBB7_2
 LBB7_1:                                 ;   in Loop: Header=BB7_2 Depth=1
 	add	x8, x8, #1
-	add	x12, x12, x9
-	add	x11, x11, x9
-	add	x10, x10, x9
-	cmp	x8, #1000
+	add	x13, x13, x10
+	add	x12, x12, x10
+	add	x11, x11, x10
+	subs	w9, w9, #1
 	b.eq	LBB7_8
 LBB7_2:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB7_5 Depth 2
                                         ;     Child Loop BB7_7 Depth 2
-	mul	x14, x8, x9
-	add	x13, x0, x14
-	add	x15, x14, x9
-	add	x16, x0, x15
-	add	x17, x1, x15
-	cmp	x13, x17
-	cset	w17, lo
-	add	x3, x1, x14
-	cmp	x3, x16
+	mul	x15, x8, x10
+	add	x14, x0, x15
+	add	x16, x15, x10
+	add	x17, x0, x16
+	add	x3, x1, x16
+	cmp	x14, x3
 	cset	w3, lo
-	and	w17, w17, w3
-	add	x15, x2, x15
-	cmp	x13, x15
-	cset	w13, lo
-	add	x14, x2, x14
+	add	x4, x1, x15
+	cmp	x4, x17
+	cset	w4, lo
+	and	w3, w3, w4
+	add	x16, x2, x16
 	cmp	x14, x16
 	cset	w14, lo
-	tbnz	w17, #0, LBB7_6
+	add	x15, x2, x15
+	cmp	x15, x17
+	cset	w15, lo
+	tbnz	w3, #0, LBB7_6
 ; %bb.3:                                ;   in Loop: Header=BB7_2 Depth=1
-	and	w13, w13, w14
-	tbnz	w13, #0, LBB7_6
+	and	w14, w14, w15
+	tbnz	w14, #0, LBB7_6
 ; %bb.4:                                ;   in Loop: Header=BB7_2 Depth=1
-	mov	x13, #-8000
+	mov	x14, #-8000
 LBB7_5:                                 ;   Parent Loop BB7_2 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
-	add	x14, x11, x13
-	add	x14, x14, x9
-	ld4.2d	{ v0, v1, v2, v3 }, [x14]
-	add	x14, x10, x13
-	add	x14, x14, x9
-	ld4.2d	{ v4, v5, v6, v7 }, [x14]
+	add	x15, x12, x14
+	add	x15, x15, x10
+	ld4.2d	{ v0, v1, v2, v3 }, [x15]
+	add	x15, x11, x14
+	add	x15, x15, x10
+	ld4.2d	{ v4, v5, v6, v7 }, [x15]
 	fadd.2d	v16, v0, v4
 	fadd.2d	v17, v1, v5
 	fadd.2d	v18, v2, v6
 	fadd.2d	v19, v3, v7
-	add	x14, x12, x13
-	add	x14, x14, x9
-	st4.2d	{ v16, v17, v18, v19 }, [x14]
-	adds	x13, x13, #64
+	add	x15, x13, x14
+	add	x15, x15, x10
+	st4.2d	{ v16, v17, v18, v19 }, [x15]
+	adds	x14, x14, #64
 	b.ne	LBB7_5
 	b	LBB7_1
 LBB7_6:                                 ;   in Loop: Header=BB7_2 Depth=1
-	mov	x13, #0
-	mov	w14, #-250
+	mov	x14, #0
+	mov	w15, #-250
 LBB7_7:                                 ;   Parent Loop BB7_2 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
-	add	x15, x11, x13
-	ldp	q0, q1, [x15]
-	add	x15, x10, x13
-	ldp	q2, q3, [x15]
+	add	x16, x12, x14
+	ldp	q0, q1, [x16]
+	add	x16, x11, x14
+	ldp	q2, q3, [x16]
 	fadd.2d	v0, v0, v2
 	fadd.2d	v1, v1, v3
-	add	x15, x12, x13
-	stp	q0, q1, [x15]
-	add	x13, x13, #32
-	adds	w14, w14, #1
+	add	x16, x13, x14
+	stp	q0, q1, [x16]
+	add	x14, x14, #32
+	adds	w15, w15, #1
 	b.lo	LBB7_7
 	b	LBB7_1
 LBB7_8:
