@@ -169,17 +169,16 @@ _vector2_sum_rows:                      ; @vector2_sum_rows
 LBB6_1:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB6_2 Depth 2
 	mov	x10, #0
-	str	xzr, [x0, x8, lsl #3]
 	movi	d0, #0000000000000000
 LBB6_2:                                 ;   Parent Loop BB6_1 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
 	ldr	d1, [x1, x10, lsl #3]
-	fadd	d0, d1, d0
-	str	d0, [x0, x8, lsl #3]
+	fadd	d0, d0, d1
 	add	x10, x10, #1
 	cmp	x10, #1000
 	b.ne	LBB6_2
 ; %bb.3:                                ;   in Loop: Header=BB6_1 Depth=1
+	str	d0, [x0, x8, lsl #3]
 	add	x8, x8, #1
 	add	x1, x1, x9
 	cmp	x8, #1000

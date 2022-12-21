@@ -112,10 +112,11 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
  */
 void vector2_sum_rows(rowsum1_t out, vector2_t v){
 	for(int i = 0; i < NROWS; i++){
-		out[i] = 0;
+		number_t sum = 0;
 		for(int j = 0; j < NCOLS; j++){
-			out[i] += v[i][j];
+			sum += v[i][j];
 		}
+		out[i] = sum;
 	}
 }
 
