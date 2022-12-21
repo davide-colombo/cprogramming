@@ -165,9 +165,9 @@ LBB7_6:                                 ;   in Loop: Header=BB7_2 Depth=1
 LBB7_7:                                 ;   Parent Loop BB7_2 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
 	add	x15, x11, x13
-	add	x16, x10, x13
 	ldp	q0, q1, [x15]
-	ldp	q2, q3, [x16]
+	add	x15, x10, x13
+	ldp	q2, q3, [x15]
 	fadd.2d	v0, v0, v2
 	fadd.2d	v1, v1, v3
 	add	x15, x12, x13

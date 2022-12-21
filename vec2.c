@@ -98,18 +98,34 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 		int jlimit = NCOLS >> 2;
 		if(jlimit){
 			while(1){
-				number_t sum1 = v1col0[j] + v2col0[j];
-				number_t sum2 = v1col1[j] + v2col1[j];
-				number_t sum3 = v1col2[j] + v2col2[j];
-				number_t sum4 = v1col3[j] + v2col3[j];
-	
-				outcol0[j] = sum1;
-				outcol1[j] = sum2;
-				outcol2[j] = sum3;
-				outcol3[j] = sum4;
-	
-				j += 4;
-				jlimit -= 1;
+				// LOAD
+				number_t v1_0 = v1col0[j];
+				number_t v1_1 = v1col1[j];
+				number_t v1_2 = v1col2[j];
+				number_t v1_3 = v1col3[j];
+
+				number_t v2_0 = v2col0[j];
+				number_t v2_1 = v2col1[j];
+				number_t v2_2 = v2col2[j];
+				number_t v2_3 = v2col3[j];
+
+				// UPDATE
+				number_t sum1	= v1_0 + v2_0;
+				number_t sum2	= v1_1 + v2_1;
+				number_t sum3	= v1_2 + v2_2;
+				number_t sum4	= v1_3 + v2_3;
+				uint32_t jnext	= j + 4;
+				uint32_t jlnext	= jlimit - 1;
+
+				// STORE
+				outcol0[j]	= sum1;
+				outcol1[j]	= sum2;
+				outcol2[j]	= sum3;
+				outcol3[j]	= sum4;
+				jlimit		= jlnext;
+				j			= jnext;
+
+				// TEST
 				if(jlimit == 0){ break; }
 			}
 		}
