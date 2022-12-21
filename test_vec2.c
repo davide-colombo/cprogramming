@@ -63,8 +63,20 @@ int main(int argc, char *argv[]){
 	e = end - start;
 	t = e * icps;
 	printf("add: %.20f\n", t);
-
 	//vector2_print_vector2_data(&sum[0][0]);
+
+	vector2_t *mul = vector2_alloc_vector2_aligned(128);
+	if(mul == NULL){
+		fprintf(stderr, "Cannot allocate memory for mul object\n");
+		return 5;
+	}
+
+	start = clock();
+	vector2_mul(&mul[0][0], &v1[0][0], &v2[0][0]);
+	end = clock();
+	e = end - start;
+	t = e * icps;
+	printf("mul: %.20f\n", t);
 
 	rowsum1_t *rsum = vector2_alloc_rowsum1();
 	if(rsum == NULL){

@@ -60,6 +60,11 @@ void vector2_rand_init_vector2(vector2_t vec2, double scale, double shift);
 void vector2_add(vector2_t out, vector2_t v1, vector2_t v2);
 
 /*
+ * Multiply 2 two-dimensional vectors and return the result in "out"
+ */
+void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2);
+
+/*
  * Compute the sum of the elements on the rows
  */
 void vector2_sum_rows(rowsum1_t out, vector2_t v);

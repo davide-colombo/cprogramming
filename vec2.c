@@ -179,6 +179,19 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 }
 
 /*
+ * Mutliply "v1" by "v2" and return the result in "out"
+ */
+void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
+	for(uint32_t i = 0; i < NROWS; i++){
+		for(uint32_t j = 0; j < NCOLS; j++){
+			for(uint32_t k = 0; k < NCOLS; k++){
+				out[i][j] = v1[i][k] * v2[k][j];
+			}
+		}
+	}
+}
+
+/*
  * Compute the sum over "v" rows and return the result in "out"
  */
 void vector2_sum_rows(rowsum1_t out, vector2_t v){
