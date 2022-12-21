@@ -41,8 +41,8 @@ Lloh1:
 	bl	_clock
 	sub	x8, x0, x20
 	ucvtf	d0, x8
-	adrp	x23, _icps@PAGE
-	ldr	d1, [x23, _icps@PAGEOFF]
+	adrp	x24, _icps@PAGE
+	ldr	d1, [x24, _icps@PAGEOFF]
 	fmul	d0, d1, d0
 	str	d0, [sp]
 Lloh2:
@@ -59,7 +59,7 @@ Lloh3:
 	bl	_clock
 	sub	x8, x0, x21
 	ucvtf	d0, x8
-	ldr	d1, [x23, _icps@PAGEOFF]
+	ldr	d1, [x24, _icps@PAGEOFF]
 	fmul	d0, d1, d0
 	str	d0, [sp]
 Lloh4:
@@ -86,7 +86,7 @@ Lloh7:
 	bl	_clock
 	sub	x8, x0, x21
 	ucvtf	d0, x8
-	ldr	d1, [x23, _icps@PAGEOFF]
+	ldr	d1, [x24, _icps@PAGEOFF]
 	fmul	d0, d1, d0
 	str	d0, [sp]
 Lloh8:
@@ -106,7 +106,7 @@ Lloh9:
 	bl	_clock
 	sub	x8, x0, x22
 	ucvtf	d0, x8
-	ldr	d1, [x23, _icps@PAGEOFF]
+	ldr	d1, [x24, _icps@PAGEOFF]
 	fmul	d0, d1, d0
 	str	d0, [sp]
 Lloh10:
@@ -118,10 +118,22 @@ Lloh11:
 	cbz	x0, LBB0_8
 ; %bb.4:
 	mov	x22, x0
+	bl	_clock
+	mov	x23, x0
+	mov	x0, x22
 	mov	x1, x19
 	bl	_vector2_sum_cols
-	mov	x0, x22
-	bl	_vector2_print_colsum1_data
+	bl	_clock
+	sub	x8, x0, x23
+	ucvtf	d0, x8
+	ldr	d1, [x24, _icps@PAGEOFF]
+	fmul	d0, d1, d0
+	str	d0, [sp]
+Lloh12:
+	adrp	x0, l_.str.8@PAGE
+Lloh13:
+	add	x0, x0, l_.str.8@PAGEOFF
+	bl	_printf
 	mov	x0, x19
 	bl	_vector2_free_vector2
 	mov	x0, x20
@@ -131,15 +143,15 @@ Lloh11:
 	mov	w19, #0
 	b	LBB0_9
 LBB0_5:
-Lloh12:
-	adrp	x8, ___stderrp@GOTPAGE
-Lloh13:
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh14:
-	ldr	x3, [x8]
+	adrp	x8, ___stderrp@GOTPAGE
 Lloh15:
-	adrp	x0, l_.str.1@PAGE
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh16:
+	ldr	x3, [x8]
+Lloh17:
+	adrp	x0, l_.str.1@PAGE
+Lloh18:
 	add	x0, x0, l_.str.1@PAGEOFF
 	mov	w19, #1
 	mov	w1, #37
@@ -147,15 +159,15 @@ Lloh16:
 	bl	_fwrite
 	b	LBB0_9
 LBB0_6:
-Lloh17:
-	adrp	x8, ___stderrp@GOTPAGE
-Lloh18:
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh19:
-	ldr	x3, [x8]
+	adrp	x8, ___stderrp@GOTPAGE
 Lloh20:
-	adrp	x0, l_.str.3@PAGE
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh21:
+	ldr	x3, [x8]
+Lloh22:
+	adrp	x0, l_.str.3@PAGE
+Lloh23:
 	add	x0, x0, l_.str.3@PAGEOFF
 	mov	w1, #38
 	mov	w2, #1
@@ -163,15 +175,15 @@ Lloh21:
 	mov	w19, #2
 	b	LBB0_9
 LBB0_7:
-Lloh22:
-	adrp	x8, ___stderrp@GOTPAGE
-Lloh23:
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh24:
-	ldr	x3, [x8]
+	adrp	x8, ___stderrp@GOTPAGE
 Lloh25:
-	adrp	x0, l_.str.5@PAGE
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh26:
+	ldr	x3, [x8]
+Lloh27:
+	adrp	x0, l_.str.5@PAGE
+Lloh28:
 	add	x0, x0, l_.str.5@PAGEOFF
 	mov	w1, #39
 	mov	w2, #1
@@ -179,15 +191,15 @@ Lloh26:
 	mov	w19, #3
 	b	LBB0_9
 LBB0_8:
-Lloh27:
-	adrp	x8, ___stderrp@GOTPAGE
-Lloh28:
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh29:
-	ldr	x3, [x8]
+	adrp	x8, ___stderrp@GOTPAGE
 Lloh30:
-	adrp	x0, l_.str.7@PAGE
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
 Lloh31:
+	ldr	x3, [x8]
+Lloh32:
+	adrp	x0, l_.str.7@PAGE
+Lloh33:
 	add	x0, x0, l_.str.7@PAGEOFF
 	mov	w1, #39
 	mov	w2, #1
@@ -207,14 +219,15 @@ LBB0_9:
 	.loh AdrpAdd	Lloh8, Lloh9
 	.loh AdrpLdrGot	Lloh6, Lloh7
 	.loh AdrpAdd	Lloh10, Lloh11
-	.loh AdrpAdd	Lloh15, Lloh16
-	.loh AdrpLdrGotLdr	Lloh12, Lloh13, Lloh14
-	.loh AdrpAdd	Lloh20, Lloh21
-	.loh AdrpLdrGotLdr	Lloh17, Lloh18, Lloh19
-	.loh AdrpAdd	Lloh25, Lloh26
-	.loh AdrpLdrGotLdr	Lloh22, Lloh23, Lloh24
-	.loh AdrpAdd	Lloh30, Lloh31
-	.loh AdrpLdrGotLdr	Lloh27, Lloh28, Lloh29
+	.loh AdrpAdd	Lloh12, Lloh13
+	.loh AdrpAdd	Lloh17, Lloh18
+	.loh AdrpLdrGotLdr	Lloh14, Lloh15, Lloh16
+	.loh AdrpAdd	Lloh22, Lloh23
+	.loh AdrpLdrGotLdr	Lloh19, Lloh20, Lloh21
+	.loh AdrpAdd	Lloh27, Lloh28
+	.loh AdrpLdrGotLdr	Lloh24, Lloh25, Lloh26
+	.loh AdrpAdd	Lloh32, Lloh33
+	.loh AdrpLdrGotLdr	Lloh29, Lloh30, Lloh31
 	.cfi_endproc
                                         ; -- End function
 	.section	__DATA,__data
@@ -223,7 +236,7 @@ LBB0_9:
 _icps:
 	.quad	0x3eb0c6f7a0b5ed8d              ; double 9.9999999999999995E-7
 
-	.comm	_v,392,3                        ; @v
+	.comm	_v,8000000,3                    ; @v
 	.section	__TEXT,__cstring,cstring_literals
 l_.str:                                 ; @.str
 	.asciz	"v2 alloc: %.20f\n"
@@ -248,5 +261,8 @@ l_.str.6:                               ; @.str.6
 
 l_.str.7:                               ; @.str.7
 	.asciz	"Cannot allocate memory for csum object\n"
+
+l_.str.8:                               ; @.str.8
+	.asciz	"colsum: %.20f\n"
 
 .subsections_via_symbols

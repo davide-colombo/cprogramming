@@ -73,8 +73,13 @@ int main(int argc, char *argv[]){
 		return 4;
 	}
 
+	start = clock();
 	vector2_sum_cols(&csum[0][0], &v2[0][0]);
-	vector2_print_colsum1_data(&csum[0][0]);
+	end = clock();
+	e = end - start;
+	t = e * icps;
+	printf("colsum: %.20f\n", t);
+	//vector2_print_colsum1_data(&csum[0][0]);
 
 	vector2_free_vector2(v2);
 	vector2_free_vector2(sum);

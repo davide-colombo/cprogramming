@@ -240,6 +240,9 @@ void vector2_print_rowsum1_data(rowsum1_t v){
 	}
 }
 
+/*
+ * Print the content of an object of type colsum1_t
+ */
 void vector2_print_colsum1_data(colsum1_t v){
 	for(int i = 0; i < NCOLS; i++){
 		printf("sum of the %d-th column = %.4f\n", i, v[i]);
