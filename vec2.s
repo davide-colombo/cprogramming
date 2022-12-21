@@ -165,22 +165,33 @@ _vector2_sum_rows:                      ; @vector2_sum_rows
 	.cfi_startproc
 ; %bb.0:
 	mov	x8, #0
-	mov	w9, #8000
+	add	x9, x1, #16
+	mov	w10, #8000
 LBB6_1:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB6_2 Depth 2
-	mov	x10, #0
 	movi	d0, #0000000000000000
+	mov	w11, #-250
+	mov	x12, x9
+	movi	d1, #0000000000000000
+	movi	d2, #0000000000000000
+	movi	d3, #0000000000000000
 LBB6_2:                                 ;   Parent Loop BB6_1 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
-	ldr	d1, [x1, x10, lsl #3]
-	fadd	d0, d0, d1
-	add	x10, x10, #1
-	cmp	x10, #1000
-	b.ne	LBB6_2
+	ldp	d4, d5, [x12, #-16]
+	fadd	d3, d3, d4
+	fadd	d0, d0, d5
+	ldp	d4, d5, [x12], #32
+	fadd	d1, d1, d4
+	fadd	d2, d2, d5
+	adds	w11, w11, #1
+	b.lo	LBB6_2
 ; %bb.3:                                ;   in Loop: Header=BB6_1 Depth=1
+	fadd	d0, d3, d0
+	fadd	d1, d1, d2
+	fadd	d0, d0, d1
 	str	d0, [x0, x8, lsl #3]
 	add	x8, x8, #1
-	add	x1, x1, x9
+	add	x9, x9, x10
 	cmp	x8, #1000
 	b.ne	LBB6_1
 ; %bb.4:

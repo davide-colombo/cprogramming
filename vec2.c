@@ -112,12 +112,45 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
  */
 void vector2_sum_rows(rowsum1_t out, vector2_t v){
 	for(int i = 0; i < NROWS; i++){
-		number_t *irow = &v[i][0];
-		number_t sum = 0;
-		for(int j = 0; j < NCOLS; j++){
-			sum += irow[j];
+		number_t *icol0 = &v[i][0];
+		number_t *icol1 = &v[i][1];
+		number_t *icol2 = &v[i][2];
+		number_t *icol3 = &v[i][3];
+
+		number_t sum0 = 0;
+		number_t sum1 = 0;
+		number_t sum2 = 0;
+		number_t sum3 = 0;
+		
+		int j = 0;
+		int jlimit = NCOLS >> 2;
+		if(jlimit){
+			while(1){
+				sum0 += icol0[j];
+				sum1 += icol1[j];
+				sum2 += icol2[j];
+				sum3 += icol3[j];
+	
+				j += 4;
+				jlimit -= 1;
+				if(jlimit == 0){ break; }
+			}
 		}
-		out[i] = sum;
+
+		int jres = NCOLS & 3;
+		if(jres){
+			while(1){
+				sum0 += icol0[j];
+
+				j += 1;
+				jres -= 1;
+				if(jres == 0){ break; }
+			}
+		}
+
+		number_t sum01 = sum0 + sum1;
+		number_t sum23 = sum2 + sum3;
+		out[i] = sum01 + sum23;
 	}
 }
 
