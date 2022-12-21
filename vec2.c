@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <assert.h>
 #include "vec2.h"
 
 #define alignof(t) __alignof__(t)
@@ -20,6 +21,23 @@ void vector2_print_vector2_type_info(){
 vector2_t *vector2_alloc_vector2(){
 	vector2_t *out = NULL;
 	out = malloc(sizeof *out);
+	return out;
+}
+
+/*
+ * Align memory for an object of type "vector2_t" aligned on a memory boundary 
+ * that is a multiple of "align_bytes"
+ */
+vector2_t *vector2_alloc_vector2_aligned(size_t alignment){
+	assert( (alignment == 128) | (alignment == 64) | (alignment == 32) | \
+			(alignment == 16) | (alignment == 8) | (alignment == 4));
+	vector2_t *out = NULL;
+	size_t size = sizeof *out;
+	size_t residual = size & (alignment - 1);
+	size_t extra = alignment - residual;
+	size += extra;
+	assert( ( size & (alignment - 1) ) == 0 );
+	out = aligned_alloc(alignment, size);
 	return out;
 }
 

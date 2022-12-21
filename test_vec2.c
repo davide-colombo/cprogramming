@@ -6,7 +6,7 @@
 
 double icps = 1.0f / (double)CLOCKS_PER_SEC;
 
-vector2_t v;
+vector2_t v __attribute__( (aligned(128)) );
 
 int main(int argc, char *argv[]){
 	srand(time(NULL));
@@ -17,11 +17,12 @@ int main(int argc, char *argv[]){
 
 	clock_t start, end;
 	start = clock();
-	vector2_t *v2 = vector2_alloc_vector2();
+	vector2_t *v2 = vector2_alloc_vector2_aligned(128);
 	end = clock();
 	double e = end - start;
 	double t = e * icps;
 	printf("v2 alloc: %.20f\n", t);
+	printf("v2 = %p\n", v2);
 
 	if(v2 == NULL){
 		fprintf(stderr, "Cannot allocate memory for v2 object\n");
@@ -29,11 +30,12 @@ int main(int argc, char *argv[]){
 	}
 
 	start = clock();
-	vector2_t *sum = vector2_alloc_vector2();
+	vector2_t *sum = vector2_alloc_vector2_aligned(128);
 	end = clock();
 	e = end - start;
 	t = e * icps;
 	printf("sum alloc: %.20f\n", t);
+	printf("sum = %p\n", sum);
 
 	if(sum == NULL){
 		fprintf(stderr, "Cannot allocate memory for sum object\n");

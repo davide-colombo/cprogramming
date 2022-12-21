@@ -2,8 +2,8 @@
 #ifndef MATRIX_H_INCLUDED
 #define MATRIX_H_INCLUDED
 
-#define NROWS 1000
-#define NCOLS 1000
+#define NROWS 2233
+#define NCOLS 2233
 
 /*
  * Numeric data type
@@ -23,7 +23,7 @@ typedef number_t colsum1_t[NCOLS];
 /*
  * Two dimensional vector represented as a 2D array of items
  */
-typedef number_t vector2_t[NROWS][NCOLS];
+typedef number_t vector2_t[NROWS][NCOLS] __attribute__( (aligned(128)) );
 
 // ===========================================================================
 // COMPUTATIONAL PROCEDURES
@@ -77,6 +77,12 @@ void vector2_sum_cols(colsum1_t out, vector2_t v);
  * Alloc memory for an object of type "vector2_t"
  */
 vector2_t *vector2_alloc_vector2();
+
+/*
+ * Alloc memory for an object of type "vector2_t" aligned on a memory that is 
+ * a multiple or a divisor of "align_bytes"
+ */
+vector2_t *vector2_alloc_vector2_aligned(size_t alignment);
 
 /*
  * Free memory previously allocated for an object of type "vector2_t"
