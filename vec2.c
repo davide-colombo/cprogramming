@@ -117,11 +117,11 @@ void vector2_sum_rows(rowsum1_t out, vector2_t v){
 	uint32_t ilimit = NROWS;
 	if(ilimit){
 		while(1){
-			number_t *icol0 = &v[i][0];
-			number_t *icol1 = &v[i][1];
-			number_t *icol2 = &v[i][2];
-			number_t *icol3 = &v[i][3];
-	
+			number_t *restrict icol0 = &v[i][0];
+			number_t *restrict icol1 = &v[i][1];
+			number_t *restrict icol2 = &v[i][2];
+			number_t *restrict icol3 = &v[i][3];
+
 			number_t sum0 = 0;
 			number_t sum1 = 0;
 			number_t sum2 = 0;
@@ -135,28 +135,28 @@ void vector2_sum_rows(rowsum1_t out, vector2_t v){
 					sum1 += icol1[j];
 					sum2 += icol2[j];
 					sum3 += icol3[j];
-		
+
 					j += 4;
 					jlimit -= 1;
 					if(jlimit == 0){ break; }
 				} /* while */
 			} /* jlimit */
-	
+
 			uint32_t jres = NCOLS & 3;
 			if(jres){
 				while(1){
 					sum0 += icol0[j];
-	
+
 					j += 1;
 					jres -= 1;
 					if(jres == 0){ break; }
 				} /* while */
 			} /* jres */
-	
+
 			number_t sum01 = sum0 + sum1;
 			number_t sum23 = sum2 + sum3;
 			out[i] = sum01 + sum23;
-	
+
 			i += 1;
 			ilimit -= 1;
 			if(ilimit == 0){ break; }
