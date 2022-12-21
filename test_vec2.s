@@ -25,201 +25,246 @@ _main:                                  ; @main
                                         ; kill: def $w0 killed $w0 killed $x0
 	bl	_srand
 	bl	_vector2_print_vector2_type_info
+	mov	w0, #128
+	bl	_vector2_alloc_vector2_aligned
+	cbz	x0, LBB0_6
+; %bb.1:
+	mov	x19, x0
+	str	x0, [sp]
 Lloh0:
-	adrp	x0, _v@GOTPAGE
+	adrp	x0, l_.str.1@PAGE
 Lloh1:
-	ldr	x0, [x0, _v@GOTPAGEOFF]
+	add	x0, x0, l_.str.1@PAGEOFF
+	bl	_printf
 	mov	x8, #70368744177664
 	movk	x8, #16527, lsl #48
 	fmov	d0, x8
 	fmov	d1, #10.00000000
-	bl	_vector2_rand_init_vector2
-	bl	_clock
-	mov	x20, x0
-	mov	w0, #128
-	bl	_vector2_alloc_vector2_aligned
-	mov	x19, x0
-	bl	_clock
-	sub	x8, x0, x20
-	ucvtf	d0, x8
-	adrp	x24, _icps@PAGE
-	ldr	d1, [x24, _icps@PAGEOFF]
-	fmul	d0, d1, d0
-	str	d0, [sp]
-Lloh2:
-	adrp	x0, l_.str@PAGE
-Lloh3:
-	add	x0, x0, l_.str@PAGEOFF
-	bl	_printf
-	str	x19, [sp]
-Lloh4:
-	adrp	x0, l_.str.1@PAGE
-Lloh5:
-	add	x0, x0, l_.str.1@PAGEOFF
-	bl	_printf
-	cbz	x19, LBB0_5
-; %bb.1:
-	bl	_clock
-	mov	x21, x0
-	mov	w0, #128
-	bl	_vector2_alloc_vector2_aligned
-	mov	x20, x0
-	bl	_clock
-	sub	x8, x0, x21
-	ucvtf	d0, x8
-	ldr	d1, [x24, _icps@PAGEOFF]
-	fmul	d0, d1, d0
-	str	d0, [sp]
-Lloh6:
-	adrp	x0, l_.str.3@PAGE
-Lloh7:
-	add	x0, x0, l_.str.3@PAGEOFF
-	bl	_printf
-	str	x20, [sp]
-Lloh8:
-	adrp	x0, l_.str.4@PAGE
-Lloh9:
-	add	x0, x0, l_.str.4@PAGEOFF
-	bl	_printf
-	cbz	x20, LBB0_6
-; %bb.2:
-	mov	x8, #4650248090236747776
-	fmov	d0, x8
-	fmov	d1, #20.00000000
 	mov	x0, x19
 	bl	_vector2_rand_init_vector2
 	bl	_clock
 	mov	x21, x0
-Lloh10:
-	adrp	x1, _v@GOTPAGE
-Lloh11:
-	ldr	x1, [x1, _v@GOTPAGEOFF]
-	mov	x0, x20
-	mov	x2, x19
-	bl	_vector2_add
+	mov	w0, #128
+	bl	_vector2_alloc_vector2_aligned
+	mov	x20, x0
 	bl	_clock
 	sub	x8, x0, x21
 	ucvtf	d0, x8
-	ldr	d1, [x24, _icps@PAGEOFF]
-	fmul	d0, d1, d0
+	mov	x8, #60813
+	movk	x8, #41141, lsl #16
+	movk	x8, #50935, lsl #32
+	movk	x8, #16048, lsl #48
+	fmov	d1, x8
+	fmul	d0, d0, d1
 	str	d0, [sp]
-Lloh12:
-	adrp	x0, l_.str.6@PAGE
-Lloh13:
-	add	x0, x0, l_.str.6@PAGEOFF
+Lloh2:
+	adrp	x0, l_.str.2@PAGE
+Lloh3:
+	add	x0, x0, l_.str.2@PAGEOFF
 	bl	_printf
-	bl	_vector2_alloc_rowsum1
-	cbz	x0, LBB0_7
-; %bb.3:
-	mov	x21, x0
+	str	x20, [sp]
+Lloh4:
+	adrp	x0, l_.str.3@PAGE
+Lloh5:
+	add	x0, x0, l_.str.3@PAGEOFF
+	bl	_printf
+	cbz	x20, LBB0_7
+; %bb.2:
 	bl	_clock
 	mov	x22, x0
-	mov	x0, x21
-	mov	x1, x20
-	bl	_vector2_sum_rows
+	mov	w0, #128
+	bl	_vector2_alloc_vector2_aligned
+	mov	x21, x0
 	bl	_clock
 	sub	x8, x0, x22
 	ucvtf	d0, x8
-	ldr	d1, [x24, _icps@PAGEOFF]
-	fmul	d0, d1, d0
+	mov	x8, #60813
+	movk	x8, #41141, lsl #16
+	movk	x8, #50935, lsl #32
+	movk	x8, #16048, lsl #48
+	fmov	d1, x8
+	fmul	d0, d0, d1
 	str	d0, [sp]
-Lloh14:
+Lloh6:
+	adrp	x0, l_.str.5@PAGE
+Lloh7:
+	add	x0, x0, l_.str.5@PAGEOFF
+	bl	_printf
+	str	x21, [sp]
+Lloh8:
+	adrp	x0, l_.str.6@PAGE
+Lloh9:
+	add	x0, x0, l_.str.6@PAGEOFF
+	bl	_printf
+	cbz	x21, LBB0_8
+; %bb.3:
+	mov	x8, #4650248090236747776
+	fmov	d0, x8
+	fmov	d1, #20.00000000
+	mov	x0, x20
+	bl	_vector2_rand_init_vector2
+	bl	_clock
+	mov	x22, x0
+	mov	x0, x21
+	mov	x1, x19
+	mov	x2, x20
+	bl	_vector2_add
+	bl	_clock
+	sub	x8, x0, x22
+	ucvtf	d0, x8
+	mov	x8, #60813
+	movk	x8, #41141, lsl #16
+	movk	x8, #50935, lsl #32
+	movk	x8, #16048, lsl #48
+	fmov	d1, x8
+	fmul	d0, d0, d1
+	str	d0, [sp]
+Lloh10:
 	adrp	x0, l_.str.8@PAGE
-Lloh15:
+Lloh11:
 	add	x0, x0, l_.str.8@PAGEOFF
 	bl	_printf
-	bl	_vector2_alloc_colsum1
-	cbz	x0, LBB0_8
+	bl	_vector2_alloc_rowsum1
+	cbz	x0, LBB0_9
 ; %bb.4:
 	mov	x22, x0
 	bl	_clock
 	mov	x23, x0
 	mov	x0, x22
-	mov	x1, x19
-	bl	_vector2_sum_cols
+	mov	x1, x21
+	bl	_vector2_sum_rows
 	bl	_clock
 	sub	x8, x0, x23
 	ucvtf	d0, x8
-	ldr	d1, [x24, _icps@PAGEOFF]
-	fmul	d0, d1, d0
+	mov	x8, #60813
+	movk	x8, #41141, lsl #16
+	movk	x8, #50935, lsl #32
+	movk	x8, #16048, lsl #48
+	fmov	d1, x8
+	fmul	d0, d0, d1
 	str	d0, [sp]
-Lloh16:
+Lloh12:
 	adrp	x0, l_.str.10@PAGE
-Lloh17:
+Lloh13:
 	add	x0, x0, l_.str.10@PAGEOFF
+	bl	_printf
+	bl	_vector2_alloc_colsum1
+	cbz	x0, LBB0_10
+; %bb.5:
+	mov	x23, x0
+	bl	_clock
+	mov	x24, x0
+	mov	x0, x23
+	mov	x1, x20
+	bl	_vector2_sum_cols
+	bl	_clock
+	sub	x8, x0, x24
+	ucvtf	d0, x8
+	mov	x8, #60813
+	movk	x8, #41141, lsl #16
+	movk	x8, #50935, lsl #32
+	movk	x8, #16048, lsl #48
+	fmov	d1, x8
+	fmul	d0, d0, d1
+	str	d0, [sp]
+Lloh14:
+	adrp	x0, l_.str.12@PAGE
+Lloh15:
+	add	x0, x0, l_.str.12@PAGEOFF
 	bl	_printf
 	mov	x0, x19
 	bl	_vector2_free_vector2
 	mov	x0, x20
 	bl	_vector2_free_vector2
 	mov	x0, x21
+	bl	_vector2_free_vector2
+	mov	x0, x22
 	bl	_vector2_free_rowsum1
+	mov	x0, x23
+	bl	_vector2_free_colsum1
 	mov	w19, #0
-	b	LBB0_9
-LBB0_5:
-Lloh18:
+	b	LBB0_11
+LBB0_6:
+Lloh16:
 	adrp	x8, ___stderrp@GOTPAGE
-Lloh19:
+Lloh17:
 	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
-Lloh20:
+Lloh18:
 	ldr	x3, [x8]
-Lloh21:
-	adrp	x0, l_.str.2@PAGE
-Lloh22:
-	add	x0, x0, l_.str.2@PAGEOFF
+Lloh19:
+	adrp	x0, l_.str@PAGE
+Lloh20:
+	add	x0, x0, l_.str@PAGEOFF
 	mov	w19, #1
 	mov	w1, #37
 	mov	w2, #1
 	bl	_fwrite
-	b	LBB0_9
-LBB0_6:
-Lloh23:
+	b	LBB0_11
+LBB0_7:
+Lloh21:
 	adrp	x8, ___stderrp@GOTPAGE
-Lloh24:
+Lloh22:
 	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
-Lloh25:
+Lloh23:
 	ldr	x3, [x8]
+Lloh24:
+	adrp	x0, l_.str.4@PAGE
+Lloh25:
+	add	x0, x0, l_.str.4@PAGEOFF
+	mov	w19, #1
+	mov	w1, #37
+	mov	w2, #1
+	bl	_fwrite
+                                        ; kill: def $w19 killed $w19 killed $x19 def $x19
+	b	LBB0_11
+LBB0_8:
 Lloh26:
-	adrp	x0, l_.str.5@PAGE
+	adrp	x8, ___stderrp@GOTPAGE
 Lloh27:
-	add	x0, x0, l_.str.5@PAGEOFF
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
+Lloh28:
+	ldr	x3, [x8]
+Lloh29:
+	adrp	x0, l_.str.7@PAGE
+Lloh30:
+	add	x0, x0, l_.str.7@PAGEOFF
 	mov	w1, #38
 	mov	w2, #1
 	bl	_fwrite
 	mov	w19, #2
-	b	LBB0_9
-LBB0_7:
-Lloh28:
-	adrp	x8, ___stderrp@GOTPAGE
-Lloh29:
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
-Lloh30:
-	ldr	x3, [x8]
+	b	LBB0_11
+LBB0_9:
 Lloh31:
-	adrp	x0, l_.str.7@PAGE
-Lloh32:
-	add	x0, x0, l_.str.7@PAGEOFF
-	mov	w1, #39
-	mov	w2, #1
-	bl	_fwrite
-	mov	w19, #3
-	b	LBB0_9
-LBB0_8:
-Lloh33:
 	adrp	x8, ___stderrp@GOTPAGE
-Lloh34:
+Lloh32:
 	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
-Lloh35:
+Lloh33:
 	ldr	x3, [x8]
-Lloh36:
+Lloh34:
 	adrp	x0, l_.str.9@PAGE
-Lloh37:
+Lloh35:
 	add	x0, x0, l_.str.9@PAGEOFF
 	mov	w1, #39
 	mov	w2, #1
 	bl	_fwrite
+	mov	w19, #3
+	b	LBB0_11
+LBB0_10:
+Lloh36:
+	adrp	x8, ___stderrp@GOTPAGE
+Lloh37:
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
+Lloh38:
+	ldr	x3, [x8]
+Lloh39:
+	adrp	x0, l_.str.11@PAGE
+Lloh40:
+	add	x0, x0, l_.str.11@PAGEOFF
+	mov	w1, #39
+	mov	w2, #1
+	bl	_fwrite
 	mov	w19, #4
-LBB0_9:
+LBB0_11:
 	mov	x0, x19
 	ldp	x29, x30, [sp, #64]             ; 16-byte Folded Reload
 	ldp	x20, x19, [sp, #48]             ; 16-byte Folded Reload
@@ -229,62 +274,62 @@ LBB0_9:
 	ret
 	.loh AdrpAdd	Lloh4, Lloh5
 	.loh AdrpAdd	Lloh2, Lloh3
-	.loh AdrpLdrGot	Lloh0, Lloh1
+	.loh AdrpAdd	Lloh0, Lloh1
 	.loh AdrpAdd	Lloh8, Lloh9
 	.loh AdrpAdd	Lloh6, Lloh7
+	.loh AdrpAdd	Lloh10, Lloh11
 	.loh AdrpAdd	Lloh12, Lloh13
-	.loh AdrpLdrGot	Lloh10, Lloh11
 	.loh AdrpAdd	Lloh14, Lloh15
-	.loh AdrpAdd	Lloh16, Lloh17
-	.loh AdrpAdd	Lloh21, Lloh22
-	.loh AdrpLdrGotLdr	Lloh18, Lloh19, Lloh20
-	.loh AdrpAdd	Lloh26, Lloh27
-	.loh AdrpLdrGotLdr	Lloh23, Lloh24, Lloh25
-	.loh AdrpAdd	Lloh31, Lloh32
-	.loh AdrpLdrGotLdr	Lloh28, Lloh29, Lloh30
-	.loh AdrpAdd	Lloh36, Lloh37
-	.loh AdrpLdrGotLdr	Lloh33, Lloh34, Lloh35
+	.loh AdrpAdd	Lloh19, Lloh20
+	.loh AdrpLdrGotLdr	Lloh16, Lloh17, Lloh18
+	.loh AdrpAdd	Lloh24, Lloh25
+	.loh AdrpLdrGotLdr	Lloh21, Lloh22, Lloh23
+	.loh AdrpAdd	Lloh29, Lloh30
+	.loh AdrpLdrGotLdr	Lloh26, Lloh27, Lloh28
+	.loh AdrpAdd	Lloh34, Lloh35
+	.loh AdrpLdrGotLdr	Lloh31, Lloh32, Lloh33
+	.loh AdrpAdd	Lloh39, Lloh40
+	.loh AdrpLdrGotLdr	Lloh36, Lloh37, Lloh38
 	.cfi_endproc
                                         ; -- End function
-	.section	__DATA,__data
-	.globl	_icps                           ; @icps
-	.p2align	3
-_icps:
-	.quad	0x3eb0c6f7a0b5ed8d              ; double 9.9999999999999995E-7
-
-	.comm	_v,39890312,7                   ; @v
 	.section	__TEXT,__cstring,cstring_literals
 l_.str:                                 ; @.str
-	.asciz	"v2 alloc: %.20f\n"
+	.asciz	"Cannot allocate memory for v1 object\n"
 
 l_.str.1:                               ; @.str.1
-	.asciz	"v2 = %p\n"
+	.asciz	"v1 = %p\n"
 
 l_.str.2:                               ; @.str.2
-	.asciz	"Cannot allocate memory for v2 object\n"
+	.asciz	"v2 alloc: %.20f\n"
 
 l_.str.3:                               ; @.str.3
-	.asciz	"sum alloc: %.20f\n"
+	.asciz	"v2 = %p\n"
 
 l_.str.4:                               ; @.str.4
-	.asciz	"sum = %p\n"
+	.asciz	"Cannot allocate memory for v2 object\n"
 
 l_.str.5:                               ; @.str.5
-	.asciz	"Cannot allocate memory for sum object\n"
+	.asciz	"sum alloc: %.20f\n"
 
 l_.str.6:                               ; @.str.6
-	.asciz	"add: %.20f\n"
+	.asciz	"sum = %p\n"
 
 l_.str.7:                               ; @.str.7
-	.asciz	"Cannot allocate memory for rsum object\n"
+	.asciz	"Cannot allocate memory for sum object\n"
 
 l_.str.8:                               ; @.str.8
-	.asciz	"rowsum: %.20f\n"
+	.asciz	"add: %.20f\n"
 
 l_.str.9:                               ; @.str.9
-	.asciz	"Cannot allocate memory for csum object\n"
+	.asciz	"Cannot allocate memory for rsum object\n"
 
 l_.str.10:                              ; @.str.10
+	.asciz	"rowsum: %.20f\n"
+
+l_.str.11:                              ; @.str.11
+	.asciz	"Cannot allocate memory for csum object\n"
+
+l_.str.12:                              ; @.str.12
 	.asciz	"colsum: %.20f\n"
 
 .subsections_via_symbols
