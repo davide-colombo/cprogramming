@@ -113,8 +113,8 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
  * Compute the sum over "v" rows and return the result in "out"
  */
 void vector2_sum_rows(rowsum1_t out, vector2_t v){
-	int i = 0;
-	int ilimit = NROWS;
+	uint32_t i = 0;
+	uint32_t ilimit = NROWS;
 	if(ilimit){
 		while(1){
 			number_t *icol0 = &v[i][0];
@@ -127,8 +127,8 @@ void vector2_sum_rows(rowsum1_t out, vector2_t v){
 			number_t sum2 = 0;
 			number_t sum3 = 0;
 			
-			int j = 0;
-			int jlimit = NCOLS >> 2;
+			uint32_t j = 0;
+			uint32_t jlimit = NCOLS >> 2;
 			if(jlimit){
 				while(1){
 					sum0 += icol0[j];
@@ -142,7 +142,7 @@ void vector2_sum_rows(rowsum1_t out, vector2_t v){
 				} /* while */
 			} /* jlimit */
 	
-			int jres = NCOLS & 3;
+			uint32_t jres = NCOLS & 3;
 			if(jres){
 				while(1){
 					sum0 += icol0[j];
