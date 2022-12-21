@@ -122,11 +122,11 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 				outcol1[j]	= sum2;
 				outcol2[j]	= sum3;
 				outcol3[j]	= sum4;
-				jlimit		= jlnext;
-				j			= jnext;
 
 				// TEST
-				if(jlimit == 0){ break; }
+				if(jlnext == 0){ break; }
+				jlimit		= jlnext;
+				j			= jnext;
 			}
 		}
 
