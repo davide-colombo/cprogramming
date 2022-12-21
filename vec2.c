@@ -81,54 +81,52 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 	uint32_t ilimit = NROWS;
 	uint32_t i = 0;
 	while(1){
-		number_t * restrict v1col0 = &v1[i][0];
-		number_t * restrict v1col1 = &v1[i][1];
-		number_t * restrict v1col2 = &v1[i][2];
-		number_t * restrict v1col3 = &v1[i][3];
-
-		number_t * restrict v2col0 = &v2[i][0];
-		number_t * restrict v2col1 = &v2[i][1];
-		number_t * restrict v2col2 = &v2[i][2];
-		number_t * restrict v2col3 = &v2[i][3];
-
-		number_t * restrict outcol0 = &out[i][0];
-		number_t * restrict outcol1 = &out[i][1];
-		number_t * restrict outcol2 = &out[i][2];
-		number_t * restrict outcol3 = &out[i][3];
-
 		uint32_t j = 0;
+		uint32_t j1 = 1;
+		uint32_t j2 = 2;
+		uint32_t j3 = 3;
 		uint32_t jlimit = NCOLS >> 2;
 		if(jlimit){
 			while(1){
 				// LOAD
-				number_t v1_0 = v1col0[j];
-				number_t v1_1 = v1col1[j];
-				number_t v1_2 = v1col2[j];
-				number_t v1_3 = v1col3[j];
+				number_t v1_0 = v1[i][j];
+				number_t v1_1 = v1[i][j1];
+				number_t v1_2 = v1[i][j2];
+				number_t v1_3 = v1[i][j3];
 
-				number_t v2_0 = v2col0[j];
-				number_t v2_1 = v2col1[j];
-				number_t v2_2 = v2col2[j];
-				number_t v2_3 = v2col3[j];
+				number_t v2_0 = v2[i][j];
+				number_t v2_1 = v2[i][j1];
+				number_t v2_2 = v2[i][j2];
+				number_t v2_3 = v2[i][j3];
 
 				// UPDATE
 				number_t sum1	= v1_0 + v2_0;
 				number_t sum2	= v1_1 + v2_1;
 				number_t sum3	= v1_2 + v2_2;
 				number_t sum4	= v1_3 + v2_3;
-				uint32_t jnext	= j + 4;
+
 				uint32_t jlnext	= jlimit - 1;
 
 				// STORE
-				outcol0[j]	= sum1;
-				outcol1[j]	= sum2;
-				outcol2[j]	= sum3;
-				outcol3[j]	= sum4;
+				out[i][j]	= sum1;
+				out[i][j1]	= sum2;
+				out[i][j2]	= sum3;
+				out[i][j3]	= sum4;
 
 				// TEST
 				if(jlnext == 0){ break; }
+
+				uint32_t jnext	= j + 4;
+				uint32_t jnext1 = j1 + 4;
+				uint32_t jnext2 = j2 + 4;
+				uint32_t jnext3 = j3 + 4;
+
 				jlimit		= jlnext;
 				j			= jnext;
+				j1			= jnext1;
+				j2			= jnext2;
+				j3			= jnext3;
+
 			} /* while */
 		} /* jlimit */
 
@@ -136,19 +134,21 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 		if(jres){
 			while(1){
 				// LOAD
-				number_t v1_0 = v1col0[j];
-				number_t v2_0 = v2col0[j];
+				number_t v1_0 = v1[i][j];
+				number_t v2_0 = v2[i][j];
 
 				// UPDATE
 				number_t sum0	= v1_0 + v2_0;
-				uint32_t jnext	= j + 1;
 				uint32_t jrnext	= jres - 1;
 
 				// STORE
-				outcol0[j] = sum0;
+				out[i][j] = sum0;
 
 				// TEST
 				if(jrnext == 0){ break; }
+
+				uint32_t jnext	= j + 1;
+
 				j		= jnext;
 				jres	= jrnext;
 			} /* while */
