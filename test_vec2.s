@@ -50,7 +50,7 @@ Lloh2:
 Lloh3:
 	add	x0, x0, l_.str@PAGEOFF
 	bl	_printf
-	cbz	x19, LBB0_4
+	cbz	x19, LBB0_5
 ; %bb.1:
 	bl	_clock
 	mov	x21, x0
@@ -67,7 +67,7 @@ Lloh4:
 Lloh5:
 	add	x0, x0, l_.str.2@PAGEOFF
 	bl	_printf
-	cbz	x20, LBB0_5
+	cbz	x20, LBB0_6
 ; %bb.2:
 	mov	x8, #4650248090236747776
 	fmov	d0, x8
@@ -95,7 +95,7 @@ Lloh9:
 	add	x0, x0, l_.str.4@PAGEOFF
 	bl	_printf
 	bl	_vector2_alloc_rowsum1
-	cbz	x0, LBB0_6
+	cbz	x0, LBB0_7
 ; %bb.3:
 	mov	x21, x0
 	bl	_clock
@@ -114,6 +114,14 @@ Lloh10:
 Lloh11:
 	add	x0, x0, l_.str.6@PAGEOFF
 	bl	_printf
+	bl	_vector2_alloc_colsum1
+	cbz	x0, LBB0_8
+; %bb.4:
+	mov	x22, x0
+	mov	x1, x19
+	bl	_vector2_sum_cols
+	mov	x0, x22
+	bl	_vector2_print_colsum1_data
 	mov	x0, x19
 	bl	_vector2_free_vector2
 	mov	x0, x20
@@ -121,8 +129,8 @@ Lloh11:
 	mov	x0, x21
 	bl	_vector2_free_rowsum1
 	mov	w19, #0
-	b	LBB0_7
-LBB0_4:
+	b	LBB0_9
+LBB0_5:
 Lloh12:
 	adrp	x8, ___stderrp@GOTPAGE
 Lloh13:
@@ -137,8 +145,8 @@ Lloh16:
 	mov	w1, #37
 	mov	w2, #1
 	bl	_fwrite
-	b	LBB0_7
-LBB0_5:
+	b	LBB0_9
+LBB0_6:
 Lloh17:
 	adrp	x8, ___stderrp@GOTPAGE
 Lloh18:
@@ -153,8 +161,8 @@ Lloh21:
 	mov	w2, #1
 	bl	_fwrite
 	mov	w19, #2
-	b	LBB0_7
-LBB0_6:
+	b	LBB0_9
+LBB0_7:
 Lloh22:
 	adrp	x8, ___stderrp@GOTPAGE
 Lloh23:
@@ -169,7 +177,23 @@ Lloh26:
 	mov	w2, #1
 	bl	_fwrite
 	mov	w19, #3
-LBB0_7:
+	b	LBB0_9
+LBB0_8:
+Lloh27:
+	adrp	x8, ___stderrp@GOTPAGE
+Lloh28:
+	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
+Lloh29:
+	ldr	x3, [x8]
+Lloh30:
+	adrp	x0, l_.str.7@PAGE
+Lloh31:
+	add	x0, x0, l_.str.7@PAGEOFF
+	mov	w1, #39
+	mov	w2, #1
+	bl	_fwrite
+	mov	w19, #4
+LBB0_9:
 	mov	x0, x19
 	ldp	x29, x30, [sp, #64]             ; 16-byte Folded Reload
 	ldp	x20, x19, [sp, #48]             ; 16-byte Folded Reload
@@ -189,6 +213,8 @@ LBB0_7:
 	.loh AdrpLdrGotLdr	Lloh17, Lloh18, Lloh19
 	.loh AdrpAdd	Lloh25, Lloh26
 	.loh AdrpLdrGotLdr	Lloh22, Lloh23, Lloh24
+	.loh AdrpAdd	Lloh30, Lloh31
+	.loh AdrpLdrGotLdr	Lloh27, Lloh28, Lloh29
 	.cfi_endproc
                                         ; -- End function
 	.section	__DATA,__data
@@ -197,7 +223,7 @@ LBB0_7:
 _icps:
 	.quad	0x3eb0c6f7a0b5ed8d              ; double 9.9999999999999995E-7
 
-	.comm	_v,8000000,3                    ; @v
+	.comm	_v,392,3                        ; @v
 	.section	__TEXT,__cstring,cstring_literals
 l_.str:                                 ; @.str
 	.asciz	"v2 alloc: %.20f\n"
@@ -219,5 +245,8 @@ l_.str.5:                               ; @.str.5
 
 l_.str.6:                               ; @.str.6
 	.asciz	"rowsum: %.20f\n"
+
+l_.str.7:                               ; @.str.7
+	.asciz	"Cannot allocate memory for csum object\n"
 
 .subsections_via_symbols

@@ -52,6 +52,24 @@ void vector2_free_rowsum1(rowsum1_t *r){
 }
 
 /*
+ * Custom allocator for objects of type colsum1_t
+ */
+colsum1_t *vector2_alloc_colsum1(){
+	colsum1_t *c = NULL;
+	c = malloc(sizeof *c);
+	return c;
+}
+
+/*
+ * Release memory allocated for an object of type colsum1_t
+ */
+void vector2_free_colsum1(colsum1_t *c){
+	if(c != NULL){
+		free(c);
+	}
+}
+
+/*
  * Compute the elementwise sum between v1 and v2 and return it in out
  *
  * Unroll loop using an unroll factor K = 4.
@@ -219,6 +237,12 @@ void vector2_rand_init_vector2(vector2_t vec2, double scale, double shift){
 void vector2_print_rowsum1_data(rowsum1_t v){
 	for(int i = 0; i < NROWS; i++){
 		printf("sum of the %d-th row = %.4f\n", i, v[i]);
+	}
+}
+
+void vector2_print_colsum1_data(colsum1_t v){
+	for(int i = 0; i < NCOLS; i++){
+		printf("sum of the %d-th column = %.4f\n", i, v[i]);
 	}
 }
 

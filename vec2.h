@@ -2,8 +2,8 @@
 #ifndef MATRIX_H_INCLUDED
 #define MATRIX_H_INCLUDED
 
-#define NROWS 1000
-#define NCOLS 1000
+#define NROWS 7
+#define NCOLS 7
 
 /*
  * Numeric data type
@@ -40,6 +40,11 @@ void vector2_print_vector2_data(vector2_t vec2);
 void vector2_print_rowsum1_data(rowsum1_t v);
 
 /*
+ * Print the content of an object of type colsum1_t
+ */
+void vector2_print_colsum1_data(colsum1_t v);
+
+/*
  * Print vector2_t data type size and alignment
  */
 void vector2_print_vector2_type_info();
@@ -69,23 +74,33 @@ void vector2_sum_cols(colsum1_t out, vector2_t v);
 // ===========================================================================
 
 /*
- * Alloc memory for a vec2 object
+ * Alloc memory for an object of type "vector2_t"
  */
 vector2_t *vector2_alloc_vector2();
 
 /*
- * Free memory for a vec2 object
+ * Free memory previously allocated for an object of type "vector2_t"
  */
 void vector2_free_vector2(vector2_t *v);
 
 /*
- * Alloc memory for a rowsum1_t object
+ * Alloc memory for an object of type "rowsum1_t"
  */
 rowsum1_t *vector2_alloc_rowsum1();
 
 /*
- * Free memory for a rowsum1_t object
+ * Free memory previously allocated for an object of type "rowsum1_t"
  */
 void vector2_free_rowsum1(rowsum1_t *r);
+
+/*
+ * Alloc memory for an object of type "colsum1_t"
+ */
+colsum1_t *vector2_alloc_colsum1();
+
+/*
+ * Free memory previously allocated for an object of type "colsum1_t"
+ */
+void vector2_free_colsum1(colsum1_t *c);
 
 #endif

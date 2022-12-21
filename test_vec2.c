@@ -66,6 +66,16 @@ int main(int argc, char *argv[]){
 	t = e * icps;
 	printf("rowsum: %.20f\n", t);
 
+
+	colsum1_t *csum = vector2_alloc_colsum1();
+	if(csum == NULL){
+		fprintf(stderr, "Cannot allocate memory for csum object\n");
+		return 4;
+	}
+
+	vector2_sum_cols(&csum[0][0], &v2[0][0]);
+	vector2_print_colsum1_data(&csum[0][0]);
+
 	vector2_free_vector2(v2);
 	vector2_free_vector2(sum);
 	vector2_free_rowsum1(rsum);
