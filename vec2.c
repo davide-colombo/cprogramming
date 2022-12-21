@@ -78,7 +78,7 @@ void vector2_free_colsum1(colsum1_t *c){
  * multithreading execution.
  */
 void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
-	for(int i = 0; i < NROWS; i++){
+	for(uint32_t i = 0; i < NROWS; i++){
 		number_t *v1col0 = &v1[i][0];
 		number_t *v1col1 = &v1[i][1];
 		number_t *v1col2 = &v1[i][2];
@@ -94,8 +94,8 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 		number_t *outcol2 = &out[i][2];
 		number_t *outcol3 = &out[i][3];
 
-		int j = 0;
-		int jlimit = NCOLS >> 2;
+		uint32_t j = 0;
+		uint32_t jlimit = NCOLS >> 2;
 		if(jlimit){
 			while(1){
 				// LOAD
@@ -130,14 +130,25 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 			}
 		}
 
-		int jres = NCOLS & 3;
+		uint32_t jres = NCOLS & 3;
 		if(jres){
 			while(1){
-				number_t sum = v1col0[j] + v2col0[j];
-				outcol0[j] = sum;
-				j += 1;
-				jres -= 1;
-				if(jres == 0){ break; }
+				// LOAD
+				number_t v1_0 = v1col0[j];
+				number_t v2_0 = v2col0[j];
+
+				// UPDATE
+				number_t sum0	= v1_0 + v2_0;
+				uint32_t jnext	= j + 1;
+				uint32_t jrnext	= jres - 1;
+
+				// STORE
+				outcol0[j] = sum0;
+
+				// TEST
+				if(jrnext == 0){ break; }
+				j		= jnext;
+				jres	= jrnext;
 			}
 		} // jres
 	}
