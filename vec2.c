@@ -186,8 +186,11 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
  * Multiply "v1" by "v2" and return the result in "out"
  */
 void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
-	for(uint32_t i = 0; i < NROWS; i++){
-		number_t *iout	= &out[i][0];
+	uint32_t i = 0;
+	uint32_t iiter = NROWS;
+	number_t *iout = &out[0][0];
+	number_t *iv1 = &v1[0][0];
+	while(1){
 		number_t *iv1	= &v1[i][0];
 
 		number_t *kv2	= &v2[0][0];
@@ -222,7 +225,13 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 			kv2		+= NCOLS;
 			kiter	-= 1;
 		} /* kiter*/
-	}
+	
+	if(iiter == 1){break; }
+	iout += NCOLS;
+	iv1 += NCOLS;
+	i += 1;
+	iiter -= 1;
+	} /* iiter*/
 }
 
 /*
