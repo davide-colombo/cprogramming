@@ -192,10 +192,27 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 		for(uint32_t k = 0; k < NCOLS; k++){
 			number_t ikv1	= iv1[k];
 			number_t *kv2	= &v2[k][0];
-			for(uint32_t j = 0; j < NCOLS; j++){
-				number_t kjv2	= kv2[j];
+			number_t *iiout	= iout;
+
+			uint32_t jiter = NCOLS;
+			while(1){
+				// LOAD
+				number_t kjv2	= *kv2;
+				number_t kiout	= *iiout;
+
+				// UPDATE
 				number_t mul	= ikv1 * kjv2;
-				iout[j] += mul;
+
+				// STORE
+				*iiout = kiout + mul;
+
+				// TEST
+				uint32_t jiter_next = jiter - 1;
+				if(jiter_next == 0){ break; }
+
+				kv2++;
+				iiout++;
+				jiter = jiter_next;
 			}
 		}
 	}
@@ -207,7 +224,6 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 void vector2_transpose(vector2_t out, vector2_t v){
 	for(uint32_t i = 0; i < NROWS; i++){
 		for(uint32_t j = 0; j < NCOLS; j++){
-			// THIS WILL CAUSE A LOT OF CACHE MISSES
 			out[j][i] = v[i][j];
 		}
 	}
