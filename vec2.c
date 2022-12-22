@@ -189,9 +189,11 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 	for(uint32_t i = 0; i < NROWS; i++){
 		number_t *iout	= &out[i][0];
 		number_t *iv1	= &v1[i][0];
-		for(uint32_t k = 0; k < NCOLS; k++){
-			number_t ikv1	= iv1[k];
-			number_t *kv2	= &v2[k][0];
+
+		uint32_t kiter = NCOLS;
+		while(1){
+			number_t ikv1	= *iv1;
+			number_t *kv2	= &v2[0][0];
 			number_t *iiout	= iout;
 
 			uint32_t jiter = NCOLS;
@@ -207,14 +209,19 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 				*iiout = kiout + mul;
 
 				// TEST
-				uint32_t jiter_next = jiter - 1;
-				if(jiter_next == 0){ break; }
+				if(jiter == 1){ break; }
 
 				kv2++;
 				iiout++;
-				jiter = jiter_next;
-			}
-		}
+				jiter -= 1;
+			} /* jiter */
+
+			if(kiter == 1){ break; }
+
+			ikv1++;
+			kv2		+= NCOLS;
+			kiter	-= 1;
+		} /* kiter*/
 	}
 }
 
