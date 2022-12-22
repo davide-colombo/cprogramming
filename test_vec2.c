@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
 	}
 	printf("v1 = %p\n", v1);
 
-	vector2_rand_init_vector2(&v1[0][0], 1000.0f, 10.0f);
+	//vector2_rand_init_vector2(&v1[0][0], 1000.0f, 10.0f);
 
 	/* V2 */
 	start = clock();
@@ -54,15 +54,26 @@ int main(int argc, char *argv[]){
 		return 2;
 	}
 
-	vector2_rand_init_vector2(&v2[0][0], 800.0f, 20.0f);
-	//vector2_print_vector2_data(&v2[0][0]);
+//	vector2_rand_init_vector2(&v2[0][0], 800.0f, 20.0f);
+//	vector2_print_vector2_data(&v2[0][0]);
+	(*v1)[0][0] = 1;
+	(*v1)[0][1] = 2;
+	(*v1)[1][0] = 4;
+	(*v1)[1][1] = 5;
+	vector2_print_vector2_data(&v1[0][0]);
 
-	start = clock();
-	vector2_add(&sum[0][0], &v1[0][0], &v2[0][0]);
-	end = clock();
-	e = end - start;
-	t = e * icps;
-	printf("add: %.20f\n", t);
+	(*v2)[0][0] = 2;
+	(*v2)[0][1] = 3;
+	(*v2)[1][0] = 1;
+	(*v2)[1][1] = 3;
+	vector2_print_vector2_data(&v2[0][0]);
+
+//	start = clock();
+//	vector2_add(&sum[0][0], &v1[0][0], &v2[0][0]);
+//	end = clock();
+//	e = end - start;
+//	t = e * icps;
+//	printf("add: %.20f\n", t);
 	//vector2_print_vector2_data(&sum[0][0]);
 
 	vector2_t *mul = vector2_alloc_vector2_aligned(128);
@@ -71,12 +82,20 @@ int main(int argc, char *argv[]){
 		return 5;
 	}
 
+	vector2_print_vector2_data(&mul[0][0]);
+	/*
+	 * Zero initialize "mul" object
+	 */
+	vector2_zero_init_vector2(mul);
+	vector2_print_vector2_data(&mul[0][0]);
+
 	start = clock();
 	vector2_mul(&mul[0][0], &v1[0][0], &v2[0][0]);
 	end = clock();
 	e = end - start;
 	t = e * icps;
 	printf("mul: %.20f\n", t);
+	vector2_print_vector2_data(&mul[0][0]);
 
 	rowsum1_t *rsum = vector2_alloc_rowsum1();
 	if(rsum == NULL){

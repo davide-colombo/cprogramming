@@ -2,8 +2,8 @@
 #ifndef MATRIX_H_INCLUDED
 #define MATRIX_H_INCLUDED
 
-#define NROWS 2233
-#define NCOLS 2233
+#define NROWS 2
+#define NCOLS 2
 
 /*
  * Numeric data type
@@ -53,6 +53,11 @@ void vector2_print_vector2_type_info();
  * Randomly initialize the 2d vector
  */
 void vector2_rand_init_vector2(vector2_t vec2, double scale, double shift);
+
+/*
+ * Set each item of an object of type vector2_t to 0
+ */
+void vector2_zero_init_vector2(vector2_t *v);
 
 /*
  * Add 2 two-dimensional vectors together

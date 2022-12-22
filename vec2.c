@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <assert.h>
 #include "vec2.h"
@@ -183,9 +184,22 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
  */
 void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 	for(uint32_t i = 0; i < NROWS; i++){
+		printf("LOOP I = %u\n", i);
+		number_t *iout	= &out[i][0];
+		number_t *iv1	= &v1[i][0];
 		for(uint32_t k = 0; k < NCOLS; k++){
+			printf("\tLOOP K = %u\n", k);
+			number_t ikv1	= iv1[k];
+			printf("v1[%u][%u] = %.4f\n", i, k, ikv1);
+			number_t *kv2	= &v2[k][0];
 			for(uint32_t j = 0; j < NCOLS; j++){
-				out[i][j] = v1[i][k] * v2[k][j];
+				printf("\t\tLOOP J = %u\n", j);
+				number_t kjv2	= kv2[j];
+				printf("v2[%u][%u] = %.4f\n", k, j, kjv2);
+				number_t mul	= ikv1 * kjv2;
+				printf("mul = %.4f\n", mul);
+				iout[j] += mul;
+				printf("out[%u][%u] = %.4f\n", i, j, iout[j]);
 			}
 		}
 	}
@@ -293,6 +307,13 @@ void vector2_rand_init_vector2(vector2_t vec2, double scale, double shift){
 			irow[j] = (number_t)rscale + (number_t)rshift;
 		}
 	}
+}
+
+/*
+ * Zero initialize an object of type vector2_t
+ */
+void vector2_zero_init_vector2(vector2_t *v){
+	memset(v, 0, sizeof *v);
 }
 
 /*
