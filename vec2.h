@@ -2,8 +2,8 @@
 #ifndef MATRIX_H_INCLUDED
 #define MATRIX_H_INCLUDED
 
-#define NROWS 2
-#define NCOLS 2
+#define NROWS 1000
+#define NCOLS 1000
 
 /*
  * Numeric data type
@@ -68,6 +68,17 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2);
  * Multiply 2 two-dimensional vectors and return the result in "out"
  */
 void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2);
+
+/*
+ * Multiply "v1" by the transpose of "v2" vectors and return the result in 
+ * "out"
+ */
+void vector2_mul_transpose(vector2_t out, vector2_t v1, vector2_t v2);
+
+/*
+ * Transpose an object of type vector2_t.
+ */
+void vector2_transpose(vector2_t out, vector2_t v);
 
 /*
  * Compute the sum of the elements on the rows

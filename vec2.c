@@ -184,22 +184,42 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
  */
 void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 	for(uint32_t i = 0; i < NROWS; i++){
-		printf("LOOP I = %u\n", i);
 		number_t *iout	= &out[i][0];
 		number_t *iv1	= &v1[i][0];
 		for(uint32_t k = 0; k < NCOLS; k++){
-			printf("\tLOOP K = %u\n", k);
 			number_t ikv1	= iv1[k];
-			printf("v1[%u][%u] = %.4f\n", i, k, ikv1);
 			number_t *kv2	= &v2[k][0];
 			for(uint32_t j = 0; j < NCOLS; j++){
-				printf("\t\tLOOP J = %u\n", j);
 				number_t kjv2	= kv2[j];
-				printf("v2[%u][%u] = %.4f\n", k, j, kjv2);
 				number_t mul	= ikv1 * kjv2;
-				printf("mul = %.4f\n", mul);
 				iout[j] += mul;
-				printf("out[%u][%u] = %.4f\n", i, j, iout[j]);
+			}
+		}
+	}
+}
+
+/*
+ * Transpose "v" (i.e., v[i][j] = v[j][i])
+ */
+void vector2_transpose(vector2_t out, vector2_t v){
+	for(uint32_t i = 0; i < NROWS; i++){
+		for(uint32_t j = 0; j < NCOLS; j++){
+			// THIS WILL CAUSE A LOT OF CACHE MISSES
+			out[i][j] = v[j][i];
+		}
+	}
+}
+
+/*
+ * Multiply "v1" by the transpose of "v2" and store the result in "out".
+ * Use of this interface MUST call the procedure with the already transposed 
+ * version of "v2"
+ */
+void vector2_mul_transpose(vector2_t out, vector2_t v1, vector2_t tv2){
+	for(uint32_t i = 0; i < NROWS; i++){
+		for(uint32_t j = 0; j < NCOLS; j++){
+			for(uint32_t k = 0; k < NCOLS; k++){
+				out[i][j] = v1[i][k] * tv2[k][j];
 			}
 		}
 	}
