@@ -76,6 +76,14 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2);
 void vector2_mul_transpose(vector2_t out, vector2_t v1, vector2_t v2);
 
 /*
+ * Multiply "v1" by "v2" in a blocks-by-blocks fashion and return the result 
+ * in "out".
+ *
+ * Each block is "stride"x"stride"
+ */
+void vector2_mul_localized(vector2_t out, vector2_t v1, vector2_t v2, uint32_t stride);
+
+/*
  * Transpose an object of type vector2_t.
  */
 void vector2_transpose(vector2_t out, vector2_t v);
@@ -108,7 +116,7 @@ vector2_t *vector2_alloc_vector2_aligned(size_t alignment);
 /*
  * Free memory previously allocated for an object of type "vector2_t"
  */
-void vector2_free_vector2(vector2_t *v);
+void vector2_free_vector2(vector2_t **v);
 
 /*
  * Alloc memory for an object of type "rowsum1_t"
@@ -118,7 +126,7 @@ rowsum1_t *vector2_alloc_rowsum1();
 /*
  * Free memory previously allocated for an object of type "rowsum1_t"
  */
-void vector2_free_rowsum1(rowsum1_t *r);
+void vector2_free_rowsum1(rowsum1_t **r);
 
 /*
  * Alloc memory for an object of type "colsum1_t"
@@ -128,6 +136,6 @@ colsum1_t *vector2_alloc_colsum1();
 /*
  * Free memory previously allocated for an object of type "colsum1_t"
  */
-void vector2_free_colsum1(colsum1_t *c);
+void vector2_free_colsum1(colsum1_t **c);
 
 #endif

@@ -46,9 +46,10 @@ vector2_t *vector2_alloc_vector2_aligned(size_t alignment){
  * Custom procedure to release previously allocated memory for an object of 
  * type vector2_t
  */
-void vector2_free_vector2(vector2_t *v){
-	if(v != NULL){
-		free(v);
+void vector2_free_vector2(vector2_t **v){
+	if(*v != NULL){
+		free(*v);
+		*v = NULL;
 	}
 }
 
@@ -64,9 +65,10 @@ rowsum1_t *vector2_alloc_rowsum1(){
 /*
  * Release memory allocated for an object of type rowsum1_t
  */
-void vector2_free_rowsum1(rowsum1_t *r){
-	if(r != NULL){
-		free(r);
+void vector2_free_rowsum1(rowsum1_t **r){
+	if(*r != NULL){
+		free(*r);
+		*r = NULL;
 	}
 }
 
@@ -82,9 +84,10 @@ colsum1_t *vector2_alloc_colsum1(){
 /*
  * Release memory allocated for an object of type colsum1_t
  */
-void vector2_free_colsum1(colsum1_t *c){
-	if(c != NULL){
-		free(c);
+void vector2_free_colsum1(colsum1_t **c){
+	if(*c != NULL){
+		free(*c);
+		*c = NULL;
 	}
 }
 
@@ -220,6 +223,31 @@ void vector2_mul_transpose(vector2_t out, vector2_t v1, vector2_t tv2){
 		for(uint32_t j = 0; j < NCOLS; j++){
 			for(uint32_t k = 0; k < NCOLS; k++){
 				out[i][j] = v1[i][k] * tv2[k][j];
+			}
+		}
+	}
+}
+
+/*
+ * Multiply "v1" by "v2" in a block-by-block fashion and store the result in 
+ * "out".
+ *
+ * Each block is "stride"x"stride" in size
+ */
+void vector2_mul_localized(vector2_t out, vector2_t v1, vector2_t v2, uint32_t stride){
+	for(uint32_t i = 0; i < NROWS; i+=stride){
+		for(uint32_t j = 0; j < NCOLS; j+=stride){
+			for(uint32_t k = 0; k < NCOLS; k+=stride){
+				number_t *rres = &out[i][j];
+				number_t *rmul1 = &v1[i][k];
+				for(uint32_t i2 = 0; i2 < stride; i2++, rres+=NCOLS, rmul1+=NCOLS){
+					number_t *rmul2 = &v2[k][j];
+					for(uint32_t k2 = 0; k2 < stride; k2++, rmul2+=NCOLS){
+						for(uint32_t j2 = 0; j2 < stride; j2++){
+							rres[j2] += rmul1[k2] * rmul2[j2];
+						}
+					}
+				}
 			}
 		}
 	}

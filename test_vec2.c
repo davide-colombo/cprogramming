@@ -82,8 +82,6 @@ int main(int argc, char *argv[]){
 	}
 
 	vector2_zero_init_vector2(mul);
-//	vector2_print_vector2_data(&mul[0][0]);
-
 	start = clock();
 	vector2_transpose(&tv2[0][0], &v2[0][0]);
 	vector2_mul_transpose(&mul[0][0], &v1[0][0], &tv2[0][0]);
@@ -91,12 +89,23 @@ int main(int argc, char *argv[]){
 	e = end - start;
 	t = e * icps;
 	printf("mul transposed: %.20f\n", t);
+
+	/* FREE TRANSPOSE */
+	vector2_free_vector2(&tv2);
+
+	/* MULTIPLICATION LOCALIZED */
+	vector2_zero_init_vector2(mul);
+	uint32_t stride = 128 / sizeof(number_t);
+	start = clock();
+	vector2_mul_localized(&mul[0][0], &v1[0][0], &v2[0][0], stride);
+	end = clock();
+	e = end - start;
+	t = e * icps;
+	printf("mul localized: %.20f\n", t);
 	//vector2_print_vector2_data(&mul[0][0]);
 
 	/* MULTIPLICATION OPTIMIZED */
 	vector2_zero_init_vector2(mul);
-//	vector2_print_vector2_data(&mul[0][0]);
-
 	start = clock();
 	vector2_mul(&mul[0][0], &v1[0][0], &v2[0][0]);
 	end = clock();
@@ -136,13 +145,13 @@ int main(int argc, char *argv[]){
 	//vector2_print_colsum1_data(&csum[0][0]);
 
 	/* FREE */
-	vector2_free_vector2(v1);
-	vector2_free_vector2(v2);
-	vector2_free_vector2(sum);
-	vector2_free_vector2(tv2);
-	vector2_free_vector2(mul);
-	vector2_free_rowsum1(rsum);
-	vector2_free_colsum1(csum);
+	vector2_free_vector2(&v1);
+	vector2_free_vector2(&v2);
+	vector2_free_vector2(&sum);
+	vector2_free_vector2(&tv2);
+	vector2_free_vector2(&mul);
+	vector2_free_rowsum1(&rsum);
+	vector2_free_colsum1(&csum);
 
 	return 0;
 }
