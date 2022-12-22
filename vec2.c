@@ -208,7 +208,7 @@ void vector2_transpose(vector2_t out, vector2_t v){
 	for(uint32_t i = 0; i < NROWS; i++){
 		for(uint32_t j = 0; j < NCOLS; j++){
 			// THIS WILL CAUSE A LOT OF CACHE MISSES
-			out[i][j] = v[j][i];
+			out[j][i] = v[i][j];
 		}
 	}
 }

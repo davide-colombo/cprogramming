@@ -363,19 +363,19 @@ _vector2_transpose:                     ; @vector2_transpose
 LBB10_1:                                ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB10_2 Depth 2
 	mov	x10, #0
-	mov	x11, x1
+	mov	x11, x0
 LBB10_2:                                ;   Parent Loop BB10_1 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
-	ldr	d0, [x11]
-	str	d0, [x0, x10, lsl #3]
+	ldr	d0, [x1, x10, lsl #3]
+	str	d0, [x11]
 	add	x10, x10, #1
 	add	x11, x11, x9
 	cmp	x10, #1000
 	b.ne	LBB10_2
 ; %bb.3:                                ;   in Loop: Header=BB10_1 Depth=1
 	add	x8, x8, #1
-	add	x0, x0, x9
-	add	x1, x1, #8
+	add	x1, x1, x9
+	add	x0, x0, #8
 	cmp	x8, #1000
 	b.ne	LBB10_1
 ; %bb.4:
