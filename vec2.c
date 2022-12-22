@@ -222,7 +222,7 @@ void vector2_mul_transpose(vector2_t out, vector2_t v1, vector2_t tv2){
 	for(uint32_t i = 0; i < NROWS; i++){
 		for(uint32_t j = 0; j < NCOLS; j++){
 			for(uint32_t k = 0; k < NCOLS; k++){
-				out[i][j] = v1[i][k] * tv2[k][j];
+				out[i][j] += v1[i][k] * tv2[k][j];
 			}
 		}
 	}

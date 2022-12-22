@@ -400,13 +400,15 @@ LBB11_2:                                ;   Parent Loop BB11_1 Depth=1
 	mov	x12, #0
 	madd	x13, x8, x9, x0
 	add	x13, x13, x10, lsl #3
+	ldr	d0, [x13]
 	mov	x14, x11
 LBB11_3:                                ;   Parent Loop BB11_1 Depth=1
                                         ;     Parent Loop BB11_2 Depth=2
                                         ; =>    This Inner Loop Header: Depth=3
-	ldr	d0, [x1, x12, lsl #3]
-	ldr	d1, [x14]
-	fmul	d0, d0, d1
+	ldr	d1, [x1, x12, lsl #3]
+	ldr	d2, [x14]
+	fmul	d1, d1, d2
+	fadd	d0, d0, d1
 	str	d0, [x13]
 	add	x12, x12, #1
 	add	x14, x14, x9
