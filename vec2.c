@@ -189,34 +189,17 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 	uint32_t iiter = NROWS;
 	number_t *iout = &out[0][0];
 	number_t *iv1 = &v1[0][0];
-
-	uint32_t i = 0;
 	while(1){
-		number_t *_iout = &out[i][0];
-
-		printf("LOOP I = %u\n", i);
-		printf("_iout = %p\n", _iout);
-		printf("iout = %p\n", iout);
-
 		number_t *kv2	= &v2[0][0];
 		number_t *ikv1 = iv1;
-
-		uint32_t k = 0;
 		uint32_t kiter = NCOLS;
 		while(1){
-			number_t *_kv2 = &v2[k][0];
-			printf("\tLOOP K = %u\n", k);
-			printf("\t_kv2 = %p\n", _kv2);
-			printf("\tkv2 = %p\n", kv2);
-			printf("\tiv1[k] = %.4f\n", iv1[k]);
-			printf("\t*ikv1 = %.4f\n", *ikv1);
-
 			number_t *iiout	= iout;
 			number_t *kkv2 = kv2;
 			uint32_t jiter = NCOLS;
 			while(1){
 				// LOAD
-				number_t iikv1 = *ikv1;
+				number_t iikv1	= *ikv1;
 				number_t kjv2	= *kkv2;
 				number_t kiout	= *iiout;
 
@@ -236,7 +219,6 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 
 			if(kiter == 1){ break; }
 
-			k += 1;
 			ikv1++;
 			kv2		+= NCOLS;
 			kiter	-= 1;
@@ -246,7 +228,6 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 	iout += NCOLS;
 	iv1 += NCOLS;
 	iiter -= 1;
-	i += 1;
 	} /* iiter*/
 }
 

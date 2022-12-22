@@ -202,225 +202,49 @@ _vector2_add:                           ; @vector2_add
 _vector2_mul:                           ; @vector2_mul
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #112
-	stp	x28, x27, [sp, #16]             ; 16-byte Folded Spill
-	stp	x26, x25, [sp, #32]             ; 16-byte Folded Spill
-	stp	x24, x23, [sp, #48]             ; 16-byte Folded Spill
-	stp	x22, x21, [sp, #64]             ; 16-byte Folded Spill
-	stp	x20, x19, [sp, #80]             ; 16-byte Folded Spill
-	stp	x29, x30, [sp, #96]             ; 16-byte Folded Spill
-	add	x29, sp, #96
-	.cfi_def_cfa w29, 16
-	.cfi_offset w30, -8
-	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-	.cfi_offset w21, -40
-	.cfi_offset w22, -48
-	.cfi_offset w23, -56
-	.cfi_offset w24, -64
-	.cfi_offset w25, -72
-	.cfi_offset w26, -80
-	.cfi_offset w27, -88
-	.cfi_offset w28, -96
-	mov	x19, x2
-	mov	x21, x1
-	mov	x20, x0
-	str	xzr, [sp]
-Lloh4:
-	adrp	x0, l_.str.5@PAGE
-Lloh5:
-	add	x0, x0, l_.str.5@PAGEOFF
-	bl	_printf
-	str	x20, [sp]
-Lloh6:
-	adrp	x0, l_.str.6@PAGE
-Lloh7:
-	add	x0, x0, l_.str.6@PAGEOFF
-	bl	_printf
-	str	x20, [sp]
-Lloh8:
-	adrp	x0, l_.str.7@PAGE
-Lloh9:
-	add	x0, x0, l_.str.7@PAGEOFF
-	bl	_printf
-	str	xzr, [sp]
-Lloh10:
-	adrp	x22, l_.str.8@PAGE
-Lloh11:
-	add	x22, x22, l_.str.8@PAGEOFF
-	mov	x0, x22
-	bl	_printf
-	str	x19, [sp]
-Lloh12:
-	adrp	x23, l_.str.9@PAGE
-Lloh13:
-	add	x23, x23, l_.str.9@PAGEOFF
-	mov	x0, x23
-	bl	_printf
-	str	x19, [sp]
-Lloh14:
-	adrp	x24, l_.str.10@PAGE
-Lloh15:
-	add	x24, x24, l_.str.10@PAGEOFF
-	mov	x0, x24
-	bl	_printf
-	ldr	d0, [x21]
-	str	d0, [sp]
-Lloh16:
-	adrp	x25, l_.str.11@PAGE
-Lloh17:
-	add	x25, x25, l_.str.11@PAGEOFF
-	mov	x0, x25
-	bl	_printf
-	ldr	d0, [x21]
-	str	d0, [sp]
-Lloh18:
-	adrp	x26, l_.str.12@PAGE
-Lloh19:
-	add	x26, x26, l_.str.12@PAGEOFF
-	mov	x0, x26
-	bl	_printf
-	ldr	d0, [x21]
-	ldr	d1, [x19]
+	ldr	d0, [x1]
+	ldr	d1, [x2]
 	fmul	d0, d0, d1
-	ldp	d1, d2, [x20]
+	ldp	d1, d2, [x0]
 	fadd	d0, d1, d0
-	str	d0, [x20]
-	ldr	d0, [x21]
-	ldr	d1, [x19, #8]
-	fmul	d0, d0, d1
-	fadd	d0, d2, d0
-	str	d0, [x20, #8]
-	add	x28, x19, #16
-	mov	w27, #1
-	str	x27, [sp]
-	mov	x0, x22
-	bl	_printf
-	str	x28, [sp]
-	mov	x0, x23
-	bl	_printf
-	str	x28, [sp]
-	mov	x0, x24
-	bl	_printf
-	ldr	d0, [x21, #8]
-	str	d0, [sp]
-	mov	x0, x25
-	bl	_printf
-	ldr	d0, [x21, #8]
-	str	d0, [sp]
-	mov	x0, x26
-	bl	_printf
-	ldr	d0, [x21, #8]
-	ldr	d1, [x19, #16]
-	fmul	d0, d0, d1
-	ldp	d1, d2, [x20]
+	str	d0, [x0]
+	ldr	d1, [x1]
+	ldr	d3, [x2, #8]
+	fmul	d1, d1, d3
+	fadd	d1, d2, d1
+	str	d1, [x0, #8]
+	ldr	d2, [x1, #8]
+	ldr	d3, [x2, #16]
+	fmul	d2, d2, d3
+	fadd	d0, d0, d2
+	str	d0, [x0]
+	ldr	d0, [x1, #8]
+	ldr	d2, [x2, #24]
+	fmul	d0, d0, d2
 	fadd	d0, d1, d0
-	str	d0, [x20]
-	ldr	d0, [x21, #8]
-	ldr	d1, [x19, #24]
+	str	d0, [x0, #8]
+	ldr	d0, [x1, #16]
+	ldr	d1, [x2]
 	fmul	d0, d0, d1
-	fadd	d0, d2, d0
-	str	d0, [x20, #8]
-	add	x22, x20, #16
-	str	x27, [sp]
-Lloh20:
-	adrp	x0, l_.str.5@PAGE
-Lloh21:
-	add	x0, x0, l_.str.5@PAGEOFF
-	bl	_printf
-	str	x22, [sp]
-Lloh22:
-	adrp	x0, l_.str.6@PAGE
-Lloh23:
-	add	x0, x0, l_.str.6@PAGEOFF
-	bl	_printf
-	str	x22, [sp]
-Lloh24:
-	adrp	x0, l_.str.7@PAGE
-Lloh25:
-	add	x0, x0, l_.str.7@PAGEOFF
-	bl	_printf
-	str	xzr, [sp]
-Lloh26:
-	adrp	x22, l_.str.8@PAGE
-Lloh27:
-	add	x22, x22, l_.str.8@PAGEOFF
-	mov	x0, x22
-	bl	_printf
-	str	x19, [sp]
-	mov	x0, x23
-	bl	_printf
-	str	x19, [sp]
-	mov	x0, x24
-	bl	_printf
-	ldr	d0, [x21, #16]
-	str	d0, [sp]
-	mov	x0, x25
-	bl	_printf
-	ldr	d0, [x21, #16]
-	str	d0, [sp]
-	mov	x0, x26
-	bl	_printf
-	ldr	d0, [x21, #16]
-	ldr	d1, [x19]
-	fmul	d0, d0, d1
-	ldp	d1, d2, [x20, #16]
+	ldp	d1, d2, [x0, #16]
 	fadd	d0, d1, d0
-	str	d0, [x20, #16]
-	ldr	d0, [x21, #16]
-	ldr	d1, [x19, #8]
-	fmul	d0, d0, d1
-	fadd	d0, d2, d0
-	str	d0, [x20, #24]
-	str	x27, [sp]
-	mov	x0, x22
-	bl	_printf
-	str	x28, [sp]
-	mov	x0, x23
-	bl	_printf
-	str	x28, [sp]
-	mov	x0, x24
-	bl	_printf
-	ldr	d0, [x21, #24]
-	str	d0, [sp]
-	mov	x0, x25
-	bl	_printf
-	ldr	d0, [x21, #24]
-	str	d0, [sp]
-	mov	x0, x26
-	bl	_printf
-	ldr	d0, [x21, #24]
-	ldr	d1, [x19, #16]
-	fmul	d0, d0, d1
-	ldp	d1, d2, [x20, #16]
+	str	d0, [x0, #16]
+	ldr	d1, [x1, #16]
+	ldr	d3, [x2, #8]
+	fmul	d1, d1, d3
+	fadd	d1, d2, d1
+	str	d1, [x0, #24]
+	ldr	d2, [x1, #24]
+	ldr	d3, [x2, #16]
+	fmul	d2, d2, d3
+	fadd	d0, d0, d2
+	str	d0, [x0, #16]
+	ldr	d0, [x1, #24]
+	ldr	d2, [x2, #24]
+	fmul	d0, d0, d2
 	fadd	d0, d1, d0
-	str	d0, [x20, #16]
-	ldr	d0, [x21, #24]
-	ldr	d1, [x19, #24]
-	fmul	d0, d0, d1
-	fadd	d0, d2, d0
-	str	d0, [x20, #24]
-	ldp	x29, x30, [sp, #96]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #80]             ; 16-byte Folded Reload
-	ldp	x22, x21, [sp, #64]             ; 16-byte Folded Reload
-	ldp	x24, x23, [sp, #48]             ; 16-byte Folded Reload
-	ldp	x26, x25, [sp, #32]             ; 16-byte Folded Reload
-	ldp	x28, x27, [sp, #16]             ; 16-byte Folded Reload
-	add	sp, sp, #112
+	str	d0, [x0, #24]
 	ret
-	.loh AdrpAdd	Lloh26, Lloh27
-	.loh AdrpAdd	Lloh24, Lloh25
-	.loh AdrpAdd	Lloh22, Lloh23
-	.loh AdrpAdd	Lloh20, Lloh21
-	.loh AdrpAdd	Lloh18, Lloh19
-	.loh AdrpAdd	Lloh16, Lloh17
-	.loh AdrpAdd	Lloh14, Lloh15
-	.loh AdrpAdd	Lloh12, Lloh13
-	.loh AdrpAdd	Lloh10, Lloh11
-	.loh AdrpAdd	Lloh8, Lloh9
-	.loh AdrpAdd	Lloh6, Lloh7
-	.loh AdrpAdd	Lloh4, Lloh5
 	.cfi_endproc
                                         ; -- End function
 	.globl	_vector2_transpose              ; -- Begin function vector2_transpose
@@ -773,19 +597,19 @@ _vector2_print_vector2_data:            ; @vector2_print_vector2_data
 	.cfi_offset w22, -48
 	mov	x19, x0
 	str	xzr, [sp]
-Lloh28:
-	adrp	x20, l_.str.13@PAGE
-Lloh29:
-	add	x20, x20, l_.str.13@PAGEOFF
+Lloh4:
+	adrp	x20, l_.str.5@PAGE
+Lloh5:
+	add	x20, x20, l_.str.5@PAGEOFF
 	mov	x0, x20
 	bl	_printf
 	ldr	d0, [x19]
 	str	d0, [sp, #8]
 	str	xzr, [sp]
-Lloh30:
-	adrp	x21, l_.str.14@PAGE
-Lloh31:
-	add	x21, x21, l_.str.14@PAGEOFF
+Lloh6:
+	adrp	x21, l_.str.6@PAGE
+Lloh7:
+	add	x21, x21, l_.str.6@PAGEOFF
 	mov	x0, x21
 	bl	_printf
 	ldr	d0, [x19, #8]
@@ -815,8 +639,8 @@ Lloh31:
 	ldp	x22, x21, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #64
 	b	_putchar
-	.loh AdrpAdd	Lloh30, Lloh31
-	.loh AdrpAdd	Lloh28, Lloh29
+	.loh AdrpAdd	Lloh6, Lloh7
+	.loh AdrpAdd	Lloh4, Lloh5
 	.cfi_endproc
                                         ; -- End function
 	.globl	_vector2_rand_init_vector2      ; -- Begin function vector2_rand_init_vector2
@@ -917,10 +741,10 @@ _vector2_print_rowsum1_data:            ; @vector2_print_rowsum1_data
 	ldr	d0, [x0]
 	str	d0, [sp, #8]
 	str	xzr, [sp]
-Lloh32:
-	adrp	x20, l_.str.16@PAGE
-Lloh33:
-	add	x20, x20, l_.str.16@PAGEOFF
+Lloh8:
+	adrp	x20, l_.str.8@PAGE
+Lloh9:
+	add	x20, x20, l_.str.8@PAGEOFF
 	mov	x0, x20
 	bl	_printf
 	ldr	d0, [x19, #8]
@@ -933,7 +757,7 @@ Lloh33:
 	ldp	x20, x19, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #48
 	ret
-	.loh AdrpAdd	Lloh32, Lloh33
+	.loh AdrpAdd	Lloh8, Lloh9
 	.cfi_endproc
                                         ; -- End function
 	.globl	_vector2_print_colsum1_data     ; -- Begin function vector2_print_colsum1_data
@@ -954,10 +778,10 @@ _vector2_print_colsum1_data:            ; @vector2_print_colsum1_data
 	ldr	d0, [x0]
 	str	d0, [sp, #8]
 	str	xzr, [sp]
-Lloh34:
-	adrp	x20, l_.str.17@PAGE
-Lloh35:
-	add	x20, x20, l_.str.17@PAGEOFF
+Lloh10:
+	adrp	x20, l_.str.9@PAGE
+Lloh11:
+	add	x20, x20, l_.str.9@PAGEOFF
 	mov	x0, x20
 	bl	_printf
 	ldr	d0, [x19, #8]
@@ -970,7 +794,7 @@ Lloh35:
 	ldp	x20, x19, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #48
 	ret
-	.loh AdrpAdd	Lloh34, Lloh35
+	.loh AdrpAdd	Lloh10, Lloh11
 	.cfi_endproc
                                         ; -- End function
 	.p2align	2                               ; -- Begin function vector2_alloc_vector2_aligned.cold.1
@@ -982,23 +806,23 @@ _vector2_alloc_vector2_aligned.cold.1:  ; @vector2_alloc_vector2_aligned.cold.1
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-Lloh36:
+Lloh12:
 	adrp	x0, l___func__.vector2_alloc_vector2_aligned@PAGE
-Lloh37:
+Lloh13:
 	add	x0, x0, l___func__.vector2_alloc_vector2_aligned@PAGEOFF
-Lloh38:
+Lloh14:
 	adrp	x1, l_.str.2@PAGE
-Lloh39:
+Lloh15:
 	add	x1, x1, l_.str.2@PAGEOFF
-Lloh40:
+Lloh16:
 	adrp	x3, l_.str.3@PAGE
-Lloh41:
+Lloh17:
 	add	x3, x3, l_.str.3@PAGEOFF
 	mov	w2, #34
 	bl	___assert_rtn
-	.loh AdrpAdd	Lloh40, Lloh41
-	.loh AdrpAdd	Lloh38, Lloh39
-	.loh AdrpAdd	Lloh36, Lloh37
+	.loh AdrpAdd	Lloh16, Lloh17
+	.loh AdrpAdd	Lloh14, Lloh15
+	.loh AdrpAdd	Lloh12, Lloh13
 	.cfi_endproc
                                         ; -- End function
 	.p2align	2                               ; -- Begin function vector2_alloc_vector2_aligned.cold.2
@@ -1010,23 +834,23 @@ _vector2_alloc_vector2_aligned.cold.2:  ; @vector2_alloc_vector2_aligned.cold.2
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-Lloh42:
+Lloh18:
 	adrp	x0, l___func__.vector2_alloc_vector2_aligned@PAGE
-Lloh43:
+Lloh19:
 	add	x0, x0, l___func__.vector2_alloc_vector2_aligned@PAGEOFF
-Lloh44:
+Lloh20:
 	adrp	x1, l_.str.2@PAGE
-Lloh45:
+Lloh21:
 	add	x1, x1, l_.str.2@PAGEOFF
-Lloh46:
+Lloh22:
 	adrp	x3, l_.str.4@PAGE
-Lloh47:
+Lloh23:
 	add	x3, x3, l_.str.4@PAGEOFF
 	mov	w2, #40
 	bl	___assert_rtn
-	.loh AdrpAdd	Lloh46, Lloh47
-	.loh AdrpAdd	Lloh44, Lloh45
-	.loh AdrpAdd	Lloh42, Lloh43
+	.loh AdrpAdd	Lloh22, Lloh23
+	.loh AdrpAdd	Lloh20, Lloh21
+	.loh AdrpAdd	Lloh18, Lloh19
 	.cfi_endproc
                                         ; -- End function
 	.section	__TEXT,__cstring,cstring_literals
@@ -1049,39 +873,15 @@ l_.str.4:                               ; @.str.4
 	.asciz	"( size & (alignment - 1) ) == 0"
 
 l_.str.5:                               ; @.str.5
-	.asciz	"LOOP I = %u\n"
-
-l_.str.6:                               ; @.str.6
-	.asciz	"_iout = %p\n"
-
-l_.str.7:                               ; @.str.7
-	.asciz	"iout = %p\n"
-
-l_.str.8:                               ; @.str.8
-	.asciz	"\tLOOP K = %u\n"
-
-l_.str.9:                               ; @.str.9
-	.asciz	"\t_kv2 = %p\n"
-
-l_.str.10:                              ; @.str.10
-	.asciz	"\tkv2 = %p\n"
-
-l_.str.11:                              ; @.str.11
-	.asciz	"\tiv1[k] = %.4f\n"
-
-l_.str.12:                              ; @.str.12
-	.asciz	"\t*ikv1 = %.4f\n"
-
-l_.str.13:                              ; @.str.13
 	.asciz	"[%d] => "
 
-l_.str.14:                              ; @.str.14
+l_.str.6:                               ; @.str.6
 	.asciz	"[%d] = %.4f, "
 
-l_.str.16:                              ; @.str.16
+l_.str.8:                               ; @.str.8
 	.asciz	"sum of the %d-th row = %.4f\n"
 
-l_.str.17:                              ; @.str.17
+l_.str.9:                               ; @.str.9
 	.asciz	"sum of the %d-th column = %.4f\n"
 
 .subsections_via_symbols
