@@ -268,71 +268,55 @@ _vector2_mul:                           ; @vector2_mul
 ; %bb.0:
 	mov	x8, #0
 	mov	w9, #8000
-	add	x10, x2, x9
-	add	x11, x0, #48
-	mov	x12, x0
+	mov	w10, #7992
+	mov	x11, x0
 	b	LBB9_2
 LBB9_1:                                 ;   in Loop: Header=BB9_2 Depth=1
 	add	x8, x8, #1
 	add	x11, x11, x9
-	add	x12, x12, x9
 	cmp	x8, #1000
-	b.eq	LBB9_9
+	b.eq	LBB9_10
 LBB9_2:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB9_4 Depth 2
-                                        ;       Child Loop BB9_8 Depth 3
+                                        ;       Child Loop BB9_9 Depth 3
                                         ;       Child Loop BB9_6 Depth 3
-	mul	x13, x8, x9
-	add	x14, x0, x13
-	add	x15, x14, x9
-	add	x13, x1, x13
-	cmp	x14, x10
-	cset	w14, lo
-	cmp	x15, x2
-	cset	w15, hi
-	and	w14, w14, w15
+	mul	x14, x8, x9
+	add	x12, x0, x14
+	add	x13, x12, x9
+	add	x14, x1, x14
 	mov	w15, #1000
+	mov	x16, x2
 	b	LBB9_4
 LBB9_3:                                 ;   in Loop: Header=BB9_4 Depth=2
+	add	x16, x16, x9
 	subs	w15, w15, #1
 	b.eq	LBB9_1
 LBB9_4:                                 ;   Parent Loop BB9_2 Depth=1
                                         ; =>  This Loop Header: Depth=2
-                                        ;       Child Loop BB9_8 Depth 3
+                                        ;       Child Loop BB9_9 Depth 3
                                         ;       Child Loop BB9_6 Depth 3
-	ldr	d0, [x13]
-	cbz	w14, LBB9_7
+	ldr	d0, [x14]
+	add	x17, x16, x9
+	cmp	x12, x17
+	ccmp	x16, x13, #2, lo
+	b.lo	LBB9_8
 ; %bb.5:                                ;   in Loop: Header=BB9_4 Depth=2
-	mov	x16, #0
+	dup.2d	v1, v0[0]
+	add	x17, x16, #32
+	mov	x3, #-8000
 LBB9_6:                                 ;   Parent Loop BB9_2 Depth=1
                                         ;     Parent Loop BB9_4 Depth=2
                                         ; =>    This Inner Loop Header: Depth=3
-	lsl	x17, x16, #3
-	ldr	d1, [x2, x17]
-	ldr	d2, [x12, x17]
-	fmul	d1, d0, d1
-	fadd	d1, d2, d1
-	str	d1, [x12, x17]
-	add	x16, x16, #1
-	cmp	w16, #1000
-	b.ne	LBB9_6
-	b	LBB9_3
-LBB9_7:                                 ;   in Loop: Header=BB9_4 Depth=2
-	dup.2d	v1, v0[0]
-	mov	x16, #-8000
-LBB9_8:                                 ;   Parent Loop BB9_2 Depth=1
-                                        ;     Parent Loop BB9_4 Depth=2
-                                        ; =>    This Inner Loop Header: Depth=3
-	add	x17, x2, x16
-	ldr	q2, [x17, #8000]
-	ldr	q3, [x17, #8016]
-	ldr	q4, [x17, #8032]
-	ldr	q5, [x17, #8048]
-	add	x17, x11, x16
-	ldr	q6, [x17, #7952]
-	ldr	q7, [x17, #7968]
-	ldr	q16, [x17, #7984]
-	ldr	q17, [x17, #8000]
+	add	x4, x17, x3
+	ldr	q2, [x4, #7968]
+	ldr	q3, [x4, #7984]
+	ldr	q4, [x4, #8000]
+	ldr	q5, [x4, #8016]
+	add	x4, x11, x3
+	ldr	q6, [x4, #8000]
+	ldr	q7, [x4, #8016]
+	ldr	q16, [x4, #8032]
+	ldr	q17, [x4, #8048]
 	fmul.2d	v2, v1, v2
 	fmul.2d	v3, v1, v3
 	fmul.2d	v4, v1, v4
@@ -341,14 +325,32 @@ LBB9_8:                                 ;   Parent Loop BB9_2 Depth=1
 	fadd.2d	v3, v7, v3
 	fadd.2d	v4, v16, v4
 	fadd.2d	v5, v17, v5
-	str	q2, [x17, #7952]
-	str	q3, [x17, #7968]
-	str	q4, [x17, #7984]
-	str	q5, [x17, #8000]
-	adds	x16, x16, #64
-	b.ne	LBB9_8
+	str	q2, [x4, #8000]
+	str	q3, [x4, #8016]
+	str	q4, [x4, #8032]
+	str	q5, [x4, #8048]
+	adds	x3, x3, #64
+	b.ne	LBB9_6
+; %bb.7:                                ;   in Loop: Header=BB9_4 Depth=2
+	add	x16, x16, x10
 	b	LBB9_3
-LBB9_9:
+LBB9_8:                                 ;   in Loop: Header=BB9_4 Depth=2
+	mov	x17, #0
+	sub	x16, x16, #8
+LBB9_9:                                 ;   Parent Loop BB9_2 Depth=1
+                                        ;     Parent Loop BB9_4 Depth=2
+                                        ; =>    This Inner Loop Header: Depth=3
+	lsl	x3, x17, #3
+	ldr	d1, [x16, #8]!
+	ldr	d2, [x11, x3]
+	fmul	d1, d0, d1
+	fadd	d1, d2, d1
+	str	d1, [x11, x3]
+	add	x17, x17, #1
+	cmp	w17, #1000
+	b.ne	LBB9_9
+	b	LBB9_3
+LBB9_10:
 	ret
 	.cfi_endproc
                                         ; -- End function

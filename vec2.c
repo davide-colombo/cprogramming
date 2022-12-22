@@ -190,10 +190,10 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 		number_t *iout	= &out[i][0];
 		number_t *iv1	= &v1[i][0];
 
+		number_t *kv2	= &v2[0][0];
 		uint32_t kiter = NCOLS;
 		while(1){
 			number_t ikv1	= *iv1;
-			number_t *kv2	= &v2[0][0];
 			number_t *iiout	= iout;
 
 			uint32_t jiter = NCOLS;
