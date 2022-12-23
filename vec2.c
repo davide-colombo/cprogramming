@@ -203,8 +203,6 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 	uint32_t iiter_next	= NROWS - 1;
 	uint32_t knext		= 1;
 	uint32_t kiter_next	= NCOLS - 1;
-	uint32_t jnext		= 1;
-	uint32_t jiter_next	= NCOLS - 1;
 
 	while(1){
 		while(1){ /* kiter */
@@ -218,10 +216,8 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 
 				// STORE
 				iout[j]	= ijout + mul;
-				j		= jnext;
-				jiter	= jiter_next;
-				jnext		+= 1;
-				jiter_next	-= 1;
+				j += 1;
+				jiter -= 1;
 
 				// TEST
 				if(jiter == 0){ break; }
@@ -230,8 +226,6 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 			// RESET J
 			j			= 0;
 			jiter		= NCOLS;
-			jnext		= 1;
-			jiter_next	= NCOLS - 1;
 
 			// UPDATE K
 			ikv1	= iv1[knext];
