@@ -183,6 +183,24 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 }
 
 /*
+ * Swap "i" and "k" loop to decrease the number of cache misses
+ */
+void vector2_mul1(vector2_t out, vector2_t v1, vector2_t v2){
+	for(uint32_t k = 0; k < NCOLS; k++){
+		number_t *kv2	= &v2[k][0];
+		for(uint32_t i = 0; i < NROWS; i++){
+		number_t *iout	= &out[i][k];
+		number_t ikv1	= v1[i][k];
+			for(uint32_t j = 0; j < NCOLS; j++){
+				number_t kjv2	= kv2[j];
+				number_t mul	= ikv1 * kjv2;
+				iout[j] += mul;
+			}
+		}
+	}
+}
+
+/*
  * Multiply "v1" by "v2" and return the result in "out"
  */
 void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){

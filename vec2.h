@@ -70,6 +70,12 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2);
 void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2);
 
 /*
+ * Multiply 2 two-dimensional vectors and return the result in "out".
+ * This version puts the loop over "k" induction variable outside.
+ */
+void vector2_mul1(vector2_t out, vector2_t v1, vector2_t v2);
+
+/*
  * Multiply "v1" by the transpose of "v2" vectors and return the result in 
  * "out"
  */

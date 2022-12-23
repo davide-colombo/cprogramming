@@ -195,7 +195,7 @@ Lloh15:
 	mov	x0, x22
 	mov	x1, x20
 	mov	x2, x19
-	bl	_vector2_mul
+	bl	_vector2_mul1
 	bl	_clock
 	sub	x8, x0, x23
 	ucvtf	d0, x8

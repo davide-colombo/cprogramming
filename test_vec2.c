@@ -115,7 +115,7 @@ int main(int argc, char *argv[]){
 	/* MULTIPLICATION OPTIMIZED */
 	vector2_zero_init_vector2(mul);
 	start = clock();
-	vector2_mul(&mul[0][0], &v1[0][0], &v2[0][0]);
+	vector2_mul1(&mul[0][0], &v1[0][0], &v2[0][0]);
 	end = clock();
 	e = end - start;
 	t = e * icps;
