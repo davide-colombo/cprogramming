@@ -186,33 +186,36 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
  * Multiply "v1" by "v2" and return the result in "out"
  */
 void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
-	number_t *iout	= &out[0][0];
-	number_t *iv1	= &v1[0][0];
-	number_t ikv1	= iv1[0];
-	number_t *kv2	= &v2[0][0];
+	number_t *iout		= &out[0][0];
+	number_t *iv1		= &v1[0][0];
+	number_t *iv1_next	= &v1[0][1];
+	number_t *kv2		= &v2[0][0];
+	number_t *kv2_next	= &v2[1][0];
 
 	// LOAD
 	uint32_t i = 0;
+	uint32_t inext = 1;
 	uint32_t iiter = NROWS;
+	uint32_t iiter_next = NROWS - 1;
+
 	uint32_t k = 0;
+	uint32_t knext = 1;
 	uint32_t kiter = NCOLS;
+	uint32_t kiter_next = NCOLS - 1;
+
 	uint32_t j = 0;
 	uint32_t jiter = NCOLS;
 
-	uint32_t inext = 1;
-	uint32_t iiter_next = NCOLS - 1;
-	uint32_t knext = 1;
-	uint32_t kiter_next = NCOLS - 1;
-
-	while(1){
+	while(1){ /* iiter */
 		while(1){ /* kiter */
 			while(1){ /* jiter */
 				// LOAD
 				number_t kjv2		= kv2[j];
 				number_t ijout		= iout[j];
+				number_t iikv1		= *iv1;			// TODO: hoist out
 
 				// UPDATE
-				number_t mul		= ikv1 * kjv2;
+				number_t mul		= iikv1 * kjv2;
 
 				// STORE
 				iout[j]	= ijout + mul;
@@ -228,10 +231,13 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 			jiter		= NCOLS;
 
 			// UPDATE K
-			ikv1		= iv1[knext];
-			kv2			= &v2[knext][0];
-			k			= knext;
-			kiter		= kiter_next;
+			iv1			= iv1_next;				/* &v1[i][k+1] */
+			kv2			= kv2_next;				/* &v2[k+1][0] */
+			kv2_next	+= NCOLS;				/* &v2[knext][0] */
+			iv1_next	+= 1;					/* &v1[i][knext] */
+
+			k			= knext;				/* k = k + 1 */
+			kiter		= kiter_next;			/* kiter -= 1 */
 			knext		+= 1;
 			kiter_next	-= 1;
 
@@ -240,15 +246,19 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 
 		// RESET K
 		k			= 0;
-		kiter		= NCOLS;
 		knext		= 1;
+		kiter		= NCOLS;
 		kiter_next	= NCOLS - 1;
-		
+		kv2			= &v2[0][0];				/* &v2[0][0] */
+		kv2_next	= &v2[1][0];				/* &v2[1][0] */
+
 		// UPDATE I
-		iout		= &out[inext][0];
-		iv1			= &v1[inext][0];
-		i			= inext;
-		iiter		= iiter_next;
+		iout		= &out[inext][0];			/* &out[i+1][0] */
+		iv1			= &v1[inext][0];			/* &v1[i+1][0] */
+		iv1_next	= &v1[inext][1];			/* &v1[i+1][1] */
+
+		i			= inext;					/* i = i + 1 */
+		iiter		= iiter_next;				/* iiter -= 1 */
 		inext		+= 1;
 		iiter_next	-= 1;
 		if(iiter == 0){ break; }
