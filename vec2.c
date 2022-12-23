@@ -187,43 +187,57 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
  */
 void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 	uint32_t iiter = NROWS;
-	number_t *iout = &out[0][0];
-	number_t *iv1 = &v1[0][0];
+	uint32_t kiter = NCOLS;
+	uint32_t jiter = NCOLS;
+
+	uint32_t kiter_next = kiter - 1;
+
+	uint32_t jmask;
+	uint32_t kmask;
+
+	number_t *iout	= &out[0][0];
+	number_t *iv1	= &v1[0][0];
+	number_t *kv2	= &v2[0][0];
+
+	number_t *iiout	= iout;
+	number_t *ikv1	= iv1;
+	number_t *kkv2	= kv2;
+
 	while(1){
-		number_t *kv2	= &v2[0][0];
-		number_t *ikv1 = iv1;
-		uint32_t kiter = NCOLS;
-		while(1){
-			number_t *iiout	= iout;
-			number_t *kkv2 = kv2;
-			uint32_t jiter = NCOLS;
-			while(1){
-				// LOAD
-				number_t iikv1	= *ikv1;
-				number_t kjv2	= *kkv2;
-				number_t kiout	= *iiout;
+		number_t iikv1	= *ikv1;			/* v1[i][k] */
+		number_t kjv2	= *kkv2;			/* v2[k][j] */
+		number_t kiout	= *iiout;			/* out[i][k] */
+		number_t mul	= iikv1 * kjv2;
+		*iiout			= kiout + mul;
 
-				// UPDATE
-				number_t mul	= iikv1 * kjv2;
+		/* J MASK */
+		jmask = (uint32_t)((int32_t)(1 - jiter) >> 31);
 
-				// STORE
-				*iiout = kiout + mul;
+		number_t *kkv2_next = kkv2 + 1;
+		kkv2 = (jmask & kkv2_next) | (~jmask & kv2);
 
-				// TEST
-				if(jiter == 1){ break; }
+		number_t *iiout_next = iiout + 1;
+		iiout = (jmask & iiout_next) | (~jmask & iout);
 
-				kkv2++;
-				iiout++;
-				jiter -= 1;
-			} /* jiter */
+		uint32_t jiter_next = jiter - 1;
+		jiter = (jmask & jiter_next) | (~jmask & NCOLS);
 
-			if(kiter == 1){ break; }
+		/* K MASK */
+		kiter = (jmask & kiter) | (~jmask & kiter_next);
 
-			ikv1++;
-			kv2		+= NCOLS;
-			kiter	-= 1;
-		} /* kiter*/
-	
+		if((kiter ^ kiter_next) == 0){
+			kmask = (uint32_t)((int32_t)(1 - kiter) >> 31);
+
+			kiter = (kmask & kiter) | (~kmask & NCOLS);
+			kiter_next = (kmask & (kiter_next - 1)) | (~kmask & (NCOLS - 1));
+
+			number_t *ikv1_next = ikv1 + 1;
+			ikv1 = (kmask & ikv1_next) | (~kmask & iv1);
+
+			number_t *kv2_next = kv2 + NCOLS;
+			kv2 = (kmask & kv2_next) | (~kmask & (&v2[0][0]));
+		}
+
 	if(iiter == 1){break; }
 	iout += NCOLS;
 	iv1 += NCOLS;
