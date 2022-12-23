@@ -195,7 +195,7 @@ Lloh15:
 	mov	x0, x22
 	mov	x1, x20
 	mov	x2, x19
-	bl	_vector2_mul1
+	bl	_vector2_mul
 	bl	_clock
 	sub	x8, x0, x23
 	ucvtf	d0, x8
@@ -461,7 +461,7 @@ l_.str.12:                              ; @.str.12
 	.asciz	"mul localized: %.20f\n"
 
 l_.str.13:                              ; @.str.13
-	.asciz	"mul: %.20f\n"
+	.asciz	"mul optim: %.20f\n"
 
 l_.str.14:                              ; @.str.14
 	.asciz	"Cannot allocate memory for rsum object\n"

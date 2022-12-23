@@ -72,6 +72,7 @@ int main(int argc, char *argv[]){
 	t = e * icps;
 	printf("add: %.20f\n", t);
 	//vector2_print_vector2_data(&sum[0][0]);
+	vector2_free_vector2(&sum);
 
 	/* TRANSPOSE */
 	vector2_t *tv2 = vector2_alloc_vector2_aligned(128);
@@ -103,9 +104,8 @@ int main(int argc, char *argv[]){
 
 	/* MULTIPLICATION LOCALIZED */
 	vector2_zero_init_vector2(mul);
-	uint32_t stride = 128 / sizeof(number_t);
 	start = clock();
-	vector2_mul_localized(&mul[0][0], &v1[0][0], &v2[0][0], stride);
+	vector2_mul_localized(&mul[0][0], &v1[0][0], &v2[0][0], BLS);
 	end = clock();
 	e = end - start;
 	t = e * icps;
@@ -115,12 +115,13 @@ int main(int argc, char *argv[]){
 	/* MULTIPLICATION OPTIMIZED */
 	vector2_zero_init_vector2(mul);
 	start = clock();
-	vector2_mul1(&mul[0][0], &v1[0][0], &v2[0][0]);
+	vector2_mul(&mul[0][0], &v1[0][0], &v2[0][0]);
 	end = clock();
 	e = end - start;
 	t = e * icps;
-	printf("mul: %.20f\n", t);
+	printf("mul optim: %.20f\n", t);
 //	vector2_print_vector2_data(&mul[0][0]);
+	vector2_free_vector2(&mul);
 
 	/* SUM OVER ROWS */
 	rowsum1_t *rsum = vector2_alloc_rowsum1();

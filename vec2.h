@@ -2,8 +2,14 @@
 #ifndef MATRIX_H_INCLUDED
 #define MATRIX_H_INCLUDED
 
-#define NROWS 1000
-#define NCOLS 1000
+#define NROWS 4096
+#define NCOLS 4096
+
+/* The cache line size in bytes */
+#define CLS		(uint32_t) 128
+
+/* The number of items of type "number_t" that fits in a cache line */
+#define BLS		(uint32_t) ( CLS / sizeof(number_t) )
 
 /*
  * Numeric data type
@@ -73,7 +79,7 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2);
  * Multiply 2 two-dimensional vectors and return the result in "out".
  * This version puts the loop over "k" induction variable outside.
  */
-void vector2_mul1(vector2_t out, vector2_t v1, vector2_t v2);
+void vector2_mul1(vector2_t out, vector2_t v1, vector2_t v2, uint32_t stride);
 
 /*
  * Multiply "v1" by the transpose of "v2" vectors and return the result in 

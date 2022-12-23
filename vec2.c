@@ -185,16 +185,32 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
 /*
  * Swap "i" and "k" loop to decrease the number of cache misses
  */
-void vector2_mul1(vector2_t out, vector2_t v1, vector2_t v2){
-	for(uint32_t k = 0; k < NCOLS; k++){
-		number_t *kv2	= &v2[k][0];
-		for(uint32_t i = 0; i < NROWS; i++){
-		number_t *iout	= &out[i][k];
-		number_t ikv1	= v1[i][k];
-			for(uint32_t j = 0; j < NCOLS; j++){
-				number_t kjv2	= kv2[j];
-				number_t mul	= ikv1 * kjv2;
-				iout[j] += mul;
+void vector2_mul1(vector2_t out, vector2_t v1, vector2_t v2, uint32_t stride){
+
+	/* INTER-BLOCK MULTIPLICATION */
+	for(uint32_t k = 0; k < NCOLS; k+=stride){
+		for(uint32_t i = 0; i < NROWS; i+=stride){
+//			number_t (*iout)[stride][stride] = &out[i][k];
+//			number_t (*ikv1)[stride][stride] = &v1[i][k];
+			for(uint32_t j = 0; j < NCOLS; j+=stride){
+				//number_t (*kv2)[stride][stride] = &v2[k][j];
+
+				number_t *iout	= &out[i][k];
+				number_t *ikv1	= &v1[i][k];
+				/* INTRA-BLOCK MULTIPLICATION */
+				for(uint32_t i2 = 0; i2 < stride; i2++, iout+=NCOLS, ikv1+=NCOLS){
+					number_t *kv2 = &v2[k][j];
+					for(uint32_t k2 = 0; k2 < stride; k2++, kv2+=NCOLS){
+						for(uint32_t j2 = 0; j2 < stride; j2++){
+							number_t rmul2	= kv2[j2];
+							number_t rmul1	= ikv1[k2];
+							number_t rres	= iout[j2];
+							number_t mul	= rmul1 * rmul2;
+							number_t sum	= rres + mul;
+							iout[j2] = sum;
+						}
+					}
+				}
 			}
 		}
 	}
