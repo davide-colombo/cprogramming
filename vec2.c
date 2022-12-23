@@ -186,33 +186,80 @@ void vector2_add(vector2_t out, vector2_t v1, vector2_t v2){
  * Multiply "v1" by "v2" and return the result in "out"
  */
 void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
-	for(uint32_t i = 0; i < NROWS; i++){
-		number_t *iout	= &out[i][0];
-		number_t *iv1	= &v1[i][0];
-		for(uint32_t k = 0; k < NCOLS; k++){
-			number_t ikv1	= iv1[k];
-			number_t *kv2	= &v2[k][0];
-			uint32_t j = 0;
-			uint32_t jiter = NCOLS-1;
-			while(1){
+	number_t *iout	= &out[0][0];
+	number_t *iv1	= &v1[0][0];
+	number_t ikv1	= iv1[0];
+	number_t *kv2	= &v2[0][0];
+
+	// LOAD
+	uint32_t i = 0;
+	uint32_t iiter = NROWS;
+	uint32_t k = 0;
+	uint32_t kiter = NCOLS;
+	uint32_t j = 0;
+	uint32_t jiter = NCOLS;
+
+	uint32_t inext		= 1;
+	uint32_t iiter_next	= NROWS - 1;
+	uint32_t knext		= 1;
+	uint32_t kiter_next	= NCOLS - 1;
+	uint32_t jnext		= 1;
+	uint32_t jiter_next	= NCOLS - 1;
+
+	while(1){
+		while(1){ /* kiter */
+			while(1){ /* jiter */
 				// LOAD
-				number_t kjv2	= kv2[j];
-				number_t ijout	= iout[j];
+				number_t kjv2		= kv2[j];
+				number_t ijout		= iout[j];
 
 				// UPDATE
-				number_t mul	= ikv1 * kjv2;
+				number_t mul		= ikv1 * kjv2;
 
 				// STORE
-				iout[j] = ijout + mul;
+				iout[j]	= ijout + mul;
+				j		= jnext;
+				jiter	= jiter_next;
+				jnext		+= 1;
+				jiter_next	-= 1;
 
 				// TEST
 				if(jiter == 0){ break; }
+			} /* jiter */
 
-				jiter -= 1;
-				j += 1;
-			}
-		}
-	}
+			// RESET J
+			j			= 0;
+			jiter		= NCOLS;
+			jnext		= 1;
+			jiter_next	= NCOLS - 1;
+
+			// UPDATE K
+			ikv1	= iv1[knext];
+			kv2		= &v2[knext][0];
+			k		= knext;
+			kiter	= kiter_next;
+			knext		+= 1;
+			kiter_next	-= 1;
+
+			if(kiter == 0){ break; }
+		} /* kiter */
+
+		// RESET K
+		k			= 0;
+		kiter		= NCOLS;
+		knext		= 1;
+		kiter_next	= NCOLS - 1;
+
+		// UPDATE I
+		iout		= &out[inext][0];
+		iv1			= &v1[inext][0];
+		i			= inext;
+		iiter		= iiter_next;
+		inext		+= 1;
+		iiter_next	-= 1;
+
+		if(iiter == 0){ break; }
+	} /* iiter */
 }
 
 /*

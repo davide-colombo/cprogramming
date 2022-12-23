@@ -1,7 +1,7 @@
 # _*_ MakeFile _*_
 
 CC := clang
-OOPTIM := -O2
+OOPTIM := -O3
 INCDIRS := -I.
 CFLAGS := -std=c99 -fstrict-aliasing $(OOPTIM) $(INCDIRS)
 

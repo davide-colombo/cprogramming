@@ -225,18 +225,24 @@ LBB8_2:                                 ; =>This Loop Header: Depth=1
 LBB8_5:                                 ;   Parent Loop BB8_2 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
 	add	x15, x12, x14
-	add	x15, x15, x10
-	ld4.2d	{ v0, v1, v2, v3 }, [x15]
+	ldr	q0, [x15, #8032]
+	ldr	q1, [x15, #8048]
+	ldr	q2, [x15, #8000]
+	ldr	q3, [x15, #8016]
 	add	x15, x11, x14
-	add	x15, x15, x10
-	ld4.2d	{ v4, v5, v6, v7 }, [x15]
-	fadd.2d	v16, v0, v4
-	fadd.2d	v17, v1, v5
-	fadd.2d	v18, v2, v6
-	fadd.2d	v19, v3, v7
+	ldr	q4, [x15, #8032]
+	ldr	q5, [x15, #8048]
+	ldr	q6, [x15, #8000]
+	ldr	q7, [x15, #8016]
+	fadd.2d	v3, v3, v7
+	fadd.2d	v2, v2, v6
+	fadd.2d	v1, v1, v5
+	fadd.2d	v0, v0, v4
 	add	x15, x13, x14
-	add	x15, x15, x10
-	st4.2d	{ v16, v17, v18, v19 }, [x15]
+	str	q0, [x15, #8032]
+	str	q1, [x15, #8048]
+	str	q2, [x15, #8000]
+	str	q3, [x15, #8016]
 	adds	x14, x14, #64
 	b.ne	LBB8_5
 	b	LBB8_1
@@ -267,86 +273,90 @@ _vector2_mul:                           ; @vector2_mul
 	.cfi_startproc
 ; %bb.0:
 	mov	x8, #0
-	add	x9, x2, #32
+	ldr	d0, [x1]
+	mov	w14, #999
+	mov	w9, #1
 	mov	w10, #8000
 	mov	x11, x0
+	mov	x16, x2
+	mov	x12, x1
 	b	LBB9_2
 LBB9_1:                                 ;   in Loop: Header=BB9_2 Depth=1
-	add	x8, x8, #1
+	madd	x12, x9, x10, x1
+	add	x9, x9, #1
+	sub	w14, w13, #1
 	add	x11, x11, x10
-	cmp	x8, #1000
-	b.eq	LBB9_9
+	cbz	w13, LBB9_9
 LBB9_2:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB9_4 Depth 2
                                         ;       Child Loop BB9_8 Depth 3
                                         ;       Child Loop BB9_6 Depth 3
-	mov	x12, #0
-	madd	x13, x8, x10, x0
-	add	x14, x13, x10
-	mov	x15, x2
-	mov	x16, x9
+	mov	x13, x14
+	madd	x14, x8, x10, x0
+	add	x8, x8, #1
+	add	x15, x14, x10
+	mov	w4, #999
+	mov	w17, #1
 	b	LBB9_4
 LBB9_3:                                 ;   in Loop: Header=BB9_4 Depth=2
-	add	x12, x12, #1
-	add	x16, x16, x10
-	add	x15, x15, x10
-	cmp	x12, #1000
-	b.eq	LBB9_1
+	ldr	d0, [x12, x17, lsl #3]
+	madd	x16, x17, x10, x2
+	add	x17, x17, #1
+	sub	w4, w3, #1
+	cbz	w3, LBB9_1
 LBB9_4:                                 ;   Parent Loop BB9_2 Depth=1
                                         ; =>  This Loop Header: Depth=2
                                         ;       Child Loop BB9_8 Depth 3
                                         ;       Child Loop BB9_6 Depth 3
-	madd	x17, x8, x10, x1
-	ldr	d0, [x17, x12, lsl #3]
-	madd	x17, x12, x10, x2
-	add	x3, x17, x10
-	cmp	x13, x3
-	ccmp	x17, x14, #2, lo
+	mov	x3, x4
+	add	x4, x16, x10
+	cmp	x14, x4
+	ccmp	x16, x15, #2, lo
 	b.lo	LBB9_7
 ; %bb.5:                                ;   in Loop: Header=BB9_4 Depth=2
-	dup.2d	v1, v0[0]
-	mov	x17, #-8000
+	add	x16, x16, #32
+	mov	x4, #-8000
 LBB9_6:                                 ;   Parent Loop BB9_2 Depth=1
                                         ;     Parent Loop BB9_4 Depth=2
                                         ; =>    This Inner Loop Header: Depth=3
-	add	x3, x16, x17
-	ldr	q2, [x3, #7968]
-	ldr	q3, [x3, #7984]
-	ldr	q4, [x3, #8000]
-	ldr	q5, [x3, #8016]
-	add	x3, x11, x17
-	ldr	q6, [x3, #8000]
-	ldr	q7, [x3, #8016]
-	ldr	q16, [x3, #8032]
-	ldr	q17, [x3, #8048]
-	fmul.2d	v2, v1, v2
-	fmul.2d	v3, v1, v3
-	fmul.2d	v4, v1, v4
-	fmul.2d	v5, v5, v0[0]
+	add	x5, x16, x4
+	ldr	q1, [x5, #7968]
+	ldr	q2, [x5, #7984]
+	ldr	q3, [x5, #8000]
+	ldr	q4, [x5, #8016]
+	add	x5, x11, x4
+	ldr	q5, [x5, #8000]
+	ldr	q6, [x5, #8016]
+	ldr	q7, [x5, #8032]
+	ldr	q16, [x5, #8048]
+	fmul.2d	v1, v1, v0[0]
+	fmul.2d	v2, v2, v0[0]
+	fmul.2d	v3, v3, v0[0]
+	fmul.2d	v4, v4, v0[0]
+	fadd.2d	v1, v5, v1
 	fadd.2d	v2, v6, v2
 	fadd.2d	v3, v7, v3
 	fadd.2d	v4, v16, v4
-	fadd.2d	v5, v17, v5
-	str	q2, [x3, #8000]
-	str	q3, [x3, #8016]
-	str	q4, [x3, #8032]
-	str	q5, [x3, #8048]
-	adds	x17, x17, #64
+	str	q1, [x5, #8000]
+	str	q2, [x5, #8016]
+	str	q3, [x5, #8032]
+	str	q4, [x5, #8048]
+	adds	x4, x4, #64
 	b.ne	LBB9_6
 	b	LBB9_3
 LBB9_7:                                 ;   in Loop: Header=BB9_4 Depth=2
-	mov	x17, #0
+	mov	x4, #0
 LBB9_8:                                 ;   Parent Loop BB9_2 Depth=1
                                         ;     Parent Loop BB9_4 Depth=2
                                         ; =>    This Inner Loop Header: Depth=3
-	lsl	x3, x17, #3
-	ldr	d1, [x15, x3]
-	ldr	d2, [x11, x3]
+	lsl	x5, x4, #3
+	ldr	d1, [x16, x5]
+	ldr	d2, [x11, x5]
 	fmul	d1, d0, d1
 	fadd	d1, d2, d1
-	str	d1, [x11, x3]
-	add	x17, x17, #1
-	cmp	w17, #1000
+	str	d1, [x11, x5]
+	add	x4, x4, #1
+	cmp	w4, #1000
 	b.ne	LBB9_8
 	b	LBB9_3
 LBB9_9:
@@ -432,14 +442,14 @@ LBB11_3:                                ;   Parent Loop BB11_1 Depth=1
 _vector2_mul_localized:                 ; @vector2_mul_localized
 	.cfi_startproc
 ; %bb.0:
-	sub	sp, sp, #128
-	stp	x28, x27, [sp, #32]             ; 16-byte Folded Spill
-	stp	x26, x25, [sp, #48]             ; 16-byte Folded Spill
-	stp	x24, x23, [sp, #64]             ; 16-byte Folded Spill
-	stp	x22, x21, [sp, #80]             ; 16-byte Folded Spill
-	stp	x20, x19, [sp, #96]             ; 16-byte Folded Spill
-	stp	x29, x30, [sp, #112]            ; 16-byte Folded Spill
-	.cfi_def_cfa_offset 128
+	sub	sp, sp, #176
+	stp	x28, x27, [sp, #80]             ; 16-byte Folded Spill
+	stp	x26, x25, [sp, #96]             ; 16-byte Folded Spill
+	stp	x24, x23, [sp, #112]            ; 16-byte Folded Spill
+	stp	x22, x21, [sp, #128]            ; 16-byte Folded Spill
+	stp	x20, x19, [sp, #144]            ; 16-byte Folded Spill
+	stp	x29, x30, [sp, #160]            ; 16-byte Folded Spill
+	.cfi_def_cfa_offset 176
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
 	.cfi_offset w19, -24
@@ -452,205 +462,294 @@ _vector2_mul_localized:                 ; @vector2_mul_localized
 	.cfi_offset w26, -80
 	.cfi_offset w27, -88
 	.cfi_offset w28, -96
+	str	x0, [sp, #72]                   ; 8-byte Folded Spill
+	cbz	w3, LBB12_2
+; %bb.1:
 	mov	w13, #0
-	mov	w10, #0
+	mov	w8, #0
 	mov	w9, w3
-	and	x8, x9, #0xfffffff8
+	and	x21, x9, #0xfffffff8
 	lsl	x11, x9, #3
-	and	x11, x11, #0x7ffffffc0
-	mov	w12, #8000
-	b	LBB12_2
-LBB12_1:                                ;   in Loop: Header=BB12_2 Depth=1
-	ldr	x10, [sp, #16]                  ; 8-byte Folded Reload
-	add	w10, w10, w3
-	ldr	w13, [sp]                       ; 4-byte Folded Reload
-	add	w13, w13, #1
-	cmp	w10, #1000
-	b.hs	LBB12_19
-LBB12_2:                                ; =>This Loop Header: Depth=1
-                                        ;     Child Loop BB12_4 Depth 2
-                                        ;       Child Loop BB12_6 Depth 3
-                                        ;         Child Loop BB12_9 Depth 4
-                                        ;           Child Loop BB12_11 Depth 5
-                                        ;             Child Loop BB12_16 Depth 6
-                                        ;             Child Loop BB12_18 Depth 6
-	mov	w14, #0
-	mov	w6, #0
-	str	w13, [sp]                       ; 4-byte Folded Spill
-	mul	w15, w13, w3
-	mov	w10, w10
+	and	x12, x11, #0x7ffffffc0
+	add	x10, x2, #24
 	str	x10, [sp, #16]                  ; 8-byte Folded Spill
+	mov	w14, #8000
 	b	LBB12_4
-LBB12_3:                                ;   in Loop: Header=BB12_4 Depth=2
-	ldr	x10, [sp, #24]                  ; 8-byte Folded Reload
-	add	w6, w10, w3
-	ldr	w14, [sp, #4]                   ; 4-byte Folded Reload
-	add	w14, w14, #1
-	cmp	w6, #1000
-	b.hs	LBB12_1
-LBB12_4:                                ;   Parent Loop BB12_2 Depth=1
-                                        ; =>  This Loop Header: Depth=2
-                                        ;       Child Loop BB12_6 Depth 3
-                                        ;         Child Loop BB12_9 Depth 4
-                                        ;           Child Loop BB12_11 Depth 5
-                                        ;             Child Loop BB12_16 Depth 6
-                                        ;             Child Loop BB12_18 Depth 6
-	mov	w16, #0
+LBB12_2:                                ; =>This Inner Loop Header: Depth=1
+	b	LBB12_2
+LBB12_3:                                ;   in Loop: Header=BB12_4 Depth=1
+	ldr	x8, [sp, #48]                   ; 8-byte Folded Reload
+	add	w8, w8, w3
+	ldr	w13, [sp, #12]                  ; 4-byte Folded Reload
+	add	w13, w13, #1
+	cmp	w8, #1000
+	b.hs	LBB12_28
+LBB12_4:                                ; =>This Loop Header: Depth=1
+                                        ;     Child Loop BB12_6 Depth 2
+                                        ;       Child Loop BB12_8 Depth 3
+                                        ;         Child Loop BB12_10 Depth 4
+                                        ;           Child Loop BB12_22 Depth 5
+                                        ;             Child Loop BB12_25 Depth 6
+                                        ;             Child Loop BB12_27 Depth 6
+                                        ;           Child Loop BB12_13 Depth 5
+	mov	w15, #0
 	mov	w10, #0
-	str	w14, [sp, #4]                   ; 4-byte Folded Spill
-	mul	w17, w14, w3
-	add	x5, x9, x17
-	mov	w13, w6
-	str	x13, [sp, #24]                  ; 8-byte Folded Spill
-	ldr	x13, [sp, #16]                  ; 8-byte Folded Reload
-	madd	x13, x13, x12, x0
-	add	x13, x13, w6, uxtw #3
-	str	x13, [sp, #8]                   ; 8-byte Folded Spill
+	str	w13, [sp, #12]                  ; 4-byte Folded Spill
+	mul	w0, w13, w3
+	mov	w8, w8
+	str	x8, [sp, #48]                   ; 8-byte Folded Spill
 	b	LBB12_6
-LBB12_5:                                ;   in Loop: Header=BB12_6 Depth=3
-	add	w10, w7, w3
-	add	w16, w16, #1
+LBB12_5:                                ;   in Loop: Header=BB12_6 Depth=2
+	ldr	x8, [sp, #56]                   ; 8-byte Folded Reload
+	add	w10, w8, w3
+	ldr	w15, [sp, #28]                  ; 4-byte Folded Reload
+	add	w15, w15, #1
 	cmp	w10, #1000
 	b.hs	LBB12_3
-LBB12_6:                                ;   Parent Loop BB12_2 Depth=1
-                                        ;     Parent Loop BB12_4 Depth=2
+LBB12_6:                                ;   Parent Loop BB12_4 Depth=1
+                                        ; =>  This Loop Header: Depth=2
+                                        ;       Child Loop BB12_8 Depth 3
+                                        ;         Child Loop BB12_10 Depth 4
+                                        ;           Child Loop BB12_22 Depth 5
+                                        ;             Child Loop BB12_25 Depth 6
+                                        ;             Child Loop BB12_27 Depth 6
+                                        ;           Child Loop BB12_13 Depth 5
+	mov	w13, #0
+	mov	w17, #0
+	mov	w16, w10
+	str	w15, [sp, #28]                  ; 4-byte Folded Spill
+	mul	w7, w15, w3
+	add	x19, x9, x7
+	ldr	x8, [sp, #72]                   ; 8-byte Folded Reload
+	ldr	x10, [sp, #48]                  ; 8-byte Folded Reload
+	madd	x8, x10, x14, x8
+	str	x16, [sp, #56]                  ; 8-byte Folded Spill
+	lsl	x10, x16, #3
+	add	x8, x8, x10
+	str	x8, [sp, #40]                   ; 8-byte Folded Spill
+	ldr	x8, [sp, #16]                   ; 8-byte Folded Reload
+	add	x8, x8, x10
+	str	x8, [sp, #32]                   ; 8-byte Folded Spill
+	b	LBB12_8
+LBB12_7:                                ;   in Loop: Header=BB12_8 Depth=3
+	ldp	w17, w13, [sp, #64]             ; 8-byte Folded Reload
+	add	w17, w17, w3
+	add	w13, w13, #1
+	cmp	w17, #1000
+	b.hs	LBB12_5
+LBB12_8:                                ;   Parent Loop BB12_4 Depth=1
+                                        ;     Parent Loop BB12_6 Depth=2
                                         ; =>    This Loop Header: Depth=3
-                                        ;         Child Loop BB12_9 Depth 4
-                                        ;           Child Loop BB12_11 Depth 5
-                                        ;             Child Loop BB12_16 Depth 6
-                                        ;             Child Loop BB12_18 Depth 6
-	mov	w7, w10
-	cbz	w3, LBB12_5
-; %bb.7:                                ;   in Loop: Header=BB12_6 Depth=3
-	mov	x19, #0
-	mul	w20, w16, w3
-	add	x21, x20, #1
-	umaddl	x10, w10, w12, x2
-	ldr	x13, [sp, #24]                  ; 8-byte Folded Reload
-	add	x22, x10, x13, lsl #3
-	ldp	x24, x10, [sp, #8]              ; 16-byte Folded Reload
-	madd	x10, x10, x12, x1
-	add	x23, x10, x7, lsl #3
-	b	LBB12_9
-LBB12_8:                                ;   in Loop: Header=BB12_9 Depth=4
-	add	x19, x19, #1
-	add	x24, x24, x12
-	add	x23, x23, x12
-	cmp	w19, w3
-	b.eq	LBB12_5
-LBB12_9:                                ;   Parent Loop BB12_2 Depth=1
-                                        ;     Parent Loop BB12_4 Depth=2
-                                        ;       Parent Loop BB12_6 Depth=3
+                                        ;         Child Loop BB12_10 Depth 4
+                                        ;           Child Loop BB12_22 Depth 5
+                                        ;             Child Loop BB12_25 Depth 6
+                                        ;             Child Loop BB12_27 Depth 6
+                                        ;           Child Loop BB12_13 Depth 5
+	mov	x22, #0
+	ldp	x8, x28, [sp, #32]              ; 16-byte Folded Reload
+	umaddl	x23, w17, w14, x8
+	stp	w17, w13, [sp, #64]             ; 8-byte Folded Spill
+	mul	w24, w13, w3
+	add	x25, x24, #1
+	umaddl	x8, w17, w14, x2
+	ldr	x10, [sp, #56]                  ; 8-byte Folded Reload
+	add	x16, x8, x10, lsl #3
+	ldr	x8, [sp, #48]                   ; 8-byte Folded Reload
+	madd	x8, x8, x14, x1
+	add	x27, x8, w17, uxtw #3
+	b	LBB12_10
+LBB12_9:                                ;   in Loop: Header=BB12_10 Depth=4
+	add	x22, x22, #1
+	add	x28, x28, x14
+	add	x27, x27, x14
+	cmp	w22, w3
+	b.eq	LBB12_7
+LBB12_10:                               ;   Parent Loop BB12_4 Depth=1
+                                        ;     Parent Loop BB12_6 Depth=2
+                                        ;       Parent Loop BB12_8 Depth=3
                                         ; =>      This Loop Header: Depth=4
-                                        ;           Child Loop BB12_11 Depth 5
-                                        ;             Child Loop BB12_16 Depth 6
-                                        ;             Child Loop BB12_18 Depth 6
-	mov	x25, #0
-	add	x26, x19, x15
-	madd	x10, x26, x12, x0
-	add	x27, x10, x17, lsl #3
-	add	x28, x10, x5, lsl #3
-	mov	x30, x22
-	b	LBB12_11
-LBB12_10:                               ;   in Loop: Header=BB12_11 Depth=5
-	add	x25, x25, #1
-	add	x30, x30, x12
-	cmp	x25, x9
-	b.eq	LBB12_8
-LBB12_11:                               ;   Parent Loop BB12_2 Depth=1
-                                        ;     Parent Loop BB12_4 Depth=2
-                                        ;       Parent Loop BB12_6 Depth=3
-                                        ;         Parent Loop BB12_9 Depth=4
-                                        ; =>        This Loop Header: Depth=5
-                                        ;             Child Loop BB12_16 Depth 6
-                                        ;             Child Loop BB12_18 Depth 6
+                                        ;           Child Loop BB12_22 Depth 5
+                                        ;             Child Loop BB12_25 Depth 6
+                                        ;             Child Loop BB12_27 Depth 6
+                                        ;           Child Loop BB12_13 Depth 5
 	cmp	w3, #8
-	b.hs	LBB12_13
-; %bb.12:                               ;   in Loop: Header=BB12_11 Depth=5
+	b.hs	LBB12_20
+; %bb.11:                               ;   in Loop: Header=BB12_10 Depth=4
+	mov	x8, #0
+	mov	x13, x23
+	b	LBB12_13
+LBB12_12:                               ;   in Loop: Header=BB12_13 Depth=5
+	add	x8, x8, #8
+	add	x13, x13, x14
+	cmp	x11, x8
+	b.eq	LBB12_9
+LBB12_13:                               ;   Parent Loop BB12_4 Depth=1
+                                        ;     Parent Loop BB12_6 Depth=2
+                                        ;       Parent Loop BB12_8 Depth=3
+                                        ;         Parent Loop BB12_10 Depth=4
+                                        ; =>        This Inner Loop Header: Depth=5
+	ldr	d0, [x27, x8]
+	ldur	d1, [x13, #-24]
+	fmul	d0, d0, d1
+	ldr	d1, [x28]
+	fadd	d0, d1, d0
+	str	d0, [x28]
+	cmp	w3, #1
+	b.eq	LBB12_12
+; %bb.14:                               ;   in Loop: Header=BB12_13 Depth=5
+	ldr	d0, [x27, x8]
+	ldur	d1, [x13, #-16]
+	fmul	d0, d0, d1
+	ldr	d1, [x28, #8]
+	fadd	d0, d1, d0
+	str	d0, [x28, #8]
+	cmp	w3, #2
+	b.eq	LBB12_12
+; %bb.15:                               ;   in Loop: Header=BB12_13 Depth=5
+	ldr	d0, [x27, x8]
+	ldur	d1, [x13, #-8]
+	fmul	d0, d0, d1
+	ldr	d1, [x28, #16]
+	fadd	d0, d1, d0
+	str	d0, [x28, #16]
+	cmp	w3, #3
+	b.eq	LBB12_12
+; %bb.16:                               ;   in Loop: Header=BB12_13 Depth=5
+	ldr	d0, [x27, x8]
+	ldr	d1, [x13]
+	fmul	d0, d0, d1
+	ldr	d1, [x28, #24]
+	fadd	d0, d1, d0
+	str	d0, [x28, #24]
+	cmp	w3, #4
+	b.eq	LBB12_12
+; %bb.17:                               ;   in Loop: Header=BB12_13 Depth=5
+	ldr	d0, [x27, x8]
+	ldr	d1, [x13, #8]
+	fmul	d0, d0, d1
+	ldr	d1, [x28, #32]
+	fadd	d0, d1, d0
+	str	d0, [x28, #32]
+	cmp	w3, #5
+	b.eq	LBB12_12
+; %bb.18:                               ;   in Loop: Header=BB12_13 Depth=5
+	ldr	d0, [x27, x8]
+	ldr	d1, [x13, #16]
+	fmul	d0, d0, d1
+	ldr	d1, [x28, #40]
+	fadd	d0, d1, d0
+	str	d0, [x28, #40]
+	cmp	w3, #6
+	b.eq	LBB12_12
+; %bb.19:                               ;   in Loop: Header=BB12_13 Depth=5
+	ldr	d0, [x27, x8]
+	ldr	d1, [x13, #24]
+	fmul	d0, d0, d1
+	ldr	d1, [x28, #48]
+	fadd	d0, d1, d0
+	str	d0, [x28, #48]
+	b	LBB12_12
+LBB12_20:                               ;   in Loop: Header=BB12_10 Depth=4
+	mov	x30, #0
+	add	x8, x22, x0
+	ldr	x10, [sp, #72]                  ; 8-byte Folded Reload
+	madd	x10, x8, x14, x10
+	add	x13, x10, x7, lsl #3
+	add	x15, x10, x19, lsl #3
+	mov	x26, x16
+	b	LBB12_22
+LBB12_21:                               ;   in Loop: Header=BB12_22 Depth=5
+	add	x30, x30, #1
+	add	x26, x26, x14
+	cmp	x30, x9
+	b.eq	LBB12_9
+LBB12_22:                               ;   Parent Loop BB12_4 Depth=1
+                                        ;     Parent Loop BB12_6 Depth=2
+                                        ;       Parent Loop BB12_8 Depth=3
+                                        ;         Parent Loop BB12_10 Depth=4
+                                        ; =>        This Loop Header: Depth=5
+                                        ;             Child Loop BB12_25 Depth 6
+                                        ;             Child Loop BB12_27 Depth 6
 	mov	x10, #0
-	b	LBB12_18
-LBB12_13:                               ;   in Loop: Header=BB12_11 Depth=5
-	mov	x10, #0
-	add	x13, x25, x20
-	madd	x14, x13, x12, x2
-	add	x6, x21, x25
-	madd	x4, x26, x12, x1
-	add	x6, x4, x6, lsl #3
-	add	x13, x4, x13, lsl #3
-	add	x4, x14, x5, lsl #3
-	add	x14, x14, x17, lsl #3
-	cmp	x27, x6
+	add	x6, x30, x24
+	madd	x20, x6, x14, x2
+	add	x4, x25, x30
+	madd	x5, x8, x14, x1
+	add	x4, x5, x4, lsl #3
+	add	x5, x5, x6, lsl #3
+	add	x6, x20, x19, lsl #3
+	add	x17, x20, x7, lsl #3
+	cmp	x13, x4
+	cset	w4, lo
+	cmp	x5, x15
+	cset	w5, lo
+	and	w4, w4, w5
+	cmp	x13, x6
+	cset	w20, lo
+	cmp	x17, x15
 	cset	w6, lo
-	cmp	x13, x28
-	cset	w13, lo
-	and	w6, w6, w13
-	cmp	x27, x4
-	cset	w13, lo
-	cmp	x14, x28
-	cset	w14, lo
-	tbnz	w6, #0, LBB12_18
-; %bb.14:                               ;   in Loop: Header=BB12_11 Depth=5
-	and	w13, w13, w14
-	tbnz	w13, #0, LBB12_18
-; %bb.15:                               ;   in Loop: Header=BB12_11 Depth=5
+	tbnz	w4, #0, LBB12_27
+; %bb.23:                               ;   in Loop: Header=BB12_22 Depth=5
+	and	w17, w20, w6
+	tbnz	w17, #0, LBB12_27
+; %bb.24:                               ;   in Loop: Header=BB12_22 Depth=5
 	mov	x10, #0
-	add	x13, x23, x25, lsl #3
-	ld1r.2d	{ v0 }, [x13]
-LBB12_16:                               ;   Parent Loop BB12_2 Depth=1
-                                        ;     Parent Loop BB12_4 Depth=2
-                                        ;       Parent Loop BB12_6 Depth=3
-                                        ;         Parent Loop BB12_9 Depth=4
-                                        ;           Parent Loop BB12_11 Depth=5
+	add	x17, x27, x30, lsl #3
+	ld1r.2d	{ v0 }, [x17]
+LBB12_25:                               ;   Parent Loop BB12_4 Depth=1
+                                        ;     Parent Loop BB12_6 Depth=2
+                                        ;       Parent Loop BB12_8 Depth=3
+                                        ;         Parent Loop BB12_10 Depth=4
+                                        ;           Parent Loop BB12_22 Depth=5
                                         ; =>          This Inner Loop Header: Depth=6
-	ldr	d1, [x23, x25, lsl #3]
-	add	x13, x30, x10
-	ldp	q2, q3, [x13]
-	ldp	q4, q5, [x13, #32]
+	add	x17, x26, x10
+	ldp	q1, q2, [x17]
+	ldp	q3, q4, [x17, #32]
+	fmul.2d	v1, v0, v1
 	fmul.2d	v2, v0, v2
 	fmul.2d	v3, v0, v3
 	fmul.2d	v4, v0, v4
-	fmul.2d	v1, v5, v1[0]
-	add	x13, x24, x10
-	ldp	q5, q6, [x13]
-	ldp	q7, q16, [x13, #32]
-	fadd.2d	v2, v5, v2
-	fadd.2d	v3, v6, v3
-	fadd.2d	v4, v7, v4
-	fadd.2d	v1, v16, v1
-	stp	q2, q3, [x13]
-	stp	q4, q1, [x13, #32]
+	add	x17, x28, x10
+	ldp	q5, q6, [x17]
+	ldp	q7, q16, [x17, #32]
+	fadd.2d	v1, v5, v1
+	fadd.2d	v2, v6, v2
+	fadd.2d	v3, v7, v3
+	fadd.2d	v4, v16, v4
+	stp	q1, q2, [x17]
+	stp	q3, q4, [x17, #32]
 	add	x10, x10, #64
-	cmp	x11, x10
-	b.ne	LBB12_16
-; %bb.17:                               ;   in Loop: Header=BB12_11 Depth=5
-	mov	x10, x8
-	cmp	x8, x9
-	b.eq	LBB12_10
-LBB12_18:                               ;   Parent Loop BB12_2 Depth=1
-                                        ;     Parent Loop BB12_4 Depth=2
-                                        ;       Parent Loop BB12_6 Depth=3
-                                        ;         Parent Loop BB12_9 Depth=4
-                                        ;           Parent Loop BB12_11 Depth=5
+	cmp	x12, x10
+	b.ne	LBB12_25
+; %bb.26:                               ;   in Loop: Header=BB12_22 Depth=5
+	mov	x10, x21
+	cmp	x21, x9
+	b.eq	LBB12_21
+LBB12_27:                               ;   Parent Loop BB12_4 Depth=1
+                                        ;     Parent Loop BB12_6 Depth=2
+                                        ;       Parent Loop BB12_8 Depth=3
+                                        ;         Parent Loop BB12_10 Depth=4
+                                        ;           Parent Loop BB12_22 Depth=5
                                         ; =>          This Inner Loop Header: Depth=6
-	ldr	d0, [x23, x25, lsl #3]
-	lsl	x13, x10, #3
-	ldr	d1, [x30, x13]
-	ldr	d2, [x24, x13]
+	ldr	d0, [x27, x30, lsl #3]
+	lsl	x17, x10, #3
+	ldr	d1, [x26, x17]
+	ldr	d2, [x28, x17]
 	fmul	d0, d0, d1
 	fadd	d0, d2, d0
-	str	d0, [x24, x13]
+	str	d0, [x28, x17]
 	add	x10, x10, #1
 	cmp	x9, x10
-	b.ne	LBB12_18
-	b	LBB12_10
-LBB12_19:
-	ldp	x29, x30, [sp, #112]            ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #96]             ; 16-byte Folded Reload
-	ldp	x22, x21, [sp, #80]             ; 16-byte Folded Reload
-	ldp	x24, x23, [sp, #64]             ; 16-byte Folded Reload
-	ldp	x26, x25, [sp, #48]             ; 16-byte Folded Reload
-	ldp	x28, x27, [sp, #32]             ; 16-byte Folded Reload
-	add	sp, sp, #128
+	b.ne	LBB12_27
+	b	LBB12_21
+LBB12_28:
+	ldp	x29, x30, [sp, #160]            ; 16-byte Folded Reload
+	ldp	x20, x19, [sp, #144]            ; 16-byte Folded Reload
+	ldp	x22, x21, [sp, #128]            ; 16-byte Folded Reload
+	ldp	x24, x23, [sp, #112]            ; 16-byte Folded Reload
+	ldp	x26, x25, [sp, #96]             ; 16-byte Folded Reload
+	ldp	x28, x27, [sp, #80]             ; 16-byte Folded Reload
+	add	sp, sp, #176
 	ret
 	.cfi_endproc
                                         ; -- End function
