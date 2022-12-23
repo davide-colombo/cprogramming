@@ -192,10 +192,13 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 		for(uint32_t k = 0; k < NCOLS; k++){
 			number_t ikv1	= iv1[k];
 			number_t *kv2	= &v2[k][0];
-			for(uint32_t j = 0; j < NCOLS; j++){
+			uint32_t j = 0;
+			while(1){
 				number_t kjv2	= kv2[j];
 				number_t mul	= ikv1 * kjv2;
 				iout[j] += mul;
+				j += 1;
+				if(j >= NCOLS){ break; }
 			}
 		}
 	}
@@ -203,6 +206,9 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 
 /*
  * Transpose "v" (i.e., v[i][j] = v[j][i])
+ *
+ * NOTE: the indices are inverted to minimize the number of cache misses when 
+ * loading the values of the "v" object from main memory.
  */
 void vector2_transpose(vector2_t out, vector2_t v){
 	for(uint32_t i = 0; i < NROWS; i++){
