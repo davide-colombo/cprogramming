@@ -22,12 +22,12 @@ int main(int argc, char *argv[]){
 	}
 	printf("v1 = %p\n", v1);
 
-	//vector2_rand_init_vector2(&v1[0][0], 1000.0f, 10.0f);
+	vector2_rand_init_vector2(&v1[0][0], 1000.0f, 10.0f);
 
-	(*v1)[0][0] = 1;
-	(*v1)[0][1] = 2;
-	(*v1)[1][0] = 4;
-	(*v1)[1][1] = 5;
+//	(*v1)[0][0] = 1;
+//	(*v1)[0][1] = 2;
+//	(*v1)[1][0] = 4;
+//	(*v1)[1][1] = 5;
 
 	/* V2 */
 	start = clock();
@@ -56,11 +56,11 @@ int main(int argc, char *argv[]){
 		return 2;
 	}
 
-	//vector2_rand_init_vector2(&v2[0][0], 800.0f, 20.0f);
-	(*v2)[0][0] = 2;
-	(*v2)[0][1] = 3;
-	(*v2)[1][0] = 1;
-	(*v2)[1][1] = 3;
+	vector2_rand_init_vector2(&v2[0][0], 800.0f, 20.0f);
+//	(*v2)[0][0] = 2;
+//	(*v2)[0][1] = 3;
+//	(*v2)[1][0] = 1;
+//	(*v2)[1][1] = 3;
 
 //	vector2_print_vector2_data(&v2[0][0]);
 
@@ -96,21 +96,21 @@ int main(int argc, char *argv[]){
 	e = end - start;
 	t = e * icps;
 	printf("mul transposed: %.20f\n", t);
-	vector2_print_vector2_data(&mul[0][0]);
+//	vector2_print_vector2_data(&mul[0][0]);
 
 	/* FREE TRANSPOSE */
 	vector2_free_vector2(&tv2);
 
 	/* MULTIPLICATION LOCALIZED */
 	vector2_zero_init_vector2(mul);
-	//uint32_t stride = 128 / sizeof(number_t);
+	uint32_t stride = 128 / sizeof(number_t);
 	start = clock();
-	vector2_mul_localized(&mul[0][0], &v1[0][0], &v2[0][0], 1);
+	vector2_mul_localized(&mul[0][0], &v1[0][0], &v2[0][0], stride);
 	end = clock();
 	e = end - start;
 	t = e * icps;
 	printf("mul localized: %.20f\n", t);
-	vector2_print_vector2_data(&mul[0][0]);
+//	vector2_print_vector2_data(&mul[0][0]);
 
 	/* MULTIPLICATION OPTIMIZED */
 	vector2_zero_init_vector2(mul);
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]){
 	e = end - start;
 	t = e * icps;
 	printf("mul: %.20f\n", t);
-	vector2_print_vector2_data(&mul[0][0]);
+//	vector2_print_vector2_data(&mul[0][0]);
 
 	/* SUM OVER ROWS */
 	rowsum1_t *rsum = vector2_alloc_rowsum1();
