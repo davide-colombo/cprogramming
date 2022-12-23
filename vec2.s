@@ -314,15 +314,15 @@ LBB9_6:                                 ;   Parent Loop BB9_2 Depth=1
 	ldr	q3, [x3, #7984]
 	ldr	q4, [x3, #8000]
 	ldr	q5, [x3, #8016]
-	fmul.2d	v2, v1, v2
-	fmul.2d	v3, v1, v3
-	fmul.2d	v4, v1, v4
-	fmul.2d	v5, v5, v0[0]
 	add	x3, x11, x17
 	ldr	q6, [x3, #8000]
 	ldr	q7, [x3, #8016]
 	ldr	q16, [x3, #8032]
 	ldr	q17, [x3, #8048]
+	fmul.2d	v2, v1, v2
+	fmul.2d	v3, v1, v3
+	fmul.2d	v4, v1, v4
+	fmul.2d	v5, v5, v0[0]
 	fadd.2d	v2, v6, v2
 	fadd.2d	v3, v7, v3
 	fadd.2d	v4, v16, v4
@@ -346,7 +346,7 @@ LBB9_8:                                 ;   Parent Loop BB9_2 Depth=1
 	fadd	d1, d2, d1
 	str	d1, [x11, x3]
 	add	x17, x17, #1
-	cmp	x17, #1000
+	cmp	w17, #1000
 	b.ne	LBB9_8
 	b	LBB9_3
 LBB9_9:

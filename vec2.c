@@ -193,12 +193,24 @@ void vector2_mul(vector2_t out, vector2_t v1, vector2_t v2){
 			number_t ikv1	= iv1[k];
 			number_t *kv2	= &v2[k][0];
 			uint32_t j = 0;
+			uint32_t jiter = NCOLS;
 			while(1){
+				// LOAD
 				number_t kjv2	= kv2[j];
+				number_t ijout	= iout[j];
+
+				// UPDATE
 				number_t mul	= ikv1 * kjv2;
-				iout[j] += mul;
+
+				// STORE
+				iout[j] = ijout + mul;
+
+				// TEST
+				uint32_t jiter_next = jiter - 1;
+				if(jiter_next == 0){ break; }
+
 				j += 1;
-				if(j >= NCOLS){ break; }
+				jiter = jiter_next;
 			}
 		}
 	}
