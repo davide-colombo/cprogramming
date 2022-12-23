@@ -274,52 +274,51 @@ _vector2_mul:                           ; @vector2_mul
 ; %bb.0:
 	mov	x8, #0
 	ldr	d0, [x1]
-	mov	w14, #999
+	mov	w15, #999
 	mov	w9, #1
 	mov	w10, #8000
 	mov	x11, x0
-	mov	x16, x2
+	mov	x3, x2
 	mov	x12, x1
 	b	LBB9_2
 LBB9_1:                                 ;   in Loop: Header=BB9_2 Depth=1
 	madd	x12, x9, x10, x1
 	add	x9, x9, #1
-	sub	w14, w13, #1
+	sub	w15, w13, #1
 	add	x11, x11, x10
 	cbz	w13, LBB9_9
 LBB9_2:                                 ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB9_4 Depth 2
                                         ;       Child Loop BB9_8 Depth 3
                                         ;       Child Loop BB9_6 Depth 3
-	mov	x13, x14
-	madd	x14, x8, x10, x0
+	mov	x14, #0
+	mov	x13, x15
+	madd	x15, x8, x10, x0
 	add	x8, x8, #1
-	add	x15, x14, x10
-	mov	w4, #999
-	mov	w17, #1
+	add	x16, x15, x10
+	mov	w17, #1000
 	b	LBB9_4
 LBB9_3:                                 ;   in Loop: Header=BB9_4 Depth=2
-	ldr	d0, [x12, x17, lsl #3]
-	madd	x16, x17, x10, x2
-	add	x17, x17, #1
-	sub	w4, w3, #1
-	cbz	w3, LBB9_1
+	add	x14, x14, #1
+	ldr	d0, [x12, x14, lsl #3]
+	madd	x3, x14, x10, x2
+	subs	w17, w17, #1
+	b.eq	LBB9_1
 LBB9_4:                                 ;   Parent Loop BB9_2 Depth=1
                                         ; =>  This Loop Header: Depth=2
                                         ;       Child Loop BB9_8 Depth 3
                                         ;       Child Loop BB9_6 Depth 3
-	mov	x3, x4
-	add	x4, x16, x10
-	cmp	x14, x4
-	ccmp	x16, x15, #2, lo
+	add	x4, x3, x10
+	cmp	x15, x4
+	ccmp	x3, x16, #2, lo
 	b.lo	LBB9_7
 ; %bb.5:                                ;   in Loop: Header=BB9_4 Depth=2
-	add	x16, x16, #32
+	add	x3, x3, #32
 	mov	x4, #-8000
 LBB9_6:                                 ;   Parent Loop BB9_2 Depth=1
                                         ;     Parent Loop BB9_4 Depth=2
                                         ; =>    This Inner Loop Header: Depth=3
-	add	x5, x16, x4
+	add	x5, x3, x4
 	ldr	q1, [x5, #7968]
 	ldr	q2, [x5, #7984]
 	ldr	q3, [x5, #8000]
@@ -350,7 +349,7 @@ LBB9_8:                                 ;   Parent Loop BB9_2 Depth=1
                                         ;     Parent Loop BB9_4 Depth=2
                                         ; =>    This Inner Loop Header: Depth=3
 	lsl	x5, x4, #3
-	ldr	d1, [x16, x5]
+	ldr	d1, [x3, x5]
 	ldr	d2, [x11, x5]
 	fmul	d1, d0, d1
 	fadd	d1, d2, d1
